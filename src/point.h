@@ -2,8 +2,9 @@
 #define __POINT_H__
 
 #include <stdlib.h>
-#include <cmath>
 
+#include <iostream>
+#include <cmath>
 #include <vector>
 
 class Point
@@ -24,7 +25,7 @@ public:
     friend Point operator-(const Point &A, const Point &B);
     
 
-    static float dist(Point A, Point B);
+    float dist(const Point A) const;
     ~Point();
 };
 

@@ -10,13 +10,11 @@
 class Graph
 {
 private:
+    static uint32_t pt_idx;
     std::vector<std::vector<std::pair<Point, uint32_t> *>> cs;
     std::vector<std::pair<Point, uint32_t>> nodes;
     std::vector<std::vector<float>> adj_mat;
 public:
-
-    static uint32_t point_idx = 0;
-
     Graph(std::vector<Street> &);
 
     uint32_t getNode(Point);

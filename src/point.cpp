@@ -5,8 +5,10 @@ Point::Point(){};
 Point::Point(float x, float y):x(x), y(y)
 {
     if (x < 0.f ||
-        y < 0.f)
+        y < 0.f) {
+        std::cerr << "Invalid point" << std::endl;
         exit(1);
+    }
 };
 
 float Point::getX()
@@ -37,21 +39,23 @@ std::vector<float> operator^(const Point &A, const Point &B)
     return ret;
 }
 
-Point operator+(const Point &A,const Point &B){
+Point operator+(const Point &A,const Point &B)
+{
     float x = A.x + B.x;
     float y = A.y + B.y;
     Point R(x,y);
     return R;
 };
 
-Point operator-(const Point &A,const Point &B){
+Point operator-(const Point &A,const Point &B)
+{
     float x = A.x - B.x;
     float y = A.y - B.y;
     Point R(x,y);
     return R;
 };
 
-static float Point::dist(Point A, Point B) 
+float Point::dist(const Point A) const
 {
-    return sqrt(pow(A.getX() - B.getX(),2) + pow(A.getY() - B.getY(),2));
+    return sqrt(pow(x - A.x,2) + pow(y - A.y,2));
 }

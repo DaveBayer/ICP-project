@@ -2,6 +2,7 @@
 
 Graph::Graph(std::vector<Street> &s)
 {
+    pt_idx = 0;
     for (std::vector<Street>::iterator i = s.begin();
          i != s.end(); ++i) {
         std::vector pts = i->getPoints();
@@ -17,12 +18,12 @@ Graph::Graph(std::vector<Street> &s)
         }
     }
     
-    for (auto i = cs.begin(); i != cs.end(); ++i) {
+    for (auto &i : cs) {
         Point p = i[0]->first;
-        std::sort(i->begin(), i->end(), [p](const Point& lhs, const Point& rhs){ return Point::dist(p, lhs) < Point::dist(p, rhs); });
+        std::sort(i.begin(), i.end(), [p](const Point& lhs, const Point& rhs){ return p.dist(lhs) < p.dist(rhs); });
         
-        for (auto j = 0; j < i->size() - 1; j++) {
-            setEdge(i[j]->second, i[j+1]->second, Point::dist(i[j]->first,i[j+1]->first));
+        for (auto j = 0; j < i.size() - 1; j++) {
+            setEdge(i[j]->second, i[j+1]->second, (i[j]->first).dist(i[j+1]->first));
         }
     }
 }
@@ -45,9 +46,9 @@ void Graph::addNode(Street s, Point A)
     auto it = std::find(cs[id].begin(), cs[id].end(), A);
 
     if (it != cs[id].end()) {
-        std::pair<Point, uint32_t> p(A, point_idx++);
+        std::pair<Point, uint32_t> p(A, pt_idx++);
         nodes.push_back(p);
-        cs[id].push_back(&nodes.end());
+        cs[id].push_back(&nodes.back());
     }
 }
 
