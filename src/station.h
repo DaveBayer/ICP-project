@@ -7,7 +7,8 @@
 class Station
 {
 private:
-	
+	Point P;
+	Street s;
 public:
 	Station(/* args */);
 	~Station();
