@@ -15,6 +15,11 @@ private:
 	std::string name;
 public:
 	Street(Point A, Point B, std::string name);
+	
+	uint32_t getID();
+	std::vector<Point> getPoints();
+	static bool intersect(Street, Street, Point &);
+
 	~Street();
 };
 

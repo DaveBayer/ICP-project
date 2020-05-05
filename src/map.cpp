@@ -1,10 +1,10 @@
 #include "map.h"
 
-Map::Map(float x, float y)
-: x(x), y(y){};
+Map::Map(float w, float h)
+: w(w), h(h){};
 
-Map::Map(float x, float y, std::vector<Street> s)
-: x(x), y(y), streets(s){};
+Map::Map(float w, float h, std::vector<Street> s)
+: w(w), h(h), streets(s){};
 
 void Map::addStreet(Street &s)
 {

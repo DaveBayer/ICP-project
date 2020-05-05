@@ -1,5 +1,7 @@
 #include "point.h"
 
+Point::Point(){};
+
 Point::Point(float x, float y):x(x), y(y)
 {
     if (x < 0.f ||
@@ -48,3 +50,8 @@ Point operator-(const Point &A,const Point &B){
     Point R(x,y);
     return R;
 };
+
+static float Point::dist(Point A, Point B) 
+{
+    return sqrt(pow(A.getX() - B.getX(),2) + pow(A.getY() - B.getY(),2));
+}
