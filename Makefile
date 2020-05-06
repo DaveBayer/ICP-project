@@ -61,7 +61,8 @@ SOURCES       = src/graph.cpp \
 		src/station.cpp \
 		src/street.cpp \
 		src/streetmap.cpp \
-		src/linelabel.cpp moc_mainwindow.cpp \
+		src/linelabel.cpp \
+		src/lineroute.cpp moc_mainwindow.cpp \
 		moc_linelabel.cpp
 OBJECTS       = graph.o \
 		line.o \
@@ -73,6 +74,7 @@ OBJECTS       = graph.o \
 		street.o \
 		streetmap.o \
 		linelabel.o \
+		lineroute.o \
 		moc_mainwindow.o \
 		moc_linelabel.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
@@ -371,7 +373,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		src/station.h \
 		src/street.h \
 		src/streetmap.h \
-		src/linelabel.h src/graph.cpp \
+		src/linelabel.h \
+		src/lineroute.h src/graph.cpp \
 		src/line.cpp \
 		src/main.cpp \
 		src/mainwindow.cpp \
@@ -380,7 +383,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		src/station.cpp \
 		src/street.cpp \
 		src/streetmap.cpp \
-		src/linelabel.cpp
+		src/linelabel.cpp \
+		src/lineroute.cpp
 QMAKE_TARGET  = ICP-project
 DESTDIR       = 
 TARGET        = ICP-project
@@ -986,8 +990,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/graph.h src/line.h src/mainwindow.h src/map.h src/point.h src/station.h src/street.h src/streetmap.h src/linelabel.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/graph.cpp src/line.cpp src/main.cpp src/mainwindow.cpp src/map.cpp src/point.cpp src/station.cpp src/street.cpp src/streetmap.cpp src/linelabel.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/graph.h src/line.h src/mainwindow.h src/map.h src/point.h src/station.h src/street.h src/streetmap.h src/linelabel.h src/lineroute.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/graph.cpp src/line.cpp src/main.cpp src/mainwindow.cpp src/map.cpp src/point.cpp src/station.cpp src/street.cpp src/streetmap.cpp src/linelabel.cpp src/lineroute.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -1028,11 +1032,14 @@ moc_mainwindow.cpp: src/mainwindow.h \
 		src/point.h \
 		src/line.h \
 		src/linelabel.h \
+		src/lineroute.h \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include /home/michal/School/2019-20/summer/ICP/ICP-project/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include src/mainwindow.h -o moc_mainwindow.cpp
 
 moc_linelabel.cpp: src/linelabel.h \
+		src/line.h \
+		src/point.h \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include /home/michal/School/2019-20/summer/ICP/ICP-project/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include src/linelabel.h -o moc_linelabel.cpp
@@ -1058,7 +1065,8 @@ graph.o: src/graph.cpp src/graph.h \
 		src/street.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o graph.o src/graph.cpp
 
-line.o: src/line.cpp src/line.h
+line.o: src/line.cpp src/line.h \
+		src/point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o line.o src/line.cpp
 
 main.o: src/main.cpp src/graph.h \
@@ -1069,7 +1077,8 @@ main.o: src/main.cpp src/graph.h \
 		src/station.h \
 		src/mainwindow.h \
 		src/streetmap.h \
-		src/linelabel.h
+		src/linelabel.h \
+		src/lineroute.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
 mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
@@ -1077,7 +1086,8 @@ mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 		src/street.h \
 		src/point.h \
 		src/line.h \
-		src/linelabel.h
+		src/linelabel.h \
+		src/lineroute.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o src/mainwindow.cpp
 
 map.o: src/map.cpp src/map.h \
@@ -1102,8 +1112,14 @@ streetmap.o: src/streetmap.cpp src/streetmap.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o streetmap.o src/streetmap.cpp
 
 linelabel.o: src/linelabel.cpp src/linelabel.h \
-		src/line.h
+		src/line.h \
+		src/point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o linelabel.o src/linelabel.cpp
+
+lineroute.o: src/lineroute.cpp src/lineroute.h \
+		src/street.h \
+		src/point.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o lineroute.o src/lineroute.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

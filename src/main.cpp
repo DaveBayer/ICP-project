@@ -35,7 +35,7 @@ int main(int argc, char  *argv[])
 
     // std::cout << "Streets added to map" << std::endl;
 
-    Point p1(50,50);
+    Point p1(100,100);
     Point p2(100,500);
     Point p3(200,100);
     Point p4(200,500);
@@ -45,16 +45,16 @@ int main(int argc, char  *argv[])
     Point p8(400,500);
     Point p9(500,100);
     Point p10(500,500);
-    Point ph1(50,50);
-    Point ph2(550,50);
-    Point ph3(50,200);
-    Point ph4(550,300);
-    Point ph5(50,400);
-    Point ph6(550,500);
-    Point ph7(50,600);
-    Point ph8(550,700);
-    Point ph9(50,100);
-    Point ph10(550,500);
+    Point ph1(100,100);
+    Point ph2(500,100);
+    Point ph3(100,200);
+    Point ph4(500,200);
+    Point ph5(100,300);
+    Point ph6(500,300);
+    Point ph7(100,400);
+    Point ph8(500,400);
+    Point ph9(100,500);
+    Point ph10(500,500);
 
     Street s1(p1,p2, "");
     Street s2(p3,p4, "");
@@ -80,12 +80,24 @@ int main(int argc, char  *argv[])
 
     std::vector<Line> lines;
 
+    Point pr1(100,100);
+    Point pr2(100,200);
+    Point pr3(300,200);
+    Point pr4(300,400);
+    Point pr5(500,400);
+    Point pr6(500,500);
+
+    std::vector<Point> route = {pr1,pr2,pr3,pr4,pr5,pr6};
+
     Line l1("line 1");
     Line l2("line 2");
     Line l3("line 1");
     Line l4("line 2");
     Line l5("line 1");
     Line l6("line 2");
+
+    l1.setRoute(route);
+
 
     lines.push_back(l1);
     lines.push_back(l2);

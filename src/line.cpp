@@ -17,4 +17,14 @@ std::string Line::getName()
 	return name;
 }
 
+std::vector<Point>  Line::getRoute()
+{
+	return route;
+}
+
+void Line::setRoute(std::vector<Point> &route) 
+{
+	this->route = route;
+}
+
 Line::~Line(){}

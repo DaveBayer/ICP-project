@@ -7,6 +7,7 @@
 #include "streetmap.h"
 #include "line.h"
 #include "linelabel.h"
+#include "lineroute.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -18,7 +19,7 @@ public:
    void finish();
 
 private slots:
-    // void lineClicked(uint32_t id);
+    void lineClicked(uint32_t id);
 
 private:
     QGraphicsView *view;

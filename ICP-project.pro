@@ -25,7 +25,8 @@ HEADERS += src/graph.h \
            src/station.h \
            src/street.h \
            src/streetmap.h \
-           src/linelabel.h
+           src/linelabel.h \
+           src/lineroute.h
 SOURCES += src/graph.cpp \
            src/line.cpp \
            src/main.cpp \
@@ -35,4 +36,5 @@ SOURCES += src/graph.cpp \
            src/station.cpp \
            src/street.cpp \
            src/streetmap.cpp \
-           src/linelabel.cpp
+           src/linelabel.cpp \
+           src/lineroute.cpp

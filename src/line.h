@@ -11,11 +11,13 @@ private:
 	static uint32_t LineCount;
     uint32_t id;
     std::string name;
+	std::vector<Point> route;
 public:
-	std::vector<Point> path;
     Line(std::string name);
     uint32_t getId();
+    std::vector<Point> getRoute();
     std::string getName();
+    void setRoute(std::vector<Point>&);
     ~Line();
 };
 
