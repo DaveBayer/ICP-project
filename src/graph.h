@@ -1,7 +1,7 @@
 #ifndef __GRAPH_H__
 #define __GRAPH_H__
 
-//#include <algorithm>
+#include <algorithm>
 #include <vector>
 #include <iostream>
 
@@ -26,7 +26,7 @@ public:
     void setEdge(uint32_t idx_a, uint32_t idx_b, float w);
     void setOEdge(uint32_t idx_a, uint32_t idx_b, float w);
 
-
+    friend std::ostream &operator<<(std::ostream &, Graph);
 
     ~Graph();
 };

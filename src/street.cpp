@@ -35,7 +35,7 @@ bool Street::intersect(Street s, Point &p)
  	auto c2 = a2 * pts[0].getX() + b2 * pts[0].getY();
 
 
- 	auto determinant = a1*b2 - a2*b1;
+ 	auto determinant = a1 * b2 - a2 * b1;
 
  	if (determinant == 0) {
  		return false;

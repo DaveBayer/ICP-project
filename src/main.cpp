@@ -19,19 +19,25 @@ int main(int argc, char const *argv[])
     getPoints(pts);
     std::cout << "Points created.." << std::endl;
 
+    std::vector<Street> sv;
     Street s1(pts[0], pts[1], "prvni");
     std::cout << "Street 1 created.." << std::endl;
 
     Street s2(pts[2], pts[3], "druha");
     std::cout << "Streets 2 created.." << std::endl;
+
+    sv.push_back(s1);
+    sv.push_back(s2);
     
-    Map m(20.f, 20.f);
+    Map m(20.f, 20.f, sv);
     
     std::cout << "Map created.." << std::endl;
-    m.addStreet(s1);
-    m.addStreet(s2);
-
+    m.createGraph();
     std::cout << "Streets added to map" << std::endl;
+
+    std::cout << "Graph:\n";
+
+    m.outputGraph();
 
     return 0;
 }

@@ -20,6 +20,7 @@ public:
 	std::vector<Point> getPoints();
 	bool intersect(Street, Point &);
 
+	
 	~Street();
 };
 

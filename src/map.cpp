@@ -11,4 +11,14 @@ void Map::addStreet(Street &s)
     streets.push_back(s);
 }
 
+void Map::createGraph()
+{
+    g = Graph(streets);
+}
+
+void Map::outputGraph()
+{
+    std::cout << g;
+}
+
 Map::~Map(){}
