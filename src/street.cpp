@@ -1,9 +1,12 @@
 #include "street.h"
 
-Street::Street(Point A, Point B, std::string name)
-: A(A), B(B), name(name)
+uint32_t Street::StreetCount = 0;
+
+Street::Street(Point new_A, Point new_B, std::string new_name)
+: A(new_A), B(new_B), name(new_name)
 {
-    v = A ^ B;
+    id = StreetCount++;
+//    v = A ^ B;
 };
 
 uint32_t Street::getID()

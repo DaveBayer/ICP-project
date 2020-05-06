@@ -8,6 +8,7 @@
 class Street
 {
 private:
+	static uint32_t StreetCount;
 	uint32_t id;
 	Point A, B;
 	std::vector<float> v;		/*	y = v[0]x + v[1]*/

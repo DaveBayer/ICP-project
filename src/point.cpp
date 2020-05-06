@@ -4,40 +4,35 @@ const float epsilon = 0.01;
 
 Point::Point(){};
 
-Point::Point(float x, float y):x(x), y(y)
-{
-    if (x < 0.f ||
-        y < 0.f) {
-        std::cerr << "Invalid point" << std::endl;
-        exit(1);
-    }
-};
+Point::Point(float new_x, float new_y)
+: x(new_x), y(new_y){}
 
 float Point::getX()
 {
-    return this->x;
+    return x;
 }
 
 float Point::getY()
 {
-    return this->y;
+    return y;
 }
 
 std::vector<float> operator^(const Point &A, const Point &B)
 {
-    Point v = A - B;
-
+    std::cout << "newvec";
+    std::vector v(A.x - B.x, A.y - B.y);
+    std::cout << "tady";
 //  to norm vec    
-    float c = v.x;
-    v.x = v.y;
-    v.y = - c;
-
+    float c = v[0];
+    v[0] = v[1];
+    v[1] = - c;
+    std::cout << "tu";
 //  get c from point A and norm vec
-    c = - (v.x * A.x + v.y * A.y);
-
+    c = - (v[0] * A.x + v[1] * A.y);
+    std::cout << "t";
 //  transform ax + by + c = 0 to y = ax + b
-    std::vector<float> ret(- (v.x / c), - (v.y / c));
-
+    std::vector<float> ret(- (v[0] / c), - (v[1] / c));
+    std::cout << "r";
     return ret;
 }
 
