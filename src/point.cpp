@@ -67,3 +67,5 @@ float Point::dist(const Point A) const
 {
     return sqrt(pow(x - A.x,2) + pow(y - A.y,2));
 }
+
+Point::~Point(){}

@@ -11,3 +11,4 @@ void Map::addStreet(Street &s)
     streets.push_back(s);
 }
 
+Map::~Map(){}

@@ -52,3 +52,5 @@ bool Street::intersect(Street s, Point &p)
         }
  	}
 }
+
+Street::~Street(){}

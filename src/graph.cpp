@@ -69,3 +69,5 @@ void Graph::setOEdge(uint32_t idx_a, uint32_t idx_b, float w)
 {
     adj_mat[idx_a][idx_b] = w;
 }
+
+Graph::~Graph(){}
