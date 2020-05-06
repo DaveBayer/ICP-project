@@ -4,7 +4,6 @@
 #include <cmath>
 
 #include "point.h"
-#include "map.h"
 
 class Street
 {
@@ -18,7 +17,7 @@ public:
 	
 	uint32_t getID();
 	std::vector<Point> getPoints();
-	static bool intersect(Street, Street, Point &);
+	bool intersect(Street, Point &);
 
 	~Street();
 };

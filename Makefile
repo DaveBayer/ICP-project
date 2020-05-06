@@ -1,5 +1,5 @@
 TARGET=apk
-CPPFLAGS=-c
+CPPFLAGS=-std=c++17
 
 SRC=src
 OBJ=obj
@@ -9,8 +9,15 @@ HDRFILES=$(wildcard $(SRC)/*.h)
 
 all: $(TARGET)
 
+
+#$(TARGET): $(SRCFILES) $(HDRFILES)
+#	g++ $(CPPFLAGS) -o $@ $(SRCFILES) $(HDRFILES)
 $(TARGET): $(OBJFILES) $(HDRFILES)
-	g++ $(CPPFLAGS) -o $@ $(OBJFILES)
+	g++ $(CPPFLAGS) -o $@ $(OBJFILES) -I$(SRC) $(HDRFILES)
 
 $(OBJ)/%.o: $(SRC)/%.cpp $(HDRFILES)
-	g++ $(CPPFLAGS) $< -o $@ -I$(SRC)
+	g++ $(CPPFLAGS) $< -c -o $@ -I$(SRC) $(HDRFILES)
+
+clean:
+	rm -r $(OBJ)
+	mkdir $(OBJ)

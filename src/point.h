@@ -23,7 +23,7 @@ public:
     friend std::vector<float> operator^(const Point &A, const Point &B);
     friend Point operator+(const Point &A, const Point &B);
     friend Point operator-(const Point &A, const Point &B);
-    
+    friend bool operator==(const Point &A, const Point &B);
 
     float dist(const Point A) const;
     ~Point();

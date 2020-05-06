@@ -1,5 +1,7 @@
 #include "point.h"
 
+const float epsilon = 0.01;
+
 Point::Point(){};
 
 Point::Point(float x, float y):x(x), y(y)
@@ -54,6 +56,12 @@ Point operator-(const Point &A,const Point &B)
     Point R(x,y);
     return R;
 };
+
+bool operator==(const Point &A, const Point &B)
+{
+    return std::fabs(A.x - B.x) < epsilon * std::max(std::abs(A.x), std::abs(B.x)) && 
+           std::fabs(A.y - B.y) < epsilon * std::max(std::abs(A.y), std::abs(B.y));
+}
 
 float Point::dist(const Point A) const
 {

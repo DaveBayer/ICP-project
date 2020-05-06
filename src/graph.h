@@ -1,23 +1,25 @@
 #ifndef __GRAPH_H__
 #define __GRAPH_H__
 
-#include <algorithm>
+//#include <algorithm>
 #include <vector>
 #include <iostream>
 
+#include "point.h"
 #include "street.h"
 
 class Graph
 {
 private:
-    static uint32_t pt_idx;
+    uint32_t pt_idx;
     std::vector<std::vector<std::pair<Point, uint32_t> *>> cs;
     std::vector<std::pair<Point, uint32_t>> nodes;
     std::vector<std::vector<float>> adj_mat;
 public:
+    Graph();
     Graph(std::vector<Street> &);
 
-    uint32_t getNode(Point);
+//    uint32_t getNode(Point);
     void addNode(Street, Point);
     void addNodes(Street, std::vector<Point>);
     
