@@ -4,6 +4,8 @@
 #include "point.h"
 #include "station.h"
 #include "street.h"
+#include <QApplication>
+#include "mainwindow.h"
 
 void getPoints(std::vector<Point> &pts)
 {
@@ -13,7 +15,7 @@ void getPoints(std::vector<Point> &pts)
     pts.push_back(Point(0.f, 2.f));
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char  *argv[])
 {
     std::vector<Point> pts;
     getPoints(pts);
@@ -33,5 +35,13 @@ int main(int argc, char const *argv[])
 
     std::cout << "Streets added to map" << std::endl;
 
-    return 0;
+
+    // GUI Window
+
+    QApplication app(argc, argv);
+    MainWindow mainWindow;
+    mainWindow.setGeometry(100, 100, 800, 500);
+    mainWindow.show();
+
+    return app.exec();
 }

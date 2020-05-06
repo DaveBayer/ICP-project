@@ -20,7 +20,7 @@ float Point::getY()
 std::vector<float> operator^(const Point &A, const Point &B)
 {
     std::cout << "newvec";
-    std::vector v(A.x - B.x, A.y - B.y);
+    std::vector<float> v(A.x - B.x, A.y - B.y);
     std::cout << "tady";
 //  to norm vec    
     float c = v[0];
