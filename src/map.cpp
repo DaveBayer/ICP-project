@@ -11,4 +11,14 @@ void Map::addStreet(Street &s)
     streets.push_back(s);
 }
 
+
+
+
+std::vector<Street> Map::getStreets() 
+{
+	return streets;
+}
+
+
+
 Map::~Map(){}

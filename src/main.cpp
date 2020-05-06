@@ -17,30 +17,90 @@ void getPoints(std::vector<Point> &pts)
 
 int main(int argc, char  *argv[])
 {
-    std::vector<Point> pts;
-    getPoints(pts);
-    std::cout << "Points created.." << std::endl;
+    // std::vector<Point> pts;
+    // getPoints(pts);
+    // std::cout << "Points created.." << std::endl;
 
-    Street s1(pts[0], pts[1], "prvni");
-    std::cout << "Street 1 created.." << std::endl;
+    // Street s1(pts[0], pts[1], "prvni");
+    // std::cout << "Street 1 created.." << std::endl;
 
-    Street s2(pts[2], pts[3], "druha");
-    std::cout << "Streets 2 created.." << std::endl;
+    // Street s2(pts[2], pts[3], "druha");
+    // std::cout << "Streets 2 created.." << std::endl;
     
-    Map m(20.f, 20.f);
+    Map m(600, 600);
     
-    std::cout << "Map created.." << std::endl;
+    // std::cout << "Map created.." << std::endl;
+    // m.addStreet(s1);
+    // m.addStreet(s2);
+
+    // std::cout << "Streets added to map" << std::endl;
+
+    Point p1(50,50);
+    Point p2(100,500);
+    Point p3(200,100);
+    Point p4(200,500);
+    Point p5(300,100);
+    Point p6(300,500);
+    Point p7(400,100);
+    Point p8(400,500);
+    Point p9(500,100);
+    Point p10(500,500);
+    Point ph1(50,50);
+    Point ph2(550,50);
+    Point ph3(50,200);
+    Point ph4(550,300);
+    Point ph5(50,400);
+    Point ph6(550,500);
+    Point ph7(50,600);
+    Point ph8(550,700);
+    Point ph9(50,100);
+    Point ph10(550,500);
+
+    Street s1(p1,p2, "");
+    Street s2(p3,p4, "");
+    Street s3(p5,p6, "");
+    Street s4(p7,p8, "");
+    Street s5(p9,p10, "");
+    Street s6(ph1,ph2, "");
+    Street s7(ph3,ph4, "");
+    Street s8(ph5,ph6, "");
+    Street s9(ph7,ph8, "");
+    Street s10(ph9,ph10, "");
+
     m.addStreet(s1);
     m.addStreet(s2);
+    m.addStreet(s3);
+    m.addStreet(s4);
+    m.addStreet(s5);
+    m.addStreet(s6);
+    m.addStreet(s7);
+    m.addStreet(s8);
+    m.addStreet(s9);
+    m.addStreet(s10);
 
-    std::cout << "Streets added to map" << std::endl;
+    std::vector<Line> lines;
 
+    Line l1("line 1");
+    Line l2("line 2");
+    Line l3("line 1");
+    Line l4("line 2");
+    Line l5("line 1");
+    Line l6("line 2");
 
+    lines.push_back(l1);
+    lines.push_back(l2);
+    lines.push_back(l3);
+    lines.push_back(l4);
+    lines.push_back(l5);
+    lines.push_back(l6);
     // GUI Window
 
     QApplication app(argc, argv);
     MainWindow mainWindow;
-    mainWindow.setGeometry(100, 100, 800, 500);
+    // mainWindow.setGeometry(100, 100, 800, 500);
+    mainWindow.createStreetMap(m.getStreets());
+    mainWindow.createLines(lines);
+    mainWindow.finish();
     mainWindow.show();
 
     return app.exec();

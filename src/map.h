@@ -19,6 +19,7 @@ public:
 	void addStreet(Street &);
 	void closeStreet(Street);
 	void closeStreet(Point, Point);
+	std::vector<Street> getStreets();
 
 	void createGraph();
 	
