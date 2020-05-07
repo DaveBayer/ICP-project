@@ -54,8 +54,8 @@ Point operator-(const Point &A,const Point &B)
 
 bool operator==(const Point &A, const Point &B)
 {
-    return std::fabs(A.x - B.x) < epsilon * std::max(std::abs(A.x), std::abs(B.x)) && 
-           std::fabs(A.y - B.y) < epsilon * std::max(std::abs(A.y), std::abs(B.y));
+    return std::fabs(A.x - B.x) < epsilon && 
+           std::fabs(A.y - B.y) < epsilon;
 }
 
 float Point::dist(const Point A) const

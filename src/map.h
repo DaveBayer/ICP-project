@@ -1,6 +1,8 @@
 #ifndef __MAP_H__
 #define __MAP_H__
 
+#include <fstream>
+#include <sstream>
 #include <vector>
 
 #include "graph.h"
@@ -13,6 +15,7 @@ private:
 	std::vector<Street> streets;
 	Graph g;
 public:
+	Map();
 	Map(float w, float h);
 	Map(float w, float h, std::vector<Street> s);
 
@@ -21,8 +24,9 @@ public:
 	void closeStreet(Point, Point);
 
 	void createGraph();
-	
 	void outputGraph();
+
+	int readMap(const char *);
 
 	~Map();
 };

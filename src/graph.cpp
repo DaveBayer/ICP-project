@@ -19,20 +19,24 @@ Graph::Graph(std::vector<Street> &s)
             }
         }
     }
-    
+
     adj_mat.resize(pt_idx);
     for (auto &i : adj_mat)
         i.resize(pt_idx);
 
     std::cout << "Lets create edges\n";
     for (auto &i : cs) {
-        Point P(i.front()->first);
-        std::sort(i.begin(), i.end(),
-            [&P](auto &lhs, auto &rhs) -> bool
-            { return lhs->first.dist(P) < rhs->first.dist(P); });
+        if (i.size() > 0) {
+            std::cout << "sort\n";
+            Point P(i.front()->first);
+            std::sort(i.begin(), i.end(),
+                [&P](auto &lhs, auto &rhs) -> bool
+                { return lhs->first.dist(P) < rhs->first.dist(P); });
 
-        for (auto j = 0; j < i.size() - 1; j++) {
-            setEdge(i[j]->second, i[j+1]->second, (i[j]->first).dist(i[j+1]->first));
+            std::cout << "done, lets set edges now\n";
+            for (auto j = 0; j < i.size() - 1; j++) {
+                setEdge(i[j]->second, i[j+1]->second, (i[j]->first).dist(i[j+1]->first));
+            }
         }
     }
 }
@@ -53,6 +57,8 @@ uint32_t Graph::getNode(Point A)
 void Graph::addNode(Street s, Point A)
 {
     auto id = s.getID();
+    if (id + 1 > cs.size())
+        cs.resize(id + 1);
 
     auto it = std::find_if(nodes.begin(), nodes.end(),
         [&A](std::pair<Point, uint32_t> &el) -> bool
@@ -60,14 +66,14 @@ void Graph::addNode(Street s, Point A)
 
     if (it == nodes.end()) {
         std::pair<Point, uint32_t> p({A, pt_idx++});
-        std::cout << "new pair: " << p.first.getX() << p.first.getY() << p.second << std::endl;
+        std::cout << "new pair: " << p.first.getX() << "\t"
+            << p.first.getY() << "\t" << p.second
+            << "\t" << s.getName() << std::endl;
         nodes.push_back(p);
-    }
-
-    if (id + 1 > cs.size())
-        cs.resize(id + 1);
-
-    cs[id].push_back(&(nodes.back()));
+        cs[id].push_back(&(nodes.back()));
+    
+    } else
+        cs[id].push_back(&(*it));
 }
 
 void Graph::addNodes(Street s, std::vector<Point> v)
@@ -89,6 +95,7 @@ void Graph::setOEdge(uint32_t idx_a, uint32_t idx_b, float w)
 
 std::ostream &operator<<(std::ostream &os, Graph g)
 {
+    os.precision(2);
     uint32_t size = g.adj_mat.size();
     for (auto i = 0; i < size; i++)
         os << "\t" << i;
@@ -99,7 +106,7 @@ std::ostream &operator<<(std::ostream &os, Graph g)
 
         for (auto j = 0; j < size; j++)
             os << "\t" << g.adj_mat[i][j];
-            
+
         os << std::endl;
     }
 

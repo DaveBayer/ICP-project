@@ -14,6 +14,11 @@ uint32_t Street::getID()
     return id;
 }
 
+std::string Street::getName()
+{
+    return name;
+}
+
 std::vector<Point> Street::getPoints()
 {
     std::vector<Point> ret;

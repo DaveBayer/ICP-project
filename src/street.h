@@ -17,6 +17,7 @@ public:
 	Street(Point A, Point B, std::string name);
 	
 	uint32_t getID();
+	std::string getName();
 	std::vector<Point> getPoints();
 	bool intersect(Street, Point &);
 
