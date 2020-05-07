@@ -9,5 +9,5 @@ LineLabel::LineLabel(Line line, QWidget *parent)
 
 void LineLabel::mouseReleaseEvent(QMouseEvent* event) 
 {
-	emit clicked(line.getId());
+	emit clicked();
 }

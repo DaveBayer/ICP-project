@@ -8,6 +8,8 @@ INCLUDEPATH += .
 
 QT += widgets
 QT += gui
+QT += core
+
 
 # You can make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -26,7 +28,8 @@ HEADERS += src/graph.h \
            src/street.h \
            src/streetmap.h \
            src/linelabel.h \
-           src/lineroute.h
+           src/lineroute.h \
+           src/transportvehicle.h
 SOURCES += src/graph.cpp \
            src/line.cpp \
            src/main.cpp \
@@ -37,4 +40,5 @@ SOURCES += src/graph.cpp \
            src/street.cpp \
            src/streetmap.cpp \
            src/linelabel.cpp \
-           src/lineroute.cpp
+           src/lineroute.cpp \
+           src/transportvehicle.cpp

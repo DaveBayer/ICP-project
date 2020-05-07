@@ -51,6 +51,5 @@ void StreetMap::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 QRectF StreetMap::boundingRect() const
 {
     qreal adjust = 0.5;
-    return QRectF(-300 - adjust, -300 - adjust,
-                  600 + adjust, 600 + adjust);
+    return QRectF(0, 0, 600, 600);
 }

@@ -13,7 +13,8 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *ev);
 
 signals:
-	void clicked(uint32_t);
+	// void clicked(uint32_t);
+	void clicked();
 
 private:
 	Line line;

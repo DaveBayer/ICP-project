@@ -23,7 +23,7 @@ void MainWindow::createLines(std::vector<Line> l)
         LineLabel * lineLabel = new LineLabel(line);
         line_labels->addWidget(lineLabel);
         LineRoute * lineRoute = new LineRoute(line.getId(),line.getRoute());
-        QObject::connect(lineLabel, SIGNAL(clicked(uint32_t)),this,SLOT(lineClicked(uint32_t)));
+        QObject::connect(lineLabel, SIGNAL(clicked()),lineRoute,SLOT(showRoute()));
 
         scene->addItem(lineRoute);
     }
@@ -32,6 +32,12 @@ void MainWindow::createLines(std::vector<Line> l)
 
 void MainWindow::finish() 
 {
+
+    QTimer *sys_clock = new QTimer(this);
+    connect(sys_clock, SIGNAL(timeout()), this,SLOT(clock_tick()));
+    sys_clock->start(1000);
+    
+
     view = new QGraphicsView(scene);
     view->show();
 
@@ -50,21 +56,14 @@ void MainWindow::finish()
     setUnifiedTitleAndToolBarOnMac(true);
 }
 
-void MainWindow::lineClicked(uint32_t id)
+void MainWindow::clock_tick()
 {
-    std::cout<<"Line with id " << id << " clicked.\n";
-    auto item_list = scene->items();
-    for (auto it : item_list){
-        LineRoute *route = qgraphicsitem_cast<LineRoute *>(it);
-        if (!route) continue;
-        if(route->getId() == id) {
-            std::cout << route->getId() <<std::endl;
-            if (route->isVisible())
-                route->setVisible(false);
-            else
-                route->setVisible(true);
-            scene->update();
-        }
+    static uint32_t time = 0;
+    std::cout<<"Clock ticked()\n";
+    time++;
+    if(time == 5){
+        TransportVehicle *v = new TransportVehicle(scene);
+        v->createAnimation();
+        v->addToScene();
     }
-    // it->setVisible(true);
 }

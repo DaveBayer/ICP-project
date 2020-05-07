@@ -3,11 +3,13 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGridLayout>
+#include <QTimer>
 
 #include "streetmap.h"
 #include "line.h"
 #include "linelabel.h"
 #include "lineroute.h"
+#include "transportvehicle.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -19,7 +21,7 @@ public:
    void finish();
 
 private slots:
-    void lineClicked(uint32_t id);
+    void clock_tick();
 
 private:
     QGraphicsView *view;
