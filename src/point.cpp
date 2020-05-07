@@ -63,4 +63,10 @@ float Point::dist(const Point A) const
     return sqrt(pow(x - A.x,2) + pow(y - A.y,2));
 }
 
+std::ostream &operator<<(std::ostream &os, Point P)
+{
+    os << P.x << " " << P.y;
+    return os;
+}
+
 Point::~Point(){}

@@ -26,6 +26,8 @@ public:
     friend bool operator==(const Point &A, const Point &B);
 
     float dist(const Point A) const;
+    
+    friend std::ostream &operator<<(std::ostream &, Point);
     ~Point();
 };
 

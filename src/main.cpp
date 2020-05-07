@@ -15,30 +15,6 @@ void getPoints(std::vector<Point> &pts)
 
 int main(int argc, char const *argv[])
 {
-    std::vector<Point> pts;
-    getPoints(pts);
-    std::cout << "Points created.." << std::endl;
-
-    std::vector<Street> sv;
-    Street s1(pts[0], pts[1], "prvni");
-    std::cout << "Street 1 created.." << std::endl;
-
-    Street s2(pts[2], pts[3], "druha");
-    std::cout << "Streets 2 created.." << std::endl;
-
-    sv.push_back(s1);
-    sv.push_back(s2);
-    
-    Map m(20.f, 20.f, sv);
-    
-    std::cout << "Map created.." << std::endl;
-    m.createGraph();
-    std::cout << "Streets added to map" << std::endl;
-
-    std::cout << "Graph:\n";
-
-    m.outputGraph();
-
     Map m2;
     switch(m2.readMap(argv[1])) {
     case 0 :
@@ -56,9 +32,9 @@ int main(int argc, char const *argv[])
     default :
         break;
     }
-    
+
     m2.createGraph();
-    m2.outputGraph();
+//    m2.outputGraph();
 
     return 0;
 }

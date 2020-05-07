@@ -2,6 +2,7 @@
 #define __GRAPH_H__
 
 #include <algorithm>
+#include <map>
 #include <vector>
 #include <iostream>
 
@@ -12,7 +13,7 @@ class Graph
 {
 private:
     uint32_t pt_idx;
-    std::vector<std::vector<std::pair<Point, uint32_t> *>> cs;
+    std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> cs;
     std::vector<std::pair<Point, uint32_t>> nodes;
     std::vector<std::vector<float>> adj_mat;
 public:

@@ -26,16 +26,18 @@ Graph::Graph(std::vector<Street> &s)
 
     std::cout << "Lets create edges\n";
     for (auto &i : cs) {
-        if (i.size() > 0) {
-            std::cout << "sort\n";
-            Point P(i.front()->first);
-            std::sort(i.begin(), i.end(),
-                [&P](auto &lhs, auto &rhs) -> bool
-                { return lhs->first.dist(P) < rhs->first.dist(P); });
+        std::vector<std::pair<Point, uint32_t>> &v = i.second;
 
-            std::cout << "done, lets set edges now\n";
-            for (auto j = 0; j < i.size() - 1; j++) {
-                setEdge(i[j]->second, i[j+1]->second, (i[j]->first).dist(i[j+1]->first));
+        if (v.size() > 0) {
+//            std::cout << "sort\n";
+            Point P(v.front().first);
+            std::sort(v.begin(), v.end(),
+                [&P](auto &lhs, auto &rhs) -> bool
+                { return lhs.first.dist(P) < rhs.first.dist(P); });
+
+//            std::cout << "done, lets set edges now\n";
+            for (auto j = 0; j < v.size() - 1; j++) {
+                setEdge(v[j].second, v[j+1].second, (v[j].first).dist(v[j+1].first));
             }
         }
     }
@@ -56,24 +58,25 @@ uint32_t Graph::getNode(Point A)
 */
 void Graph::addNode(Street s, Point A)
 {
+    std::pair<Point, uint32_t> p;
     auto id = s.getID();
-    if (id + 1 > cs.size())
-        cs.resize(id + 1);
 
-    auto it = std::find_if(nodes.begin(), nodes.end(),
-        [&A](std::pair<Point, uint32_t> &el) -> bool
+    auto it_nd = std::find_if(nodes.begin(), nodes.end(),
+        [&A](auto &el) -> bool
         { return el.first == A; });
 
-    if (it == nodes.end()) {
-        std::pair<Point, uint32_t> p({A, pt_idx++});
-        std::cout << "new pair: " << p.first.getX() << "\t"
-            << p.first.getY() << "\t" << p.second
-            << "\t" << s.getName() << std::endl;
+    if (it_nd == nodes.end()) {
+        p = std::make_pair(A, pt_idx++);
         nodes.push_back(p);
-        cs[id].push_back(&(nodes.back()));
-    
     } else
-        cs[id].push_back(&(*it));
+        p = *it_nd;
+    
+    auto it_cs = std::find_if(cs[id].begin(), cs[id].end(),
+        [&A](auto &el) -> bool
+        { return el.first == A; });
+
+    if (it_cs == cs[id].end())
+        cs[id].push_back(p);
 }
 
 void Graph::addNodes(Street s, std::vector<Point> v)
@@ -92,7 +95,7 @@ void Graph::setOEdge(uint32_t idx_a, uint32_t idx_b, float w)
 {
     adj_mat[idx_a][idx_b] = w;
 }
-
+/*
 std::ostream &operator<<(std::ostream &os, Graph g)
 {
     os.precision(2);
@@ -110,6 +113,21 @@ std::ostream &operator<<(std::ostream &os, Graph g)
         os << std::endl;
     }
 
+    return os;
+}
+*/
+std::ostream &operator<<(std::ostream &os, Graph g)
+{
+    for (auto i = 0; i < g.pt_idx; i++) {
+        for (auto j = 0; j < g.pt_idx; j++) {
+            if (g.adj_mat[i][j] > 0) {
+                std::cout << g.nodes[i].first
+                    << "\t" << g.nodes[j].first
+                    << "\t\t" << g.adj_mat[i][j]
+                    << std::endl;
+            }
+        }
+    }
     return os;
 }
 
