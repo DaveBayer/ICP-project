@@ -1,5 +1,6 @@
 TARGET=apk
 CPPFLAGS=-std=c++17
+DBUGFLAGS=
 
 SRC=src
 OBJ=obj
@@ -13,10 +14,10 @@ all: $(TARGET)
 #$(TARGET): $(SRCFILES) $(HDRFILES)
 #	g++ $(CPPFLAGS) -o $@ $(SRCFILES) $(HDRFILES)
 $(TARGET): $(OBJFILES) $(HDRFILES)
-	g++ $(CPPFLAGS) -o $@ $(OBJFILES) -I$(SRC)
+	g++ $(CPPFLAGS) $(DBUGFLAGS) -o $@ $(OBJFILES) -I$(SRC)
 
 $(OBJ)/%.o: $(SRC)/%.cpp $(HDRFILES)
-	g++ $(CPPFLAGS) $< -c -o $@ -I$(SRC)
+	g++ $(CPPFLAGS) $(DBUGFLAGS) $< -c -o $@ -I$(SRC)
 
 clean:
 	rm -r $(OBJ)
