@@ -1,7 +1,5 @@
 #include "point.h"
 
-const float epsilon = 0.01;
-
 Point::Point(){};
 
 Point::Point(float new_x, float new_y)
@@ -17,23 +15,12 @@ float Point::getY()
     return y;
 }
 
-std::vector<float> operator^(const Point &A, const Point &B)
+bool Point::between(const Point &A, const Point &B)
 {
-    std::cout << "newvec";
-    std::vector<float> v(A.x - B.x, A.y - B.y);
-    std::cout << "tady";
-//  to norm vec    
-    float c = v[0];
-    v[0] = v[1];
-    v[1] = - c;
-    std::cout << "tu";
-//  get c from point A and norm vec
-    c = - (v[0] * A.x + v[1] * A.y);
-    std::cout << "t";
-//  transform ax + by + c = 0 to y = ax + b
-    std::vector<float> ret(- (v[0] / c), - (v[1] / c));
-    std::cout << "r";
-    return ret;
+    return x >= std::min(A.x, B.x) && 
+        x <= std::max(A.x, B.x) &&
+        y >= std::min(A.y, B.y) &&
+        y <= std::max(A.y, B.y);
 }
 
 Point operator+(const Point &A,const Point &B)
@@ -54,13 +41,24 @@ Point operator-(const Point &A,const Point &B)
 
 bool operator==(const Point &A, const Point &B)
 {
-    return std::fabs(A.x - B.x) < epsilon * std::max(std::abs(A.x), std::abs(B.x)) && 
-           std::fabs(A.y - B.y) < epsilon * std::max(std::abs(A.y), std::abs(B.y));
+    return floatEQ(A.x, B.x) && floatEQ(A.y, B.y);
 }
 
 float Point::dist(const Point A) const
 {
     return sqrt(pow(x - A.x,2) + pow(y - A.y,2));
+}
+
+std::ostream &operator<<(std::ostream &os, Point P)
+{
+    os << P.x << " " << P.y;
+    return os;
+}
+
+std::istream &operator>>(std::istream &is, Point &P)
+{
+    is >> P.x >> P.y;
+    return is;
 }
 
 Point::~Point(){}

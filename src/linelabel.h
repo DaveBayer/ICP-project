@@ -1,3 +1,6 @@
+#ifndef __LINELABEL_H__
+#define __LINELABEL_H__
+
 
 #include <QLabel>
 #include <QWidget>
@@ -6,7 +9,7 @@ class LineLabel : public QLabel
 {
 	Q_OBJECT
 public:
-	LineLabel(Line line,QWidget *parent = nullptr);
+	LineLabel(std::string,QWidget *parent = nullptr);
 	~LineLabel(){};
 
 protected:
@@ -17,5 +20,7 @@ signals:
 	void clicked();
 
 private:
-	Line line;
+	std::string name;
 };
+
+#endif // __LINELABEL_H__
