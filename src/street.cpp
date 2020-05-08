@@ -3,11 +3,7 @@
 uint32_t Street::StreetCount = 0;
 
 Street::Street(Point new_A, Point new_B, std::string new_name)
-: A(new_A), B(new_B), name(new_name)
-{
-    id = StreetCount++;
-//    v = A ^ B;
-};
+: id(StreetCount++), A(new_A), B(new_B), name(new_name){}
 
 uint32_t Street::getID()
 {
@@ -64,8 +60,13 @@ bool Street::intersect(Street s, Point &P)
     float y = det(d2, ydiff) / div;
     P = Point(x,y);
 
-    return P.between(s.A, s.B) &&
-           P.between(A, B);
+    return P.between(s.A, s.B) && P.between(A, B);
+}
+
+std::istream &operator>>(std::istream &is, Street &s)
+{
+    is >> s.A >> s.B >> s.name;
+    return is;
 }
 
 Street::~Street(){}

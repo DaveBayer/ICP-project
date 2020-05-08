@@ -1,5 +1,7 @@
 #ifndef __STREET_H__
 #define __STREET_H__
+
+#include <iostream>
 #include <string>
 #include <cmath>
 
@@ -20,8 +22,10 @@ public:
 	uint32_t getID();
 	std::string getName();
 	std::vector<Point> getPoints();
+
 	bool intersect(Street, Point &);
 
+	friend std::istream &operator>>(std::istream &, Street &);
 	
 	~Street();
 };

@@ -14,26 +14,6 @@ float Point::getY()
 {
     return y;
 }
-/*
-std::vector<float> operator^(const Point &A, const Point &B)
-{
-    std::cout << "newvec";
-    std::vector v(A.x - B.x, A.y - B.y);
-    std::cout << "tady";
-//  to norm vec    
-    float c = v[0];
-    v[0] = v[1];
-    v[1] = - c;
-    std::cout << "tu";
-//  get c from point A and norm vec
-    c = - (v[0] * A.x + v[1] * A.y);
-    std::cout << "t";
-//  transform ax + by + c = 0 to y = ax + b
-    std::vector<float> ret(- (v[0] / c), - (v[1] / c));
-    std::cout << "r";
-    return ret;
-}
-*/
 
 bool Point::between(const Point &A, const Point &B)
 {
@@ -61,8 +41,7 @@ Point operator-(const Point &A,const Point &B)
 
 bool operator==(const Point &A, const Point &B)
 {
-    return floatEQ(A.x, B.x) && 
-           floatEQ(A.y, B.y);
+    return floatEQ(A.x, B.x) && floatEQ(A.y, B.y);
 }
 
 float Point::dist(const Point A) const
@@ -74,6 +53,12 @@ std::ostream &operator<<(std::ostream &os, Point P)
 {
     os << P.x << " " << P.y;
     return os;
+}
+
+std::istream &operator>>(std::istream &is, Point &P)
+{
+    is >> P.x >> P.y;
+    return is;
 }
 
 Point::~Point(){}

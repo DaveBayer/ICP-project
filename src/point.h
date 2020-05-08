@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <sstream>
 
 #include "float_eq.h"
 
@@ -32,6 +33,7 @@ public:
     float dist(const Point A) const;
     
     friend std::ostream &operator<<(std::ostream &, Point);
+    friend std::istream &operator>>(std::istream &, Point &);
     ~Point();
 };
 
