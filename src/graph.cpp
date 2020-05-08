@@ -60,9 +60,12 @@ uint32_t Graph::getNodeID(Point A)
     return it->second;
 }
 
+
 Point Graph::getNodePoint(uint32_t idx)
 {
-    auto it = std::find(nodes.begin(), nodes.end(), idx);
+    auto it = std::find_if(nodes.begin(), nodes.end(),
+    [&idx](auto &el) -> bool
+    { return idx == el.second; });
     if (it == nodes.end()) {
         std::cerr << "Node not found\n";
         exit(1); 
