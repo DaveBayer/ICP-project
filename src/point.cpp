@@ -1,7 +1,5 @@
 #include "point.h"
 
-const float epsilon = 0.01;
-
 Point::Point(){};
 
 Point::Point(float new_x, float new_y)
@@ -16,7 +14,7 @@ float Point::getY()
 {
     return y;
 }
-
+/*
 std::vector<float> operator^(const Point &A, const Point &B)
 {
     std::cout << "newvec";
@@ -34,6 +32,15 @@ std::vector<float> operator^(const Point &A, const Point &B)
     std::vector<float> ret(- (v[0] / c), - (v[1] / c));
     std::cout << "r";
     return ret;
+}
+*/
+
+bool Point::between(const Point &A, const Point &B)
+{
+    return x >= std::min(A.x, B.x) && 
+        x <= std::max(A.x, B.x) &&
+        y >= std::min(A.y, B.y) &&
+        y <= std::max(A.y, B.y);
 }
 
 Point operator+(const Point &A,const Point &B)
@@ -54,8 +61,8 @@ Point operator-(const Point &A,const Point &B)
 
 bool operator==(const Point &A, const Point &B)
 {
-    return std::fabs(A.x - B.x) < epsilon && 
-           std::fabs(A.y - B.y) < epsilon;
+    return floatEQ(A.x, B.x) && 
+           floatEQ(A.y, B.y);
 }
 
 float Point::dist(const Point A) const

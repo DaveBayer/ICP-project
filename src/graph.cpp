@@ -9,15 +9,16 @@ Graph::Graph(std::vector<Street> &s)
 
     for (auto i = s.begin(); i != s.end(); ++i) {
         addNodes(*i, i->getPoints());
-
+    
         for (auto j = s.begin(); j != i; ++j) {
             Point p;
 
-            if (j->intersect(*i, p)){
+            if (j->intersect(*i, p)) {
                 addNode(*i,p);
                 addNode(*j,p);
             }
         }
+    
     }
 
     adj_mat.resize(pt_idx);
@@ -40,6 +41,14 @@ Graph::Graph(std::vector<Street> &s)
                 setEdge(v[j].second, v[j+1].second, (v[j].first).dist(v[j+1].first));
             }
         }
+    }
+
+    for (auto i : s) {
+        std::vector<std::pair<Point, uint32_t>> v = cs[i.getID()];
+        std::cout << i.getName() << std::endl;
+        for (auto j : v)
+            std::cout << "\t" << j.first << std::endl;
+        std::cout << std::endl;
     }
 }
 /*

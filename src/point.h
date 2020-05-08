@@ -7,6 +7,8 @@
 #include <cmath>
 #include <vector>
 
+#include "float_eq.h"
+
 class Point
 {
 private:
@@ -17,6 +19,8 @@ public:
 
     float getX();
     float getY();
+
+    bool between(const Point &, const Point &);
 
     std::vector<float> makeLine(Point, Point);
 

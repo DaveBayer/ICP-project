@@ -27,38 +27,45 @@ std::vector<Point> Street::getPoints()
     return ret;
 }
 
-bool Street::intersect(Street s, Point &p)
+bool Street::intersect(Street s, Point &P)
 {
-    auto pts = s.getPoints();
- 
- 	auto a1 = B.getY() - A.getY();
- 	auto b1 = A.getX() - B.getX();
- 	auto c1 = a1 * A.getX() + b1 * A.getY();
+    auto det = [](std::vector<float> &a, std::vector<float> &b) -> float
+    { return a[0] * b[1] - a[1] * b[0]; };
 
- 	auto a2 = pts[1].getY() - pts[0].getY();
- 	auto b2 = pts[0].getX() - pts[1].getX();
- 	auto c2 = a2 * pts[0].getX() + b2 * pts[0].getY();
+    std::vector<float> a(2), b(2), c(2), d(2), xdiff(2), ydiff(2), d2(2);
 
+    auto pts1 = this->getPoints();
+    auto pts2 = s.getPoints();
 
- 	auto determinant = a1 * b2 - a2 * b1;
+    a[0] = pts1[0].getX();
+    a[1] = pts1[0].getY();
+    b[0] = pts1[1].getX();
+    b[1] = pts1[1].getY();
+    c[0] = pts2[0].getX();
+    c[1] = pts2[0].getY();
+    d[0] = pts2[1].getX();
+    d[1] = pts2[1].getY();
 
- 	if (determinant == 0) {
+    xdiff[0] = pts1[0].getX() - pts1[1].getX();
+    xdiff[1] = pts2[0].getX() - pts2[1].getX();
+
+    ydiff[0] = pts1[0].getY() - pts1[1].getY();
+    ydiff[1] = pts2[0].getY() - pts2[1].getY();
+
+ 	float div = det(xdiff, ydiff);
+
+ 	if (floatEQ(div, 0.f))
  		return false;
- 	} else {
- 		auto x = (b2*c1 - b1*c2)/determinant; 
-        auto y = (a1*c2 - a2*c1)/determinant; 
 
-        if (x >= std::min(A.getX(), B.getX()) && 
-        	x <= std::max(A.getX(), B.getX()) &&
-        	y >= std::min(A.getY(), B.getY()) &&
-            y <= std::max(A.getY(), B.getY())) {
-        	p = Point(x,y);
-        	return true;
+    d2[0] = det(a, b);
+    d2[1] = det(c, d);
 
-        } else {
-        	return false;
-        }
- 	}
+    float x = det(d2, xdiff) / div;
+    float y = det(d2, ydiff) / div;
+    P = Point(x,y);
+
+    return P.between(s.A, s.B) &&
+           P.between(A, B);
 }
 
 Street::~Street(){}

@@ -3,6 +3,7 @@
 #include <string>
 #include <cmath>
 
+#include "float_eq.h"
 #include "point.h"
 
 class Street
