@@ -43,6 +43,7 @@ public:
     float getTC();
     void setTC(float);
     float getEdgeTC(uint32_t, uint32_t);
+    float getEdgeTC(Point, Point);
     void incEdgeTC(uint32_t, uint32_t);
 
     void SetUpLine(uint32_t, std::vector<Point>);
