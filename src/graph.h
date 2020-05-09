@@ -23,6 +23,7 @@ private:
     std::vector<std::pair<Point, uint32_t>> nodes;
     std::vector<std::vector<float>> adj_mat;
     
+    void init();
 public:
     Graph();
     Graph(std::vector<Street> &);

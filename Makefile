@@ -1,5 +1,5 @@
 TARGET=apk
-CPPFLAGS=-std=c++17
+CPPFLAGS=-std=c++17 -Wall -Wextra
 DBUGFLAGS=
 
 SRC=src

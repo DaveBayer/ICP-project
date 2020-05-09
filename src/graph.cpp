@@ -5,7 +5,7 @@ Graph::Graph()
 
 Graph::Graph(std::vector<Street> &s)
 {
-    pt_idx = 0;
+    init();
 
     for (auto i = s.begin(); i != s.end(); i++) {
         addNodes(i->getID(), i->getPoints());
@@ -25,8 +25,6 @@ Graph::Graph(std::vector<Street> &s)
 
 Graph::Graph(std::vector<Street> &streets, std::vector<Station> &stations)
 {
-    pt_idx = 0;
-
     for (auto i = streets.begin(); i != streets.end(); i++) {
         addNodes(i->getID(), i->getPoints());
     
@@ -46,6 +44,14 @@ Graph::Graph(std::vector<Street> &streets, std::vector<Station> &stations)
     createEdges();
 }
 
+void Graph::init()
+{
+    cs.clear();
+    nodes.clear();
+    adj_mat.clear();
+    pt_idx = 0;
+}
+
 uint32_t Graph::getNodeID(Point A)
 {
     auto it = std::find_if(nodes.begin(), nodes.end(),
@@ -57,7 +63,6 @@ uint32_t Graph::getNodeID(Point A)
 
     return it->second;
 }
-
 
 Point Graph::getNodePoint(uint32_t idx)
 {
@@ -113,7 +118,7 @@ void Graph::createEdges()
                 [&P](auto &lhs, auto &rhs) -> bool
                 { return lhs.first.dist(P) < rhs.first.dist(P); });
 
-            for (auto j = 0; j < v.size() - 1; j++)
+            for (uint32_t j = 0; j < v.size() - 1; j++)
                 setEdge(v[j].second, v[j+1].second, (v[j].first).dist(v[j+1].first));
         }
     }
@@ -147,7 +152,8 @@ void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
 {
     line_pts[lnum].clear();
 
-    for (auto i = 0; i + 1 < path.size(); i++) {
+    line_pts[lnum].push_back(std::vector<Point>{path.front()});
+    for (uint32_t i = 0; i + 1 < path.size(); i++) {
         std::vector<Point> subpath;
 
         if (!getPath(path[i], path[i + 1], subpath))
@@ -155,6 +161,8 @@ void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
 
         line_pts[lnum].push_back(subpath);
     }
+
+    line_pts[lnum].push_back(std::vector<Point>{path.back()});
 }
 
 bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
@@ -241,8 +249,8 @@ std::ostream &operator<<(std::ostream &os, Graph g)
 */
 std::ostream &operator<<(std::ostream &os, Graph g)
 {
-    for (auto i = 0; i < g.pt_idx; i++) {
-        for (auto j = 0; j < g.pt_idx; j++) {
+    for (uint32_t i = 0; i < g.pt_idx; i++) {
+        for (uint32_t j = 0; j < g.pt_idx; j++) {
             if (g.adj_mat[i][j] > 0) {
                 std::cout << g.nodes[i].first
                     << "\t" << g.nodes[j].first
