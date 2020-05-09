@@ -52,10 +52,8 @@ uint32_t Graph::getNodeID(Point A)
     [&A](auto &el) -> bool
     { return el.first == A; });
 
-    if (it == nodes.end()) {
-        std::cerr << "Node not find" << std::endl;
-        exit(1);
-    }
+    if (it == nodes.end())
+        errExit(1, "Node not found");
 
     return it->second;
 }
@@ -66,10 +64,8 @@ Point Graph::getNodePoint(uint32_t idx)
     auto it = std::find_if(nodes.begin(), nodes.end(),
     [&idx](auto &el) -> bool
     { return idx == el.second; });
-    if (it == nodes.end()) {
-        std::cerr << "Node not found\n";
-        exit(1); 
-    }
+    if (it == nodes.end())
+        errExit(1, "Node not found");
 
     return it->first;
 }
@@ -139,10 +135,8 @@ void Graph::resetEdge(uint32_t idx_a, uint32_t idx_b)
         [&idx_b](auto &el) -> bool
         { return idx_b == el.second; });
 
-    if (it1 == nodes.end() || it2 == nodes.end()) {
-        std::cerr << "Edge cannot be reset: points not found\n";
-        exit(1);
-    }
+    if (it1 == nodes.end() || it2 == nodes.end())
+        errExit(1, "Edge cannot be reset: points not found");
 
     float dist = it1->first.dist(it2->first);
 
@@ -156,10 +150,8 @@ void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
     for (auto i = 0; i + 1 < path.size(); i++) {
         std::vector<Point> subpath;
 
-        if (!getPath(path[i], path[i + 1], subpath)) {
-            std::cerr << "No path exists\n";
-            exit(1);
-        }
+        if (!getPath(path[i], path[i + 1], subpath))
+            errExit(1, "No path exists");
 
         line_pts[lnum].push_back(subpath);
     }

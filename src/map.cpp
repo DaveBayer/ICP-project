@@ -5,11 +5,13 @@ Map::Map(){}
 Map::Map(float new_w, float new_h)
 : w(new_w), h(new_h){}
 
-Map::Map(float w, float h, std::vector<Street> s)
-: w(w), h(h), streets(s){}
-
 void Map::addStreet(Street s)
 {
+    std::vector<Point> pts (s.getPoints());
+    if (!pts[0].between(Point(0.f, 0.f), Point(w, h)) ||
+        !pts[1].between(Point(0.f, 0.f), Point(w, h)))
+        errExit(1, "Street out of map size");
+
     auto it = std::find_if(streets.begin(), streets.end(),
         [&s](Street &el) -> bool
         { return s.getID() == el.getID(); });
@@ -26,29 +28,26 @@ void Map::addStreets(std::vector<Street> v)
 
 void Map::addStation(Station s)
 {
-    auto it = std::find_if(streets.begin(), streets.end(),
-        [&s](Street &el) -> bool
-        { return s.getStreetID() == el.getID(); });
-
-    if (it != streets.end()) {
-        auto pts = it->getPoints();
+    for (auto i : streets) {
+        auto pts = i.getPoints();
         Point P = s.getPoint();
 
         float res1 = (P.getX() - pts[0].getX()) * (pts[1].getY() - pts[0].getY());
         float res2 = (P.getY() - pts[0].getY()) * (pts[1].getX() - pts[0].getY());
+    
+        if (floatEQ(res1, res2) && P.between(pts[0], pts[1])) {
+            s.setStreetID(i.getID());
 
-        if (!(res1 == res2 &&
-            P.between(pts[0], pts[1]))) {
-
-            std::cerr << "Station does not lay on the street\n";
-            exit(1);
-
-            //TODO Vylepsit exception
+            auto it = std::find_if(stations.begin(), stations.end(),
+                [&s](auto &el) -> bool
+                { return s.getName() == el.getName(); });
+            
+            if (it == stations.end())
+                stations.push_back(s);
         }
-        stations.push_back(s);
     }
-        
-    //  TODO exception
+
+    errExit(1, "Station does not lay on the street");
 }
 
 void Map::addStations(std::vector<Station> v)
@@ -64,10 +63,8 @@ void Map::addLine(Line l)
             [&i](auto &el) -> bool
             { return i == el.getName(); });
 
-        if (it == stations.end()) {
-            std::cerr << "Station \'" << i << "\' not found\n";
-            exit(1);
-        }
+        if (it == stations.end())
+            errExit(1, "No such station");
     }
 
     lines.push_back(l);
@@ -94,12 +91,10 @@ void Map::setLinesInGraph()
                 [&j](auto &el) -> bool
                 { return j == el.getName(); });
             
-            if (it == stations.end()) {
-                std::cerr << "station not found\n";
-                exit(1);
-            }
+            if (it == stations.end())
+                errExit(1, "No such station");
 
-            pts.push_back(it->getPoint);
+            pts.push_back(it->getPoint());
         }
 
         g.SetUpLine(i.getNumber(), pts);

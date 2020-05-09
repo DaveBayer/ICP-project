@@ -2,6 +2,9 @@
 
 uint32_t Street::StreetCount = 0;
 
+Street::Street()
+: id(StreetCount++){}
+
 Street::Street(Point new_A, Point new_B, std::string new_name)
 : id(StreetCount++), A(new_A), B(new_B), name(new_name){}
 
@@ -66,12 +69,10 @@ bool Street::intersect(Street s, Point &P)
 std::istream &operator>>(std::istream &is, Street &s)
 {
     std::string line;
-    while (std::getline(is, line)) {
+    if (std::getline(is, line)) {
         std::istringstream iss(line);
-        if (!(iss >> s.A >> s.B >> s.name)) {
-            std::cerr << "Invalid street format\n";
-            exit(1);
-        }
+        if (!(iss >> s.A >> s.B >> s.name))
+            errExit(1, "Invalid istream format");
     }
     
     return is;

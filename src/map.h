@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 
+#include "error.h"
 #include "graph.h"
 #include "station.h"
 #include "street.h"
@@ -22,7 +23,6 @@ private:
 public:
 	Map();
 	Map(float w, float h);
-	Map(float w, float h, std::vector<Street> s);
 
 	void addStreet(Street);
 	void addStreets(std::vector<Street>);
@@ -38,8 +38,6 @@ public:
 	void createGraph();
 	void setLinesInGraph();
 	void outputGraph();
-
-	int readMap(const char *);
 
 	~Map();
 };

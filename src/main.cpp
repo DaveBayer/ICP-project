@@ -1,3 +1,6 @@
+#include <fstream>
+
+#include "error.h"
 #include "graph.h"
 #include "line.h"
 #include "map.h"
@@ -5,36 +8,62 @@
 #include "station.h"
 #include "street.h"
 
-void getPoints(std::vector<Point> &pts)
+std::ifstream fileOpen(const char *name)
 {
-    pts.push_back(Point(0.f, 0.f));
-    pts.push_back(Point(2.f, 2.f));
-    pts.push_back(Point(2.f, 0.f));
-    pts.push_back(Point(0.f, 2.f));
+    std::ifstream f;
+    f.open(name, std::ios::in);
+    if (!(f.is_open()))
+        errExit(1, "File cannot be opened");
+    return f;
+}
+
+std::vector<Street> getStreets(const char *name)
+{
+    std::vector<Street> streets;
+    std::ifstream f = fileOpen(name);
+    Street s;
+    while (f >> s)
+        streets.push_back(s);
+    f.close();
+    return streets;
+}
+
+std::vector<Station> getStations(const char *name)
+{
+    std::vector<Station> stations;
+    std::ifstream f = fileOpen(name);
+    Station s;
+    while (f >> s)
+        stations.push_back(s);
+    f.close();
+    return stations;
+}
+
+std::vector<Line> getLines(const char *name)
+{
+    std::vector<Line> lines;
+    std::ifstream f = fileOpen(name);
+    Line l;
+    while (f >> l)
+        lines.push_back(l);
+    f.close();
+    return lines;
 }
 
 int main(int argc, char const *argv[])
 {
-    Map m2;
-    switch(m2.readMap(argv[1])) {
-    case 0 :
-        std::cerr << "No input\n";
-        return 0;
-    case -1 :
-        std::cerr << "No such file\n";
-        return -1;
-    case -2 :
-        std::cerr << "No header\n";
-        return -2;
-    case -3 :
-        std::cerr << "Invalid street format\n";
-        return -3;
-    default :
-        break;
-    }
+    std::vector<Street> streets = getStreets(argv[1]);
+    std::vector<Station> stations = getStations(argv[2]);
+    std::vector<Line> lines = getLines(argv[2]);
 
-    m2.createGraph();
-//    m2.outputGraph();
+    Map m(600.f, 600.f);
+
+    m.addStreets(streets);
+    m.addStations(stations);
+    m.createGraph();
+
+    m.addLines(lines);
+    m.setLinesInGraph();
 
     return 0;
 }

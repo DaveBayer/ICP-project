@@ -20,16 +20,13 @@ std::istream &operator>>(std::istream &is, Line &l)
     l.slist.clear();
 
     std::string line;
-    while (std::getline(is, line)) {
+    if (std::getline(is, line)) {
         std::istringstream iss(line);
         std::string station;
 
-        if (!(is >> station)) {
-            std::cerr << "invalid format\n";
-            exit(1);
-        
-        } else
+        while (is >> station)
             l.slist.push_back(station);
+            
     }
 
     return is;

@@ -8,6 +8,7 @@
 #include <list>
 #include <iostream>
 
+#include "error.h"
 #include "point.h"
 #include "street.h"
 #include "station.h"
