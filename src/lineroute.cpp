@@ -1,8 +1,6 @@
 #include "lineroute.h"
 
-
-
-LineRoute::LineRoute(uint32_t id, std::vector<Point> route) : id(id),route(std::move(route))
+LineRoute::LineRoute(std::vector<std::vector<Point>> route) :route(std::move(route))
 {
 	pen = QPen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     this->setVisible(false);
@@ -18,10 +16,10 @@ void LineRoute::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
     QPainterPath path;
 
-    if (route.size() != 0) {
-        path.moveTo(route[0].getX(),route[0].getY());
-        for (auto i = 1; i < route.size(); i++){
-            path.lineTo(route[i].getX(),route[i].getY());
+    path.moveTo(route[0][0].getX(),route[0][0].getY());
+    for (uint32_t i = 1; i < route.size()-1; i++){
+        for (auto j = 1; j < route[i].size(); j++){
+            path.lineTo(route[i][j].getX(),route[i][j].getY());
         }
     }
 

@@ -18,16 +18,18 @@
 #include "lineroute.h"
 #include "transportvehicle.h"
 #include "lineobject.h"
-
+#include "graph.h"
+#include "map.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-   MainWindow();
-   void createStreetMap(std::vector<Street>);
-   void createStreetMap(std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>>);
-   void createLines(std::vector<Line>);
+
+   MainWindow(Map *);
+   void createStreetMap();
+   void createScene();
+   void createLines();
    void createSystemClock();
    void finish();
 
@@ -39,9 +41,12 @@ private slots:
     void zoomOut();
     void defaultZoom();
     void setTime();
+    void toggleClock();
 
 signals:
     void timeChanged();
+    void stopAnimation();
+    void resumeAnimation();
 
 private:
     QGraphicsView *view;
@@ -62,8 +67,10 @@ private:
     QPushButton * zoomdefault;
     QPushButton * changetime;
     QPushButton * settime;
+    QPushButton * pauseresumetime;
 
-
+    Graph * graph;
+    Map * map;
 
 };
 

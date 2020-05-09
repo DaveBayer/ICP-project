@@ -5,6 +5,7 @@
 #include <string>
 #include <cmath>
 
+#include "error.h"
 #include "float_eq.h"
 #include "point.h"
 
@@ -14,9 +15,9 @@ private:
 	static uint32_t StreetCount;
 	uint32_t id;
 	Point A, B;
-	std::vector<float> v;		/*	y = v[0]x + v[1]*/
 	std::string name;
 public:
+	Street();
 	Street(Point A, Point B, std::string name);
 	
 	uint32_t getID();

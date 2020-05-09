@@ -17,10 +17,10 @@ float Point::getY()
 
 bool Point::between(const Point &A, const Point &B)
 {
-    return x >= std::min(A.x, B.x) && 
-        x <= std::max(A.x, B.x) &&
-        y >= std::min(A.y, B.y) &&
-        y <= std::max(A.y, B.y);
+    return !(x < std::min(A.x, B.x) || 
+        x > std::max(A.x, B.x) ||
+        y < std::min(A.y, B.y) ||
+        y > std::max(A.y, B.y));
 }
 
 Point operator+(const Point &A,const Point &B)

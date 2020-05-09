@@ -5,9 +5,11 @@
 #include <QGraphicsItemAnimation>
 #include <QTimeLine>
 #include <QPainter>
+#include <QGraphicsSceneMouseEvent>
 #include <QTime>
 
 #include "point.h"
+#include "graph.h"
 
 class TransportVehicle : public QObject, public QGraphicsItem
 {
@@ -20,7 +22,7 @@ public:
 
 
 
-    TransportVehicle(uint32_t);
+    TransportVehicle(Graph *,uint32_t);
     ~TransportVehicle();
     QPen pen;
 
@@ -31,9 +33,13 @@ public:
     void setRouteDuration(float length);
     void setRoutePath(std::vector<std::vector<Point>>, float);
     void setVehiclePosition(int);
+    Graph * graph;
 
 private slots:
 	void finished();
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     QColor color;

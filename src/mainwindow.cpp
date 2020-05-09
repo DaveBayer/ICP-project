@@ -1,32 +1,33 @@
 #include "mainwindow.h"
 
-MainWindow::MainWindow()
-{
-    scene = new QGraphicsScene();
-    scene->setSceneRect(0,0,600,600);
-    scene->setBackgroundBrush(QBrush(Qt::white));
 
+
+MainWindow::MainWindow(Map * m) : map(m)
+{
     line_labels = new QVBoxLayout;
+    graph = &(m->g);
 
     zoomin = new QPushButton("&Zoom In");
     zoomout = new QPushButton("&Zoom Out");
     zoomdefault = new QPushButton("&Default Zoom");
     changetime = new QPushButton("&Change Time");
     settime = new QPushButton("&Set Time");
+    pauseresumetime = new QPushButton("&Pause/Resume time");
     settime->hide();
 
-
-
 }
 
-void MainWindow::createStreetMap(std::vector<Street> s)
+void MainWindow::createScene()
 {
-    StreetMap *sm = new StreetMap(s);
-    scene->addItem(sm);
+    scene = new QGraphicsScene();
+    scene->setSceneRect(0,0,600,600);
+    scene->setBackgroundBrush(QBrush(Qt::white));
 }
-void MainWindow::createStreetMap(std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> m)
+
+
+void MainWindow::createStreetMap()
 {
-    StreetMap *sm = new StreetMap(m);
+    StreetMap *sm = new StreetMap(graph->cs, map->stations);
     scene->addItem(sm);
 }
 
@@ -42,13 +43,30 @@ void MainWindow::createSystemClock()
 }
 
 
-void MainWindow::createLines(std::vector<Line> l)
+void MainWindow::createLines()
 {
-    for (auto line : l) {
-        LineObject * lineObject = new LineObject(&line, line_labels, scene, time);
+    for (auto line : graph->line_pts) {
+        std::cout<<line.first<<std::endl;
+        LineObject * lineObject = new LineObject(graph,line.first, line.second, time);
+        struct timetable_s connection1 = {.start = (0 + 0 + 2)};
+        struct timetable_s connection2 = {.start = (1*60*60 + 0*60 + 2)};
+        struct timetable_s connection3 = {.start = (1*60*60 + 10*60 + 50)};
+        
+        std::vector<timetable_s> t = {connection1,connection2,connection3};        
+        lineObject->createVehicles(t);
+
+        line_labels->addWidget(lineObject->label);
+        
+        scene->addItem(lineObject->route);
+        for (auto v : lineObject->vehicles){
+            scene->addItem(v);
+        }
+
+        QObject::connect(lineObject->label, SIGNAL(clicked()),lineObject->route,SLOT(showRoute()));
         QObject::connect(sys_clock,SIGNAL(timeout()),lineObject, SLOT(startVehicle()));
         QObject::connect(this, SIGNAL(timeChanged()), lineObject, SLOT(timeChanged()));
-        // QObject::connect(this, SIGNAL(clock_tick_signal()),lineObject,SLOT(createVehicle()));
+        QObject::connect(this, SIGNAL(stopAnimation()), lineObject, SLOT(stopAnimation()));
+        QObject::connect(this, SIGNAL(resumeAnimation()), lineObject, SLOT(resumeAnimation()));
     }
 }
 
@@ -56,7 +74,6 @@ void MainWindow::createLines(std::vector<Line> l)
 void MainWindow::finish() 
 {
 
-    // connect(sys_clock, SIGNAL(timeout()), this,SLOT(clock_tick_slot()));
     sys_clock->start(1000);
     
 
@@ -71,19 +88,20 @@ void MainWindow::finish()
     QObject::connect(settime, SIGNAL(clicked()), time_edit, SLOT(hide()));
     QObject::connect(settime, SIGNAL(clicked()), this, SLOT(setTime()));
     QObject::connect(settime, SIGNAL(clicked()), settime, SLOT(hide()));
+    QObject::connect(pauseresumetime, SIGNAL(clicked()), this, SLOT(toggleClock()));
 
     mainLayout = new QGridLayout;
 
-    mainLayout->setColumnStretch(0, 2);
-    mainLayout->addWidget(view,0,0,1,4);
-    mainLayout->addLayout(this->line_labels, 0, 4);
+    mainLayout->addWidget(view,0,0,1,5);
+    mainLayout->addLayout(this->line_labels, 0, 5);
     mainLayout->addWidget(clock_label, 1,0);
-    mainLayout->addWidget(changetime,1,1);
+    mainLayout->addWidget(pauseresumetime,1,1);
+    mainLayout->addWidget(changetime,1,2);
     mainLayout->addWidget(time_edit,2,0);
     mainLayout->addWidget(settime,2,1);  
-    mainLayout->addWidget(zoomout,1,2);
-    mainLayout->addWidget(zoomdefault,1,3);
-    mainLayout->addWidget(zoomin,1,4);
+    mainLayout->addWidget(zoomout,1,3);
+    mainLayout->addWidget(zoomdefault,1,4);
+    mainLayout->addWidget(zoomin,1,5);
     
     QWidget *widget = new QWidget;
     widget->setLayout(mainLayout);
@@ -95,15 +113,6 @@ void MainWindow::finish()
     setUnifiedTitleAndToolBarOnMac(true);
 }
 
-// void MainWindow::clock_tick_slot()
-// {
-//     static uint32_t time = 0;
-//     std::cout<<"Clock ticked()\n";
-//     time++;
-//     if(time == 5){
-//         emit clock_tick_signal();
-//     }
-// }
 
 void MainWindow::updateClock()
 {
@@ -130,4 +139,15 @@ void MainWindow::setTime()
 void MainWindow::defaultZoom()
 {
     view->resetMatrix();
+}
+
+void MainWindow::toggleClock()
+{
+    if (sys_clock->isActive()){
+        sys_clock->stop();
+        emit stopAnimation();
+    }else { 
+        sys_clock->start();
+        emit resumeAnimation();
+    }
 }

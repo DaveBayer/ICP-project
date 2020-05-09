@@ -4,22 +4,26 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <map>
 
+#include "error.h"
 #include "graph.h"
 #include "station.h"
 #include "street.h"
+#include "line.h"
 
 class Map
 {
 private:
 	float w, h;
 	std::vector<Street> streets;
-	std::vector<Station> stations;
+	std::vector<Line> lines;
 public:
 	Graph g;
 	Map();
 	Map(float w, float h);
-	Map(float w, float h, std::vector<Street> s);
+
+	std::vector<Station> stations;
 
 	void addStreet(Street);
 	void addStreets(std::vector<Street>);
@@ -29,12 +33,12 @@ public:
 	void addStation(Station);
 	void addStations(std::vector<Station>);
 
-	void createGraph();
-	void outputGraph();
+	void addLine(Line);
+	void addLines(std::vector<Line>);
 
-	int readMap(const char *);
-	std::vector<Street> getStreets();
-	std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> getGraphMap();
+	void createGraph();
+	void setLinesInGraph();
+	void outputGraph();
 
 	~Map();
 };

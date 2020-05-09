@@ -1,8 +1,8 @@
 #include "transportvehicle.h"
 
-TransportVehicle::TransportVehicle(uint32_t timeStart)
+TransportVehicle::TransportVehicle(Graph * g, uint32_t timeStart) : graph(g)
 {
-	pen = QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+	pen = QPen(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 	
 
 	timer = new QTimeLine();
@@ -31,21 +31,6 @@ void TransportVehicle::setRoutePath(std::vector<std::vector<Point>> route, float
 		animation->setItem(this);
 		animation->setTimeLine(timer);
 
-		// float street_length = 0;
-
-
-		// QPointF p(route[0].getX(), route[0].getY());
-		
-		// setPos(p-QPointF(5,5));
-		// animation->setPosAt((0/length), p - QPointF(5,5));
-		
-		// for (uint32_t i = 1; i < route.size();i++){
-		// 	street_length += route[i-1].dist(route[i]); // TODO: getEdgeLength()!!!
-		// 	QPointF p(route[i].getX(), route[i].getY());
-		// 	animation->setPosAt((street_length/length), p - QPointF(5,5));
-		// }
-
-
 
 		auto numOfStations = route.size() - 1;
 		float station_delay = 60; // 20pixel/s -> 2 s in station
@@ -64,7 +49,7 @@ void TransportVehicle::setRoutePath(std::vector<std::vector<Point>> route, float
 			QPointF s(route[i][0].getX(),route[i][0].getY());
 			animation->setPosAt((route_time/total_time), s - vehicleSize);
 			for (uint32_t j = 1; j < route[i].size(); j++){
-				route_time +=  route[i][j-1].dist(route[i][j]);
+				route_time +=  graph->getEdgeW(route[i][j-1],route[i][j]) / graph->getEdgeTC(route[i][j-1],route[i][j]);
 				std::cout<<route_time<<std::endl;
 				QPointF p(route[i][j].getX(), route[i][j].getY());
 				animation->setPosAt((route_time/total_time), p - vehicleSize);
@@ -84,6 +69,7 @@ void TransportVehicle::setVehiclePosition(int postime)
 void TransportVehicle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 	painter->setPen(pen);
+	painter->setBrush(QBrush(Qt::red));
 
     painter->drawEllipse(0,0,10,10);	
 }
@@ -98,5 +84,11 @@ void TransportVehicle::finished()
 {
 	this->setVisible(false);
 }
+
+void TransportVehicle::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+
+}
+
 
 TransportVehicle::~TransportVehicle(){}

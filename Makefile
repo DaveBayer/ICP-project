@@ -65,7 +65,8 @@ SOURCES       = src/graph.cpp \
 		src/lineroute.cpp \
 		src/transportvehicle.cpp \
 		src/lineobject.cpp \
-		src/float_eq.cpp moc_mainwindow.cpp \
+		src/float_eq.cpp \
+		src/error.cpp moc_mainwindow.cpp \
 		moc_linelabel.cpp \
 		moc_lineroute.cpp \
 		moc_transportvehicle.cpp \
@@ -84,6 +85,7 @@ OBJECTS       = graph.o \
 		transportvehicle.o \
 		lineobject.o \
 		float_eq.o \
+		error.o \
 		moc_mainwindow.o \
 		moc_linelabel.o \
 		moc_lineroute.o \
@@ -389,7 +391,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		src/lineroute.h \
 		src/transportvehicle.h \
 		src/float_eq.h \
-		src/lineobject.h src/graph.cpp \
+		src/lineobject.h \
+		src/error.h src/graph.cpp \
 		src/line.cpp \
 		src/main.cpp \
 		src/mainwindow.cpp \
@@ -402,7 +405,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		src/lineroute.cpp \
 		src/transportvehicle.cpp \
 		src/lineobject.cpp \
-		src/float_eq.cpp
+		src/float_eq.cpp \
+		src/error.cpp
 QMAKE_TARGET  = ICP-project
 DESTDIR       = 
 TARGET        = ICP-project
@@ -1008,8 +1012,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/graph.h src/line.h src/mainwindow.h src/map.h src/point.h src/station.h src/street.h src/streetmap.h src/linelabel.h src/lineroute.h src/transportvehicle.h src/float_eq.h src/lineobject.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/graph.cpp src/line.cpp src/main.cpp src/mainwindow.cpp src/map.cpp src/point.cpp src/station.cpp src/street.cpp src/streetmap.cpp src/linelabel.cpp src/lineroute.cpp src/transportvehicle.cpp src/lineobject.cpp src/float_eq.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/graph.h src/line.h src/mainwindow.h src/map.h src/point.h src/station.h src/street.h src/streetmap.h src/linelabel.h src/lineroute.h src/transportvehicle.h src/float_eq.h src/lineobject.h src/error.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/graph.cpp src/line.cpp src/main.cpp src/mainwindow.cpp src/map.cpp src/point.cpp src/station.cpp src/street.cpp src/streetmap.cpp src/linelabel.cpp src/lineroute.cpp src/transportvehicle.cpp src/lineobject.cpp src/float_eq.cpp src/error.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -1047,9 +1051,11 @@ compiler_moc_header_clean:
 moc_mainwindow.cpp: src/mainwindow.h \
 		src/streetmap.h \
 		src/street.h \
+		src/error.h \
 		src/float_eq.h \
 		src/point.h \
 		src/line.h \
+		src/station.h \
 		src/linelabel.h \
 		src/lineroute.h \
 		src/transportvehicle.h \
@@ -1060,14 +1066,18 @@ moc_mainwindow.cpp: src/mainwindow.h \
 
 moc_linelabel.cpp: src/linelabel.h \
 		src/line.h \
-		src/point.h \
+		src/station.h \
+		src/street.h \
+		src/error.h \
 		src/float_eq.h \
+		src/point.h \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include /home/michal/School/2019-20/summer/ICP/ICP-project/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include src/linelabel.h -o moc_linelabel.cpp
 
 moc_lineroute.cpp: src/lineroute.h \
 		src/street.h \
+		src/error.h \
 		src/float_eq.h \
 		src/point.h \
 		moc_predefs.h \
@@ -1083,11 +1093,13 @@ moc_transportvehicle.cpp: src/transportvehicle.h \
 
 moc_lineobject.cpp: src/lineobject.h \
 		src/line.h \
-		src/point.h \
+		src/station.h \
+		src/street.h \
+		src/error.h \
 		src/float_eq.h \
+		src/point.h \
 		src/linelabel.h \
 		src/lineroute.h \
-		src/street.h \
 		src/transportvehicle.h \
 		moc_predefs.h \
 		/usr/bin/moc
@@ -1110,18 +1122,24 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 ####### Compile
 
 graph.o: src/graph.cpp src/graph.h \
+		src/error.h \
 		src/point.h \
 		src/float_eq.h \
 		src/street.h \
-		src/station.h
+		src/station.h \
+		src/line.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o graph.o src/graph.cpp
 
 line.o: src/line.cpp src/line.h \
-		src/point.h \
-		src/float_eq.h
+		src/station.h \
+		src/street.h \
+		src/error.h \
+		src/float_eq.h \
+		src/point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o line.o src/line.cpp
 
-main.o: src/main.cpp src/graph.h \
+main.o: src/main.cpp src/error.h \
+		src/graph.h \
 		src/point.h \
 		src/float_eq.h \
 		src/street.h \
@@ -1139,9 +1157,11 @@ main.o: src/main.cpp src/graph.h \
 mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 		src/streetmap.h \
 		src/street.h \
+		src/error.h \
 		src/float_eq.h \
 		src/point.h \
 		src/line.h \
+		src/station.h \
 		src/linelabel.h \
 		src/lineroute.h \
 		src/transportvehicle.h \
@@ -1149,11 +1169,13 @@ mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o src/mainwindow.cpp
 
 map.o: src/map.cpp src/map.h \
+		src/error.h \
 		src/graph.h \
 		src/point.h \
 		src/float_eq.h \
 		src/street.h \
-		src/station.h
+		src/station.h \
+		src/line.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o map.o src/map.cpp
 
 point.o: src/point.cpp src/point.h \
@@ -1162,29 +1184,36 @@ point.o: src/point.cpp src/point.h \
 
 station.o: src/station.cpp src/station.h \
 		src/street.h \
+		src/error.h \
 		src/float_eq.h \
 		src/point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o station.o src/station.cpp
 
 street.o: src/street.cpp src/street.h \
+		src/error.h \
 		src/float_eq.h \
 		src/point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o street.o src/street.cpp
 
 streetmap.o: src/streetmap.cpp src/streetmap.h \
 		src/street.h \
+		src/error.h \
 		src/float_eq.h \
 		src/point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o streetmap.o src/streetmap.cpp
 
 linelabel.o: src/linelabel.cpp src/linelabel.h \
 		src/line.h \
-		src/point.h \
-		src/float_eq.h
+		src/station.h \
+		src/street.h \
+		src/error.h \
+		src/float_eq.h \
+		src/point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o linelabel.o src/linelabel.cpp
 
 lineroute.o: src/lineroute.cpp src/lineroute.h \
 		src/street.h \
+		src/error.h \
 		src/float_eq.h \
 		src/point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o lineroute.o src/lineroute.cpp
@@ -1196,16 +1225,21 @@ transportvehicle.o: src/transportvehicle.cpp src/transportvehicle.h \
 
 lineobject.o: src/lineobject.cpp src/lineobject.h \
 		src/line.h \
-		src/point.h \
+		src/station.h \
+		src/street.h \
+		src/error.h \
 		src/float_eq.h \
+		src/point.h \
 		src/linelabel.h \
 		src/lineroute.h \
-		src/street.h \
 		src/transportvehicle.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o lineobject.o src/lineobject.cpp
 
 float_eq.o: src/float_eq.cpp src/float_eq.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o float_eq.o src/float_eq.cpp
+
+error.o: src/error.cpp src/error.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o error.o src/error.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

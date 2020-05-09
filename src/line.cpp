@@ -1,30 +1,53 @@
 #include "line.h"
 
-uint32_t Line::LineCount = 0;
+uint32_t Line::lineCount = 0;
 
-Line::Line(std::string name) : name(name)
+Line::Line()
+: n(++lineCount){}
+
+uint32_t Line::getNumber()
 {
-	id = LineCount++;
+    return n;
 }
 
-uint32_t Line::getId()
+std::vector<std::string> Line::getSNames()
 {
-	return id;
+    return slist;
 }
 
-std::string Line::getName()
+std::istream &operator>>(std::istream &is, Line &l)
 {
-	return name;
-}
+    l.slist.clear();
 
-std::vector<Point>  Line::getRoute()
-{
-	return route;
-}
+    std::string line;
+    if (std::getline(is, line)) {
+        std::istringstream iss(line);
 
-void Line::setRoute(std::vector<Point> &route) 
-{
-	this->route = route;
+        while (std::getline(iss, line, ' '))
+            l.slist.push_back(line);
+
+        if (std::getline(is, line)) {
+            std::istringstream iss(line);
+
+            while (std::getline(iss, line, ' ')) {
+                uint32_t n = std::stoul(line);
+                l.forward.push_back(n);
+            }
+
+            if (std::getline(is, line)) {
+                std::istringstream iss(line);
+
+                while (std::getline(iss, line, ' ')) {
+                    uint32_t n = std::stoul(line);
+                    l.backward.push_back(n);
+                }
+            } else
+                errExit(1, "Missing backward");
+        } else
+            errExit(1, "Missing forward");
+    }
+
+    return is;
 }
 
 Line::~Line(){}

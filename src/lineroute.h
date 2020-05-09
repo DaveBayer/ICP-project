@@ -11,7 +11,7 @@ class LineRoute :  public QObject, public QGraphicsItem
 {
 	Q_OBJECT
 public:
-    LineRoute(uint32_t, std::vector<Point>);
+    LineRoute(std::vector<std::vector<Point>>);
     QPen pen;
 
     QRectF boundingRect() const override;
@@ -25,7 +25,7 @@ public slots:
 private:
     QColor color;
     uint32_t id;
-    std::vector<Point> route;
+    std::vector<std::vector<Point>> route;
 };
 
 #endif // __LINEROUTE_H__

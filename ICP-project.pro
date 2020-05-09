@@ -31,7 +31,8 @@ HEADERS += src/graph.h \
            src/lineroute.h \
            src/transportvehicle.h \
            src/float_eq.h \
-           src/lineobject.h
+           src/lineobject.h \
+           src/error.h
 SOURCES += src/graph.cpp \
            src/line.cpp \
            src/main.cpp \
@@ -45,4 +46,5 @@ SOURCES += src/graph.cpp \
            src/lineroute.cpp \
            src/transportvehicle.cpp \
            src/lineobject.cpp \
-           src/float_eq.cpp
+           src/float_eq.cpp \
+           src/error.cpp

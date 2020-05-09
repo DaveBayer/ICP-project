@@ -5,11 +5,13 @@ Map::Map(){}
 Map::Map(float new_w, float new_h)
 : w(new_w), h(new_h){}
 
-Map::Map(float w, float h, std::vector<Street> s)
-: w(w), h(h), streets(s){}
-
 void Map::addStreet(Street s)
 {
+    std::vector<Point> pts (s.getPoints());
+    if (!pts[0].between(Point(0.f, 0.f), Point(w, h)) ||
+        !pts[1].between(Point(0.f, 0.f), Point(w, h)))
+        errExit(1, "Street out of map size");
+
     auto it = std::find_if(streets.begin(), streets.end(),
         [&s](Street &el) -> bool
         { return s.getID() == el.getID(); });
@@ -26,29 +28,31 @@ void Map::addStreets(std::vector<Street> v)
 
 void Map::addStation(Station s)
 {
-    auto it = std::find_if(streets.begin(), streets.end(),
-        [&s](Street &el) -> bool
-        { return s.getStreetID() == el.getID(); });
-
-    if (it != streets.end()) {
-        auto pts = it->getPoints();
+    for (auto i : streets) {
+        auto pts = i.getPoints();
         Point P = s.getPoint();
 
-        float res1 = (P.getX() - pts[0].getX()) * (pts[1].getY() - pts[0].getY());
-        float res2 = (P.getY() - pts[0].getY()) * (pts[1].getX() - pts[0].getY());
+        float ab = sqrtf((pts[1].getX() - pts[0].getX()) * (pts[1].getY() - pts[0].getY()));
+        float ap = sqrtf((P.getX() - pts[0].getX()) * (P.getY() - pts[0].getY()));
+        float pb = sqrtf((pts[1].getX() - P.getX()) * (pts[1].getY() - P.getY()));
 
-        if (!(res1 == res2 &&
-            P.between(pts[0], pts[1]))) {
+        if (floatEQ(ab, ap + pb)) {
+            s.setStreetID(i.getID());
 
-            std::cerr << "Station does not lay on the street\n";
-            exit(1);
-
-            //TODO Vylepsit exception
+            auto it = std::find_if(stations.begin(), stations.end(),
+                [&s](auto &el) -> bool
+                { return s.getName() == el.getName(); });
+            
+            if (it == stations.end()) {
+                stations.push_back(s);
+                return;
+            
+            } else
+                errExit(1, "Readding station");
         }
-        stations.push_back(s);
     }
-        
-    //  TODO exception
+
+    errExit(1, "Station must lay on a street");
 }
 
 void Map::addStations(std::vector<Station> v)
@@ -57,61 +61,54 @@ void Map::addStations(std::vector<Station> v)
         addStation(i);
 }
 
+void Map::addLine(Line l)
+{
+    for (auto &i : l.getSNames()) {
+        auto it = std::find_if(stations.begin(), stations.end(),
+            [&i](auto &el) -> bool
+            { return i == el.getName(); });
+
+        if (it == stations.end())
+            errExit(1, "No such station");
+    }
+    lines.push_back(l);
+}
+
+void Map::addLines(std::vector<Line> lines)
+{
+    for (auto &i : lines){
+        addLine(i);
+    }
+}
+
 void Map::createGraph()
 {
     g = Graph(streets, stations);
 }
 
+void Map::setLinesInGraph()
+{
+    for (auto &i : lines) {
+        std::vector<Point> pts;
+
+        for (auto &j : i.getSNames()) {
+            auto it = std::find_if(stations.begin(), stations.end(),
+                [&j](auto &el) -> bool
+                { return j == el.getName(); });
+            
+            if (it == stations.end())
+                errExit(1, "No such station");
+
+            pts.push_back(it->getPoint());
+        }
+
+        g.SetUpLine(i.getNumber(), pts);
+    }
+}
+
 void Map::outputGraph()
 {
     std::cout << g;
-}
-
-int Map::readMap(const char *filename)
-{
-    int i = 0;
-    std::string a, b, c;
-    std::ifstream infile;
-    infile.open(filename, std::ios::in);
-
-    if (!infile.is_open())
-        return -1;
-
-    for (std::string line; std::getline(infile, line); i++) {
-        std::istringstream iss(line);
-        if (i == 0) {
-            if (!(iss >> w >> h)) {
-                i = -2;
-                break;
-            }
-
-        } else {
-            std::string name;
-            std::vector<float> c(4);
-            if (!(iss >> c[0] >> c[1] >> c[2] >> c[3] >> name)) {
-                i = -3;
-                break;
-            }
-            else {
-                Street s(Point(c[0], c[1]), Point(c[2], c[3]), name);
-                addStreet(s);
-            }
-        }
-    }
-
-    infile.close();
-    return i;
-}
-
-
-std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> Map::getGraphMap()
-{
-	return g.getMap();
-}
-
-std::vector<Street> Map::getStreets()
-{
-	return streets;
 }
 
 Map::~Map(){}

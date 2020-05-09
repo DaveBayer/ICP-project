@@ -10,29 +10,36 @@
 
 #include "line.h"
 #include "linelabel.h"
+#include "graph.h"
 #include "lineroute.h"
 #include "transportvehicle.h"
 class LineObject : public QObject
 {
 	Q_OBJECT
 public:
-    LineObject(Line *,QVBoxLayout*,QGraphicsScene *,QTime *);
+    LineObject(Graph *,uint32_t, std::vector<std::vector<Point>> route_vector,QTime *);
     ~LineObject();
 
+    void createVehicles(std::vector<timetable_s>);
+    float getLineLength();
+
+	uint32_t id;
+    LineRoute *route;
+    LineLabel *label;
+    Graph * graph;
+	std::vector<TransportVehicle *> vehicles;
 
 private slots:
     void startVehicle();
     void timeChanged();
+    void stopAnimation();
+    void resumeAnimation();
 
 private:
-	std::vector<TransportVehicle *> vehicles;
     Line *line;
-    LineRoute *route;
-    LineLabel *label;
     QTime * currTime;
     QGraphicsScene * scene;
-
-    uint32_t time;
+    std::vector<std::vector<Point>> route_vector;
 };
 
 

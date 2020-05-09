@@ -1,29 +1,37 @@
 #include "lineobject.h"
-LineObject::LineObject(Line * line, QVBoxLayout *layout, QGraphicsScene * scene, QTime * time) : line(line), scene(scene), currTime(time)
+LineObject::LineObject(Graph * g,uint32_t id, std::vector<std::vector<Point>> route_vector, QTime * time) : graph(g), id(id), currTime(time), route_vector(route_vector)
 {
-	time = 0;
-
-	label = new LineLabel(line->getName());
+    std::string name = "line" + std::to_string(id);
+	label = new LineLabel(name);
+        
+    route = new LineRoute(route_vector);
     
-    layout->addWidget(label);
-    
-    route = new LineRoute(line->getId(),line->getRoute());
-    QObject::connect(label, SIGNAL(clicked()),route,SLOT(showRoute()));
+}
 
-    scene->addItem(route);
+float LineObject::getLineLength()
+{
+    auto route_lenght = 0.f;
+    for (auto i = 1; i < route_vector.size() -1; i++) {
+        for (auto j = 1; j < route_vector[i].size(); j++) {
+            route_lenght += graph->getEdgeW(route_vector[i][j-1], route_vector[i][j]) / graph->getEdgeTC(route_vector[i][j-1], route_vector[i][j]);
+        }
+    }
+    return route_lenght;
+}
 
 
-
-    
-    for (auto vehicle : line->timetable) {
-        TransportVehicle *v = new TransportVehicle(vehicle.start);
-        v->setRouteDuration(line->length); // timer->setDuration()
-        v->setRoutePath(vehicle.route,line->length);
-        scene->addItem(v);
+void LineObject::createVehicles(std::vector<timetable_s> timetable)
+{
+    std::cout<<getLineLength()<<std::endl;
+    for (auto connection : timetable) {
+        TransportVehicle *v = new TransportVehicle(graph, connection.start);
+        v->setRouteDuration(getLineLength()); // timer->setDuration()
+        v->setRoutePath(route_vector,getLineLength());
         vehicles.push_back(v);
         v->setVisible(false);
     }
 }
+
 
 
 
@@ -40,9 +48,9 @@ void LineObject::startVehicle()
 
 void LineObject::timeChanged() 
 {
-    std::cout<<"timeChanged"<<std::endl;
     for (auto vehicle : vehicles) {
         vehicle->timer->stop();
+        vehicle->timer->setCurrentTime(0);
         vehicle->setVisible(false);
         if (*currTime >= *(vehicle->time_start) && *currTime <= (vehicle->time_start->addSecs(vehicle->total_time))) {
             std::cout<<vehicle->time_start->secsTo(*currTime)*1000<<std::endl;
@@ -50,6 +58,22 @@ void LineObject::timeChanged()
             vehicle->setVisible(true);
             vehicle->timer->resume();
         }
+    }
+}
+
+void LineObject::stopAnimation()
+{
+    for (auto vehicle : vehicles) {
+        if (vehicle->timer->state() == QTimeLine::Running)
+            vehicle->timer->setPaused(true);
+    }
+}
+
+void LineObject::resumeAnimation()
+{
+    for (auto vehicle : vehicles) {
+        if (vehicle->timer->state() == QTimeLine::Paused)
+            vehicle->timer->resume();
     }
 }
 
