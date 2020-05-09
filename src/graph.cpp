@@ -26,7 +26,7 @@ Graph::Graph(std::vector<Street> &s)
 Graph::Graph(std::vector<Street> &streets, std::vector<Station> &stations)
 {
     init();
-    
+
     for (auto i = streets.begin(); i != streets.end(); i++) {
         addNodes(i->getID(), i->getPoints());
     
@@ -107,8 +107,11 @@ void Graph::addNodes(uint32_t sid, std::vector<Point> v)
 void Graph::createEdges()
 {
     adj_mat.resize(pt_idx);
-    for (auto &i : adj_mat)
+    for (auto &i : adj_mat) {
         i.resize(pt_idx);
+        for (auto &j : i)
+            j = std::make_pair(0.f, 1.f);
+    }
 
     for (auto &i : cs) {
         std::vector<std::pair<Point, uint32_t>> &v = i.second;
@@ -121,18 +124,26 @@ void Graph::createEdges()
                 { return lhs.first.dist(P) < rhs.first.dist(P); });
 
             for (uint32_t j = 0; j < v.size() - 1; j++)
-                setEdge(v[j].second, v[j+1].second, (v[j].first).dist(v[j+1].first));
+                setEdgeW(v[j].second, v[j+1].second, (v[j].first).dist(v[j+1].first));
         }
     }
 }
 
-void Graph::setEdge(uint32_t idx_a, uint32_t idx_b, float w)
-{ 
-    adj_mat[idx_a][idx_b] = w;
-    adj_mat[idx_b][idx_a] = w;
+float Graph::getEdgeW(Point A, Point B)
+{
+    auto idx_a = getNodeID(A);
+    auto idx_b = getNodeID(B);
+
+    return adj_mat[idx_a][idx_b].first;
 }
 
-void Graph::resetEdge(uint32_t idx_a, uint32_t idx_b)
+void Graph::setEdgeW(uint32_t idx_a, uint32_t idx_b, float w)
+{ 
+    adj_mat[idx_a][idx_b].first = w;
+    adj_mat[idx_b][idx_a].first = w;
+}
+
+void Graph::resetEdgeW(uint32_t idx_a, uint32_t idx_b)
 {
     auto it1 = std::find_if(nodes.begin(), nodes.end(),
         [&idx_a](auto &el) -> bool
@@ -147,7 +158,28 @@ void Graph::resetEdge(uint32_t idx_a, uint32_t idx_b)
 
     float dist = it1->first.dist(it2->first);
 
-    setEdge(idx_a, idx_b, dist);
+    setEdgeW(idx_a, idx_b, dist);
+}
+
+float Graph::getTC()
+{
+    return TrafficCoef;
+}
+
+void Graph::setTC(float f)
+{
+    TrafficCoef = f;
+}
+
+float Graph::getEdgeTC(uint32_t idx_a, uint32_t idx_b)
+{
+    return adj_mat[idx_a][idx_b].second;
+}
+
+void Graph::incEdgeTC(uint32_t idx_a, uint32_t idx_b)
+{
+    adj_mat[idx_a][idx_b].second += TrafficCoef;
+    adj_mat[idx_b][idx_a].second += TrafficCoef;
 }
 
 void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
@@ -200,7 +232,7 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
                 { return i == el.first.back(); }) != close.end())
                 continue;
             else {
-                float f = adj_mat[idx][i];
+                float f = adj_mat[idx][i].first;
                 std::vector<uint32_t> v(it->first);
                 
                 if (f > 0) {
@@ -253,10 +285,10 @@ std::ostream &operator<<(std::ostream &os, Graph g)
 {
     for (uint32_t i = 0; i < g.pt_idx; i++) {
         for (uint32_t j = 0; j < g.pt_idx; j++) {
-            if (g.adj_mat[i][j] > 0) {
+            if (g.adj_mat[i][j].first > 0) {
                 std::cout << g.nodes[i].first
                     << "\t" << g.nodes[j].first
-                    << "\t\t" << g.adj_mat[i][j]
+                    << "\t\t" << g.adj_mat[i][j].first
                     << std::endl;
             }
         }

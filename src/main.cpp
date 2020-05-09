@@ -46,9 +46,11 @@ std::vector<Line> getLines(const char *name)
 {
     std::vector<Line> lines;
     std::ifstream f = fileOpen(name);
-    Line l;
-    while (f >> l)
+    while (!f.eof()) {
+        Line l;
+        f >> l;
         lines.push_back(l);
+    }
     f.close();
     return lines;
 }

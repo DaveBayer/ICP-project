@@ -11,6 +11,7 @@ private:
     static uint32_t lineCount;
     uint32_t n;
     std::vector<std::string> slist;
+    std::vector<uint32_t> forward, backward;
 public:
     Line();
     uint32_t getNumber();

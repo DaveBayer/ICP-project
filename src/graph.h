@@ -17,11 +17,12 @@
 class Graph
 {
 private:
+    float TrafficCoef;
     uint32_t pt_idx;
     std::map<uint32_t, std::vector<std::vector<Point>>> line_pts;
     std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> cs;
     std::vector<std::pair<Point, uint32_t>> nodes;
-    std::vector<std::vector<float>> adj_mat;
+    std::vector<std::vector<std::pair<float, float>>> adj_mat;
     
     void init();
 public:
@@ -35,8 +36,14 @@ public:
     void addNodes(uint32_t, std::vector<Point>);
 
     void createEdges();
-    void setEdge(uint32_t, uint32_t, float);
-    void resetEdge(uint32_t, uint32_t);
+    float getEdgeW(Point, Point);
+    void setEdgeW(uint32_t, uint32_t, float);
+    void resetEdgeW(uint32_t, uint32_t);
+
+    float getTC();
+    void setTC(float);
+    float getEdgeTC(uint32_t, uint32_t);
+    void incEdgeTC(uint32_t, uint32_t);
 
     void SetUpLine(uint32_t, std::vector<Point>);
     bool getPath(Point, Point, std::vector<Point> &);
