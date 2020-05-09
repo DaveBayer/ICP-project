@@ -1,7 +1,7 @@
 #include "graph.h"
 
 Graph::Graph()
-: pt_idx(0){}
+: pt_idx(0), TrafficCoef(.5f){}
 
 Graph::Graph(std::vector<Street> &s)
 {
@@ -51,6 +51,7 @@ void Graph::init()
     cs.clear();
     nodes.clear();
     adj_mat.clear();
+    TrafficCoef = .5f;
     pt_idx = 0;
 }
 
