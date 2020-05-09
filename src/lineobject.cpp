@@ -1,5 +1,5 @@
 #include "lineobject.h"
-LineObject::LineObject(Graph * g,uint32_t id, std::vector<std::vector<Point>> route_vector, QTime * time) : graph(g), id(id), currTime(time), route_vector(route_vector)
+LineObject::LineObject(Graph * g, std::vector<Line> lines, uint32_t id, std::vector<std::vector<Point>> route_vector, QTime * time) : graph(g), lines(lines), id(id), currTime(time), route_vector(route_vector)
 {
     std::string name = "line" + std::to_string(id);
 	label = new LineLabel(name);
@@ -20,15 +20,35 @@ float LineObject::getLineLength()
 }
 
 
-void LineObject::createVehicles(std::vector<timetable_s> timetable)
+void LineObject::createVehicles()
 {
-    std::cout<<getLineLength()<<std::endl;
-    for (auto connection : timetable) {
-        TransportVehicle *v = new TransportVehicle(graph, connection.start);
-        v->setRouteDuration(getLineLength()); // timer->setDuration()
-        v->setRoutePath(route_vector,getLineLength());
-        vehicles.push_back(v);
-        v->setVisible(false);
+    // std::cout<<getLineLength()<<std::endl;
+    for (auto line : lines) {
+        if (line.getNumber() == id){
+            for (auto connection : line.forward) {
+                TransportVehicle *v = new TransportVehicle(graph, connection);
+                v->setRouteDuration(getLineLength()); // timer->setDuration()
+                v->setRoutePath(route_vector,getLineLength());
+                vehicles.push_back(v);
+                v->setVisible(false);
+            }
+            for (auto connection : line.backward) {
+                TransportVehicle *v = new TransportVehicle(graph, connection);
+                v->setRouteDuration(getLineLength()); // timer->setDuration()
+                std::vector<std::vector<Point>> reverse_route;
+                std::vector<Point> reverse_part; 
+                for (auto it =  route_vector.rbegin(); it != route_vector.rend(); it++) {
+                    reverse_part.clear();
+                    for (auto jt = (*it).rbegin(); jt != (*it).rend(); jt++) {
+                        reverse_part.push_back(*jt);
+                    }
+                    reverse_route.push_back(reverse_part);
+                }
+                v->setRoutePath(reverse_route,getLineLength());
+                vehicles.push_back(v);
+                v->setVisible(false);
+            }
+        }
     }
 }
 
@@ -49,14 +69,15 @@ void LineObject::startVehicle()
 void LineObject::timeChanged() 
 {
     for (auto vehicle : vehicles) {
-        vehicle->timer->stop();
+        // vehicle->timer->stop();
         vehicle->timer->setCurrentTime(0);
         vehicle->setVisible(false);
         if (*currTime >= *(vehicle->time_start) && *currTime <= (vehicle->time_start->addSecs(vehicle->total_time))) {
             std::cout<<vehicle->time_start->secsTo(*currTime)*1000<<std::endl;
             vehicle->setVehiclePosition(vehicle->time_start->secsTo(*currTime)*1000);
             vehicle->setVisible(true);
-            vehicle->timer->resume();
+            if (vehicle->timer->state() == QTimeLine::NotRunning)
+                vehicle->timer->resume();
         }
     }
 }

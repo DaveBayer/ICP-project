@@ -47,13 +47,13 @@ void MainWindow::createLines()
 {
     for (auto line : graph->line_pts) {
         std::cout<<line.first<<std::endl;
-        LineObject * lineObject = new LineObject(graph,line.first, line.second, time);
+        LineObject * lineObject = new LineObject(graph, map->lines,line.first, line.second, time);
         struct timetable_s connection1 = {.start = (0 + 0 + 2)};
         struct timetable_s connection2 = {.start = (1*60*60 + 0*60 + 2)};
         struct timetable_s connection3 = {.start = (1*60*60 + 10*60 + 50)};
         
         std::vector<timetable_s> t = {connection1,connection2,connection3};        
-        lineObject->createVehicles(t);
+        lineObject->createVehicles();
 
         line_labels->addWidget(lineObject->label);
         

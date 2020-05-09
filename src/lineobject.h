@@ -17,16 +17,17 @@ class LineObject : public QObject
 {
 	Q_OBJECT
 public:
-    LineObject(Graph *,uint32_t, std::vector<std::vector<Point>> route_vector,QTime *);
+    LineObject(Graph *,std::vector<Line>,uint32_t, std::vector<std::vector<Point>> route_vector,QTime *);
     ~LineObject();
 
-    void createVehicles(std::vector<timetable_s>);
+    void createVehicles();
     float getLineLength();
 
 	uint32_t id;
     LineRoute *route;
     LineLabel *label;
     Graph * graph;
+    std::vector<Line> lines;
 	std::vector<TransportVehicle *> vehicles;
 
 private slots:

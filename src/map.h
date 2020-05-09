@@ -17,13 +17,13 @@ class Map
 private:
 	float w, h;
 	std::vector<Street> streets;
-	std::vector<Line> lines;
 public:
 	Graph g;
 	Map();
 	Map(float w, float h);
 
 	std::vector<Station> stations;
+	std::vector<Line> lines;
 
 	void addStreet(Street);
 	void addStreets(std::vector<Street>);
