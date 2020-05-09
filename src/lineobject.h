@@ -6,6 +6,7 @@
 #include <QLayout>
 #include <QGraphicsScene>
 #include <QObject>
+#include <QTime>
 
 #include "line.h"
 #include "linelabel.h"
@@ -15,18 +16,20 @@ class LineObject : public QObject
 {
 	Q_OBJECT
 public:
-    LineObject(Line,QVBoxLayout*,QGraphicsScene *);
+    LineObject(Line *,QVBoxLayout*,QGraphicsScene *,QTime *);
     ~LineObject();
 
 
 private slots:
-    void createVehicle();
+    void startVehicle();
+    void timeChanged();
 
 private:
-    Line line;
+	std::vector<TransportVehicle *> vehicles;
+    Line *line;
     LineRoute *route;
     LineLabel *label;
-
+    QTime * currTime;
     QGraphicsScene * scene;
 
     uint32_t time;

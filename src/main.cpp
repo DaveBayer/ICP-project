@@ -9,66 +9,6 @@
 
 int main(int argc, char  *argv[])
 {
-//     // std::vector<Point> pts;
-//     // getPoints(pts);
-//     // std::cout << "Points created.." << std::endl;
-
-//     // Street s1(pts[0], pts[1], "prvni");
-//     // std::cout << "Street 1 created.." << std::endl;
-
-//     // Street s2(pts[2], pts[3], "druha");
-//     // std::cout << "Streets 2 created.." << std::endl;
-    
-//     Map m(600, 600);
-    
-//     // std::cout << "Map created.." << std::endl;
-//     // m.addStreet(s1);
-//     // m.addStreet(s2);
-
-//     // std::cout << "Streets added to map" << std::endl;
-
-//     Point p1(100,100);
-//     Point p2(100,500);
-//     Point p3(200,100);
-//     Point p4(200,500);
-//     Point p5(300,100);
-//     Point p6(300,500);
-//     Point p7(400,100);
-//     Point p8(400,500);
-//     Point p9(500,100);
-//     Point p10(500,500);
-//     Point ph1(100,100);
-//     Point ph2(500,100);
-//     Point ph3(100,200);
-//     Point ph4(500,200);
-//     Point ph5(100,300);
-//     Point ph6(500,300);
-//     Point ph7(100,400);
-//     Point ph8(500,400);
-//     Point ph9(100,500);
-//     Point ph10(500,500);
-
-//     Street s1(p1,p2, "");
-//     Street s2(p3,p4, "");
-//     Street s3(p5,p6, "");
-//     Street s4(p7,p8, "");
-//     Street s5(p9,p10, "");
-//     Street s6(ph1,ph2, "");
-//     Street s7(ph3,ph4, "");
-//     Street s8(ph5,ph6, "");
-//     Street s9(ph7,ph8, "");
-//     Street s10(ph9,ph10, "");
-
-//     m.addStreet(s1);
-//     m.addStreet(s2);
-//     m.addStreet(s3);
-//     m.addStreet(s4);
-//     m.addStreet(s5);
-//     m.addStreet(s6);
-//     m.addStreet(s7);
-//     m.addStreet(s8);
-//     m.addStreet(s9);
-//     m.addStreet(s10);
 
     std::vector<Line> lines;
 
@@ -81,17 +21,44 @@ int main(int argc, char  *argv[])
 
     std::vector<Point> route1 = {pr1,pr2,pr3,pr4,pr5,pr6};
 
-    Line l1("line 1");
+    
+
+    
+
+    Point s1(0,0);
+    Point s2(150,0);
+    Point s3(320,0);
+    Point s4(600,350);
+
+    Point cs1(600,0);
+
+    std::vector<std::vector<Point>> route_line;
+    std::vector<Point> part1 = {s1};
+    std::vector<Point> part2 = {s1,s2};
+    std::vector<Point> part3 = {s2,s3};
+    std::vector<Point> part4 = {s3,cs1,s4};
+    std::vector<Point> part5 = {s4};
+
+    route_line.push_back(part1);
+    route_line.push_back(part2);
+    route_line.push_back(part3);
+    route_line.push_back(part4);
+    route_line.push_back(part5);
+
+
+   Line l1("line 1");
+    l1.length = 950;
+    struct timetable_s connection1 = {.start = (0 + 0 + 2), .route = route_line};
+    struct timetable_s connection2 = {.start = (1*60*60 + 0*60 + 2), .route = route_line};
+    struct timetable_s connection3 = {.start = (1*60*60 + 10*60 + 50), .route = route_line};
+    l1.timetable.push_back(connection1);
+    l1.timetable.push_back(connection2);
+    l1.timetable.push_back(connection3);
     Line l2("line 2");
     Line l3("line 1");
     Line l4("line 2");
     Line l5("line 1");
     Line l6("line 2");
-
-    
-
-
-   
 //     
 //     
     Map m2;
@@ -112,14 +79,14 @@ int main(int argc, char  *argv[])
         break;
     }
 
-    m2.createGraph();
+    m2.createGraph();   
     std::cout<<m2.g<<std::endl;
     std::vector<Point> route2;
     Point node1(0,0);
     Point node2(600, 420);
-    m2.g.getPath(node1, node2, route2);
+    // m2.g.getPath(node1, node2, route2);
     l1.setRoute(route1);
-    l2.setRoute(route2);
+    // l2.setRoute(route2);
     lines.push_back(l1);
     lines.push_back(l2);
     // lines.push_back(l3);

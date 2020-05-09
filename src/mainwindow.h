@@ -10,6 +10,7 @@
 #include <QTime>
 #include <map>
 #include <QPushButton>
+#include <QTimeEdit>
 
 #include "streetmap.h"
 #include "line.h"
@@ -37,9 +38,10 @@ private slots:
     void zoomIn();
     void zoomOut();
     void defaultZoom();
+    void setTime();
 
 signals:
-    // void clock_tick_signal();
+    void timeChanged();
 
 private:
     QGraphicsView *view;
@@ -51,12 +53,15 @@ private:
 
     QTimer * sys_clock;
     QTime * time;
+    QTimeEdit * time_edit;
     QLabel * clock_label;
 
 
     QPushButton * zoomin;
     QPushButton * zoomout;
     QPushButton * zoomdefault;
+    QPushButton * changetime;
+    QPushButton * settime;
 
 
 
