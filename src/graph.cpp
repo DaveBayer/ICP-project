@@ -178,11 +178,7 @@ float Graph::getEdgeTC(uint32_t idx_a, uint32_t idx_b)
 
 float Graph::getEdgeTC(Point A, Point B)
 {
-    uint32_t idx_a, idx_b;
-    idx_a = getNodeID(A);
-    idx_b = getNodeID(B);
-
-    return adj_mat[idx_a][idx_b].second;
+    return adj_mat[getNodeID(A)][getNodeID(B)].second;
 }
 
 void Graph::incEdgeTC(uint32_t idx_a, uint32_t idx_b)

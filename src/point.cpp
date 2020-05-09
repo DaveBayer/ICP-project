@@ -29,7 +29,7 @@ Point operator+(const Point &A,const Point &B)
     float y = A.y + B.y;
     Point R(x,y);
     return R;
-};
+}
 
 Point operator-(const Point &A,const Point &B)
 {
@@ -37,7 +37,7 @@ Point operator-(const Point &A,const Point &B)
     float y = A.y - B.y;
     Point R(x,y);
     return R;
-};
+}
 
 bool operator==(const Point &A, const Point &B)
 {
