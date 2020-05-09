@@ -25,6 +25,8 @@ Graph::Graph(std::vector<Street> &s)
 
 Graph::Graph(std::vector<Street> &streets, std::vector<Station> &stations)
 {
+    init();
+    
     for (auto i = streets.begin(); i != streets.end(); i++) {
         addNodes(i->getID(), i->getPoints());
     
