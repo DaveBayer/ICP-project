@@ -32,22 +32,27 @@ void Map::addStation(Station s)
         auto pts = i.getPoints();
         Point P = s.getPoint();
 
-        float res1 = (P.getX() - pts[0].getX()) * (pts[1].getY() - pts[0].getY());
-        float res2 = (P.getY() - pts[0].getY()) * (pts[1].getX() - pts[0].getY());
-    
-        if (floatEQ(res1, res2) && P.between(pts[0], pts[1])) {
+        float ab = sqrtf((pts[1].getX() - pts[0].getX()) * (pts[1].getY() - pts[0].getY()));
+        float ap = sqrtf((P.getX() - pts[0].getX()) * (P.getY() - pts[0].getY()));
+        float pb = sqrtf((pts[1].getX() - P.getX()) * (pts[1].getY() - P.getY()));
+
+        if (floatEQ(ab, ap + pb)) {
             s.setStreetID(i.getID());
 
             auto it = std::find_if(stations.begin(), stations.end(),
                 [&s](auto &el) -> bool
                 { return s.getName() == el.getName(); });
             
-            if (it == stations.end())
+            if (it == stations.end()) {
                 stations.push_back(s);
+                return;
+            
+            } else
+                errExit(1, "Readding station");
         }
     }
 
-    errExit(1, "Station does not lay on the street");
+    errExit(1, "Station must lay on a street");
 }
 
 void Map::addStations(std::vector<Station> v)

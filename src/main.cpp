@@ -21,9 +21,12 @@ std::vector<Street> getStreets(const char *name)
 {
     std::vector<Street> streets;
     std::ifstream f = fileOpen(name);
-    Street s;
-    while (f >> s)
+    while (!f.eof()) {
+        Street s;
+        f >> s;
         streets.push_back(s);
+    }
+        
     f.close();
     return streets;
 }
@@ -54,7 +57,7 @@ int main(int argc, char const *argv[])
 {
     std::vector<Street> streets = getStreets(argv[1]);
     std::vector<Station> stations = getStations(argv[2]);
-    std::vector<Line> lines = getLines(argv[2]);
+    std::vector<Line> lines = getLines(argv[3]);
 
     Map m(600.f, 600.f);
 

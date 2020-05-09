@@ -162,9 +162,6 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
     uint32_t idx;
     auto getClosest = [](auto &lhs, auto &rhs)
         { return lhs.second < rhs.second; };
-    
-    auto findLast = [&idx](auto &el) -> bool
-        { return idx == el.first.back(); };
 
     uint32_t src = getNodeID(A);
     uint32_t dst = getNodeID(B);
@@ -188,17 +185,26 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
         idx = it->first.back();
 
         for (uint32_t i = 0; i < pt_idx; i++) {
-            if (std::find_if(close.begin(), close.end(), findLast) != close.end() ||
-                i == idx)
+            if (std::find_if(close.begin(), close.end(),
+                [&i](auto &el) -> bool
+                { return i == el.first.back(); }) != close.end())
                 continue;
             else {
-                float f = it->second + adj_mat[idx][i];
+                float f = adj_mat[idx][i];
                 std::vector<uint32_t> v(it->first);
                 
                 if (f > 0) {
-                    auto toDel = std::find_if(open.begin(), open.end(), findLast);
-                    if (toDel != open.end() && f < toDel->second) {
-                        open.erase(toDel);
+                    f += it->second;
+                    auto toDel = std::find_if(open.begin(), open.end(),
+                        [&i](auto &el) -> bool
+                        { return i == el.first.back(); });
+                    if (toDel != open.end()) {
+                        if (f < toDel->second) {
+                            open.erase(toDel);
+                            v.push_back(i);
+                            open.push_back(make_pair(v, f));
+                        }
+                    } else {
                         v.push_back(i);
                         open.push_back(make_pair(v, f));
                     }

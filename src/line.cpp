@@ -22,11 +22,9 @@ std::istream &operator>>(std::istream &is, Line &l)
     std::string line;
     if (std::getline(is, line)) {
         std::istringstream iss(line);
-        std::string station;
 
-        while (is >> station)
-            l.slist.push_back(station);
-            
+        while (std::getline(iss, line, ' '))
+            l.slist.push_back(line);
     }
 
     return is;
