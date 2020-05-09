@@ -65,7 +65,15 @@ bool Street::intersect(Street s, Point &P)
 
 std::istream &operator>>(std::istream &is, Street &s)
 {
-    is >> s.A >> s.B >> s.name;
+    std::string line;
+    while (std::getline(is, line)) {
+        std::istringstream iss(line);
+        if (!(iss >> s.A >> s.B >> s.name)) {
+            std::cerr << "Invalid street format\n";
+            exit(1);
+        }
+    }
+    
     return is;
 }
 

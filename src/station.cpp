@@ -13,6 +13,11 @@ Point Station::getPoint()
     return P;
 }
 
+std::string Station::getName()
+{
+    return name;
+}
+
 std::istream &operator>>(std::istream &is, Station &s)
 {
     is >> s.P >> s.street_id >> s.name;

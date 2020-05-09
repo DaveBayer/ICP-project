@@ -11,11 +11,13 @@
 #include "point.h"
 #include "street.h"
 #include "station.h"
+#include "line.h"
 
 class Graph
 {
 private:
     uint32_t pt_idx;
+    std::map<uint32_t, std::vector<std::vector<Point>>> line_pts;
     std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> cs;
     std::vector<std::pair<Point, uint32_t>> nodes;
     std::vector<std::vector<float>> adj_mat;
@@ -34,6 +36,7 @@ public:
     void setEdge(uint32_t, uint32_t, float);
     void resetEdge(uint32_t, uint32_t);
 
+    void SetUpLine(uint32_t, std::vector<Point>);
     bool getPath(Point, Point, std::vector<Point> &);
 
     friend std::ostream &operator<<(std::ostream &, Graph);

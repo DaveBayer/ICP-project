@@ -76,11 +76,12 @@ Point Graph::getNodePoint(uint32_t idx)
 
 void Graph::addNode(uint32_t sid, Point A)
 {
+    auto findPoint = [&A](auto &el) -> bool
+        { return el.first == A; };
+
     std::pair<Point, uint32_t> p;
 
-    auto it_nd = std::find_if(nodes.begin(), nodes.end(),
-        [&A](auto &el) -> bool
-        { return el.first == A; });
+    auto it_nd = std::find_if(nodes.begin(), nodes.end(), findPoint);
 
     if (it_nd == nodes.end()) {
         p = std::make_pair(A, pt_idx++);
@@ -88,9 +89,7 @@ void Graph::addNode(uint32_t sid, Point A)
     } else
         p = *it_nd;
     
-    auto it_cs = std::find_if(cs[sid].begin(), cs[sid].end(),
-        [&A](auto &el) -> bool
-        { return el.first == A; });
+    auto it_cs = std::find_if(cs[sid].begin(), cs[sid].end(), findPoint);
 
     if (it_cs == cs[sid].end())
         cs[sid].push_back(p);
@@ -150,6 +149,22 @@ void Graph::resetEdge(uint32_t idx_a, uint32_t idx_b)
     setEdge(idx_a, idx_b, dist);
 }
 
+void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
+{
+    line_pts[lnum].clear();
+
+    for (auto i = 0; i + 1 < path.size(); i++) {
+        std::vector<Point> subpath;
+
+        if (!getPath(path[i], path[i + 1], subpath)) {
+            std::cerr << "No path exists\n";
+            exit(1);
+        }
+
+        line_pts[lnum].push_back(subpath);
+    }
+}
+
 bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
 {
     uint32_t idx;
@@ -169,8 +184,13 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
 
     while (!open.empty()) {
         it = std::min_element(open.begin(), open.end(), getClosest);
-        if (it->first.back() == dst)
-            break;
+        if (it->first.back() == dst) {
+            path.clear();
+            for (auto &i : it->first)
+                path.push_back(getNodePoint(i));
+
+            return true;
+        }
         
         close.push_back(*it);
         idx = it->first.back();
@@ -197,11 +217,7 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
         open.erase(it);
     }
 
-    path.clear();
-    for (auto &i : it->first)
-        path.push_back(getNodePoint(i));
-
-    return true;
+    return false;    
 }
 
 /*

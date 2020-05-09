@@ -18,6 +18,7 @@ public:
 	Station(Point, uint32_t, std::string);
 	Point getPoint();
 	uint32_t getStreetID();
+	std::string getName();
 
 	friend std::istream &operator>>(std::istream &, Station &);
 	~Station();
