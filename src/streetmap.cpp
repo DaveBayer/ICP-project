@@ -53,7 +53,6 @@ QRectF StreetMap::boundingRect() const
 
 void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    std::cout << mapToScene(event->pos()).x() << std::endl;
     for (auto it : lines) {
         if (it->contains(mapToScene(event->pos()))){
             it->setPen(QPen(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -63,8 +62,13 @@ void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
             // std::cout<< p1.x()<< "," << p1.y() << "--"<< p2.x() << "," <<p2.y()<<std::endl;
             auto idx1 = graph->getNodeID(p1);
             auto idx2 = graph->getNodeID(p2);
-            graph->incEdgeTC(idx1, idx2);
-            emit updateRoute(1.f);
+            // std::cout<<*graph<<"\nblablabla\n";
+            // graph->setTC(-0.5);
+            // graph->incEdgeTC(idx1, idx2);
+            // std::cout<<*graph;
+            // emit updateRoute(1.f);
+            emit actStreet(idx1,idx2);
+
         } else{
             it->setPen(pen);
         }

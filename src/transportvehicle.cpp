@@ -1,36 +1,47 @@
 #include "transportvehicle.h"
 
-TransportVehicle::TransportVehicle(Graph * g,std::vector<std::vector<Point>> route, float length, uint32_t timeStart) : graph(g), route(route)
+TransportVehicle::TransportVehicle(Graph * g,std::vector<std::vector<Point>> &route, uint32_t timeStart) : graph(g), route(route)
 {
 	pen = QPen(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-
 	
-	float station_delay = 1.4;
+	time_start = new QTime(0,0,0); // time of vehicle start
+	*time_start = time_start->addSecs(timeStart);
+	
+}
 
+void TransportVehicle::initVehicle()
+{
+	station_delay = 1.4;
 	speed = 0.0014; 			// 0.0014 pixs/s -> 14m/s -> 50km/h
-	this->length = getRouteLength();			// total pixel route length (pixs)
+	length = getRouteLength();			// total pixel route length (pixs)
+	std::cout<<length<<"len\n";
 	duration = length / speed; 	// duration of route with basic speed (ms)
-	std::cout<<"s "<<length<<" , "<<duration<<std::endl;
+
 
 	timer = new QTimeLine(duration);
 	timer->setFrameRange(0, 100);
 	timer->setCurveShape(QTimeLine::LinearCurve);
 
-	time_start = new QTime(0,0,0); // time of vehicle start
-	*time_start = time_start->addSecs(timeStart);
+	
 	time_end = new QTime(0,0,0);
 	*time_end = time_start->addSecs(duration); // time of vehicle end
 
 	animation = new QGraphicsItemAnimation;
-	
+	QObject::connect(timer, SIGNAL(finished()), this, SLOT(finished()));
+	animation->setItem(this);
+	animation->setTimeLine(timer);
+	acc = 1.f;
+
 }
 
 float TransportVehicle::getRouteLength()
 {
 	auto numOfStations = route.size() - 1;
-	auto route_lenght = 0.f;
+	float route_lenght = 0.f;
     for (auto i = 1; i < route.size() -1; i++) {
         for (auto j = 1; j < route[i].size(); j++) {
+			std::cout<<graph->getEdgeW(route[i][j-1],route[i][j]) / graph->getEdgeTC(route[i][j-1],route[i][j])<<"huuh\n";
+
             route_lenght += graph->getEdgeW(route[i][j-1], route[i][j]) / graph->getEdgeTC(route[i][j-1], route[i][j]);
         }
     }
@@ -40,16 +51,17 @@ float TransportVehicle::getRouteLength()
 
 void TransportVehicle::setRouteDuration(float c)
 {
-	timer->setDuration((int)(timer->duration()*c));
+	acc *= c;
+	duration = length /speed;
+	timer->setDuration((int)(duration*acc));
 }
 
 void TransportVehicle::setRoutePath()
 {
-	QObject::connect(timer, SIGNAL(finished()), this, SLOT(finished()));
+	length = getRouteLength();
+	std::cout<<length<<"blabla\n";
 	if (route.size() != 0) {
-		animation->setItem(this);
-		animation->setTimeLine(timer);
-
+		animation->clear();
 		float route_time = 0.f;
 
 		QPointF start(route[0][0].getX(),route[0][0].getY());
@@ -65,8 +77,11 @@ void TransportVehicle::setRoutePath()
 			for (uint32_t j = 1; j < route[i].size(); j++){
 				route_time +=  graph->getEdgeW(route[i][j-1],route[i][j]) / graph->getEdgeTC(route[i][j-1],route[i][j]);
 				QPointF p(route[i][j].getX(), route[i][j].getY());
+				std::cout<<route[i][j].getX()<<","<<route[i][j].getY()<<std::endl;
 				animation->setPosAt((route_time/length), p - vehicleSize);
+				std::cout<<(route_time/length)<<"rati\n";
 			}
+			std::cout<<(route_time/length)<<"rati\n";
 		}
 	}
 }

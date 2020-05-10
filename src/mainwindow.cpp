@@ -5,6 +5,10 @@
 MainWindow::MainWindow(Map * m) : map(m)
 {
     line_labels = new QVBoxLayout;
+    street_layout_w = new QWidget();
+    street_options_l = new QHBoxLayout(street_layout_w);
+    street_layout_w->hide();
+    // street_options_l.hide();
     graph = &(m->g);
 
     zoomin = new QPushButton("&Zoom In");
@@ -16,6 +20,10 @@ MainWindow::MainWindow(Map * m) : map(m)
     settime->hide();
     faster = new QPushButton("&Faster");
     slower = new QPushButton("&Slower");
+
+    addtraffic = new QPushButton("&Add Traffic");
+    cleartraffic = new QPushButton("&Clear Traffic");
+    closestreet = new QPushButton("&Close Street");
 
 }
 
@@ -69,7 +77,8 @@ void MainWindow::createLines()
         QObject::connect(this, SIGNAL(timeChanged(float)), lineObject, SLOT(timeChanged(float)));
         QObject::connect(this, SIGNAL(stopAnimation()), lineObject, SLOT(stopAnimation()));
         QObject::connect(this, SIGNAL(resumeAnimation()), lineObject, SLOT(resumeAnimation()));
-        QObject::connect(sm, SIGNAL(updateRoute(float)),lineObject, SLOT(timeChanged(float)));
+        // QObject::connect(sm, SIGNAL(updateRoute(float)),lineObject, SLOT(timeChanged(float)));
+        QObject::connect(sm, SIGNAL(actStreet(uint32_t,uint32_t)), this, SLOT(actStreet(uint32_t,uint32_t)));
     }
 }
 
@@ -94,22 +103,28 @@ void MainWindow::finish()
     QObject::connect(pauseresumetime, SIGNAL(clicked()), this, SLOT(toggleClock()));
     QObject::connect(faster, SIGNAL(clicked()), this, SLOT(fasterClock()));
     QObject::connect(slower, SIGNAL(clicked()), this, SLOT(slowerClock()));
+    QObject::connect(addtraffic, SIGNAL(clicked()),this, SLOT(addTraffic()));
 
+
+    street_options_l->addWidget(closestreet);
+    street_options_l->addWidget(cleartraffic);
+    street_options_l->addWidget(addtraffic);
 
     mainLayout = new QGridLayout;
 
     mainLayout->addWidget(view,0,0,1,7);
     mainLayout->addLayout(this->line_labels, 0, 7);
-    mainLayout->addWidget(clock_label, 1,0);
-    mainLayout->addWidget(slower,1,1);
-    mainLayout->addWidget(faster,1,2);
-    mainLayout->addWidget(pauseresumetime,1,3);
-    mainLayout->addWidget(changetime,1,4);
-    mainLayout->addWidget(time_edit,2,0);
-    mainLayout->addWidget(settime,2,1);  
-    mainLayout->addWidget(zoomout,1,5);
-    mainLayout->addWidget(zoomdefault,1,6);
-    mainLayout->addWidget(zoomin,1,7);
+    mainLayout->addWidget(street_layout_w,1,0);
+    mainLayout->addWidget(clock_label, 2,0);
+    mainLayout->addWidget(slower,2,1);
+    mainLayout->addWidget(faster,2,2);
+    mainLayout->addWidget(pauseresumetime,2,3);
+    mainLayout->addWidget(changetime,2,4);
+    mainLayout->addWidget(time_edit,3,0);
+    mainLayout->addWidget(settime,3,1);  
+    mainLayout->addWidget(zoomout,2,5);
+    mainLayout->addWidget(zoomdefault,2,6);
+    mainLayout->addWidget(zoomin,2,7);
     
     QWidget *widget = new QWidget;
     widget->setLayout(mainLayout);
@@ -175,8 +190,34 @@ void MainWindow::fasterClock()
 void MainWindow::slowerClock()
 {
     if(sys_clock->interval()<10000){       
-        std::cout<<sys_clock->interval()<<std::endl;
         sys_clock->setInterval(sys_clock->interval()*2);
         emit timeChanged(2);
     }
+}
+
+void MainWindow::addTraffic()
+{
+    graph->setTC(-0.5);
+    graph->incEdgeTC(act_street[0],act_street[1]);
+    std::cout<<*graph;
+    emit timeChanged(1.f);
+}
+
+void MainWindow::clearTraffic()
+{
+    graph->setTC(0.5);
+    graph->incEdgeTC(act_street[0],act_street[1]);
+    emit timeChanged(1.f);
+}
+
+void MainWindow::closeStreet()
+{
+
+}
+
+void MainWindow::actStreet(uint32_t idx1,uint32_t idx2)
+{
+    act_street.push_back(idx1);
+    act_street.push_back(idx2);
+    street_layout_w->show();
 }

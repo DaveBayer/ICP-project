@@ -44,6 +44,10 @@ private slots:
     void toggleClock();
     void fasterClock();
     void slowerClock();
+    void actStreet(uint32_t,uint32_t);
+    void closeStreet();
+    void addTraffic();
+    void clearTraffic();
 
 signals:
     void timeChanged(float);
@@ -56,8 +60,10 @@ private:
     QGraphicsScene *scene;
     QLabel *label;
 
-    QGridLayout *mainLayout;
+    QGridLayout * mainLayout;
     QVBoxLayout * line_labels;
+    QWidget * street_layout_w;
+    QHBoxLayout * street_options_l;
 
     QTimer * sys_clock;
     QTime * time;
@@ -74,9 +80,16 @@ private:
     QPushButton * faster;
     QPushButton * slower;
 
+    QPushButton * addtraffic;
+    QPushButton * cleartraffic;
+    QPushButton * closestreet;
+
+
     StreetMap *sm;
     Graph * graph;
     Map * map;
+
+    std::vector<uint32_t> act_street;
 
 };
 

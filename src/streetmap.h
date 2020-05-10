@@ -25,7 +25,8 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget) override;
 signals:
-    void updateRoute(float);
+    // void updateRoute(float);
+void actStreet(uint32_t,uint32_t);
 
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);

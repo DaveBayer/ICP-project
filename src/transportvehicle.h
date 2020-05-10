@@ -25,7 +25,7 @@ public:
 
 
 
-    TransportVehicle(Graph *,std::vector<std::vector<Point>>,float,uint32_t);
+    TransportVehicle(Graph *,std::vector<std::vector<Point>> &,uint32_t);
     ~TransportVehicle();
     QPen pen;
 
@@ -37,11 +37,13 @@ public:
     void setRoutePath();
     float getRouteLength();
     void setVehiclePosition(float);
+    void initVehicle();
     Graph * graph;
 
     uint8_t state;
     float speed;
     float length;
+    float acc;
     float duration;
     float station_delay;
     std::vector<std::vector<Point>> route;

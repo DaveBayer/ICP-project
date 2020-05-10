@@ -1,25 +1,25 @@
 #include "lineobject.h"
-LineObject::LineObject(Graph * g, std::vector<Line> lines, uint32_t id, std::vector<std::vector<Point>> route_vector, QTime * time) : graph(g), lines(lines), id(id), currTime(time), route_vector(route_vector)
+LineObject::LineObject(Graph * g, std::vector<Line> lines, uint32_t id, std::vector<std::vector<Point>> &route_vector, QTime * time) : graph(g), lines(lines), id(id), currTime(time), route_vector(route_vector)
 {
     std::string name = "line" + std::to_string(id);
 	label = new LineLabel(name);
         
     route = new LineRoute(route_vector);
     running = true;
-    route_length = getLineLength();
+    // route_length = getLineLength();
     
 }
 
-float LineObject::getLineLength()
-{
-    auto route_lenght = 0.f;
-    for (auto i = 1; i < route_vector.size() -1; i++) {
-        for (auto j = 1; j < route_vector[i].size(); j++) {
-            route_lenght += graph->getEdgeW(route_vector[i][j-1], route_vector[i][j]) / graph->getEdgeTC(route_vector[i][j-1], route_vector[i][j]);
-        }
-    }
-    return route_lenght;
-}
+// float LineObject::getLineLength()
+// {
+//     auto route_lenght = 0.f;
+//     for (auto i = 1; i < route_vector.size() -1; i++) {
+//         for (auto j = 1; j < route_vector[i].size(); j++) {
+//             route_lenght += graph->getEdgeW(route_vector[i][j-1], route_vector[i][j]) / graph->getEdgeTC(route_vector[i][j-1], route_vector[i][j]);
+//         }
+//     }
+//     return route_lenght;
+// }
 
 
 void LineObject::createVehicles()
@@ -28,7 +28,8 @@ void LineObject::createVehicles()
     for (auto line : lines) {
         if (line.getNumber() == id){
             for (auto connection : line.forward) {
-                TransportVehicle *v = new TransportVehicle(graph,route_vector, route_length, connection);
+                TransportVehicle *v = new TransportVehicle(graph,route_vector, connection);
+                v->initVehicle();
                 v->setRouteDuration(1); // timer->setDuration()
                 v->setRoutePath();
                 vehicles.push_back(v);
@@ -73,12 +74,11 @@ void LineObject::timeChanged(float speed)
     for (auto vehicle : vehicles) {
         vehicle->timer->stop();
         vehicle->timer->setCurrentTime(0);
+        vehicle->setRoutePath();
         vehicle->setVisible(false);
         vehicle->setRouteDuration(speed);
         if (*currTime >= *(vehicle->time_start) && *currTime <= (vehicle->time_start->addSecs(vehicle->duration/1000))) {
             auto pos_time = vehicle->time_start->secsTo(*currTime);
-            std::cout << "sec from start " << pos_time<<std::endl;
-            std::cout<<"pos "<<pos_time*1000/vehicle->duration/1000<<std::endl;
             vehicle->setVehiclePosition(pos_time*1000/vehicle->duration);
             vehicle->setVisible(true);
             vehicle->timer->resume();

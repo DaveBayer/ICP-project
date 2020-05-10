@@ -187,6 +187,7 @@ float Graph::getEdgeTC(Point A, Point B)
 
 void Graph::incEdgeTC(uint32_t idx_a, uint32_t idx_b)
 {
+    std::cout<<"here\n"<<TrafficCoef<<std::endl;
     adj_mat[idx_a][idx_b].second += TrafficCoef;
     adj_mat[idx_b][idx_a].second += TrafficCoef;
 }
@@ -294,6 +295,7 @@ std::ostream &operator<<(std::ostream &os, Graph g)
                 std::cout << g.nodes[i].first
                     << "\t" << g.nodes[j].first
                     << "\t\t" << g.adj_mat[i][j].first
+                    << "\t\t\t" << g.adj_mat[i][j].second
                     << std::endl;
             }
         }
