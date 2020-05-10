@@ -5,6 +5,8 @@ LineObject::LineObject(Graph * g, std::vector<Line> lines, uint32_t id, std::vec
 	label = new LineLabel(name);
         
     route = new LineRoute(route_vector);
+    running = true;
+    route_length = getLineLength();
     
 }
 
@@ -26,28 +28,28 @@ void LineObject::createVehicles()
     for (auto line : lines) {
         if (line.getNumber() == id){
             for (auto connection : line.forward) {
-                TransportVehicle *v = new TransportVehicle(graph, connection);
-                v->setRouteDuration(getLineLength()); // timer->setDuration()
-                v->setRoutePath(route_vector,getLineLength());
+                TransportVehicle *v = new TransportVehicle(graph,route_vector, route_length, connection);
+                v->setRouteDuration(1); // timer->setDuration()
+                v->setRoutePath();
                 vehicles.push_back(v);
                 v->setVisible(false);
             }
-            for (auto connection : line.backward) {
-                TransportVehicle *v = new TransportVehicle(graph, connection);
-                v->setRouteDuration(getLineLength()); // timer->setDuration()
-                std::vector<std::vector<Point>> reverse_route;
-                std::vector<Point> reverse_part; 
-                for (auto it =  route_vector.rbegin(); it != route_vector.rend(); it++) {
-                    reverse_part.clear();
-                    for (auto jt = (*it).rbegin(); jt != (*it).rend(); jt++) {
-                        reverse_part.push_back(*jt);
-                    }
-                    reverse_route.push_back(reverse_part);
-                }
-                v->setRoutePath(reverse_route,getLineLength());
-                vehicles.push_back(v);
-                v->setVisible(false);
-            }
+            // for (auto connection : line.backward) {
+            //     TransportVehicle *v = new TransportVehicle(graph, connection);
+            //     v->setRouteDuration(route_lenght*v->speed); // timer->setDuration()
+            //     std::vector<std::vector<Point>> reverse_route;
+            //     std::vector<Point> reverse_part; 
+            //     for (auto it =  route_vector.rbegin(); it != route_vector.rend(); it++) {
+            //         reverse_part.clear();
+            //         for (auto jt = (*it).rbegin(); jt != (*it).rend(); jt++) {
+            //             reverse_part.push_back(*jt);
+            //         }
+            //         reverse_route.push_back(reverse_part);
+            //     }
+            //     v->setRoutePath(reverse_route,route_lenght);
+            //     vehicles.push_back(v);
+            //     v->setVisible(false);
+            // }
         }
     }
 }
@@ -66,17 +68,22 @@ void LineObject::startVehicle()
 }
 
 
-void LineObject::timeChanged() 
+void LineObject::timeChanged(float speed) 
 {
     for (auto vehicle : vehicles) {
-        // vehicle->timer->stop();
+        vehicle->timer->stop();
         vehicle->timer->setCurrentTime(0);
         vehicle->setVisible(false);
-        if (*currTime >= *(vehicle->time_start) && *currTime <= (vehicle->time_start->addSecs(vehicle->total_time))) {
-            std::cout<<vehicle->time_start->secsTo(*currTime)*1000<<std::endl;
-            vehicle->setVehiclePosition(vehicle->time_start->secsTo(*currTime)*1000);
+        vehicle->setRouteDuration(speed);
+        if (*currTime >= *(vehicle->time_start) && *currTime <= (vehicle->time_start->addSecs(vehicle->duration/1000))) {
+            auto pos_time = vehicle->time_start->secsTo(*currTime);
+            std::cout << "sec from start " << pos_time<<std::endl;
+            std::cout<<"pos "<<pos_time*1000/vehicle->duration/1000<<std::endl;
+            vehicle->setVehiclePosition(pos_time*1000/vehicle->duration);
             vehicle->setVisible(true);
-            if (vehicle->timer->state() == QTimeLine::NotRunning)
+            vehicle->timer->resume();
+            vehicle->timer->setPaused(true);
+            if (running)
                 vehicle->timer->resume();
         }
     }
@@ -84,17 +91,21 @@ void LineObject::timeChanged()
 
 void LineObject::stopAnimation()
 {
+    running = !running;
     for (auto vehicle : vehicles) {
-        if (vehicle->timer->state() == QTimeLine::Running)
+        if (vehicle->timer->state() == QTimeLine::Running){
             vehicle->timer->setPaused(true);
+        }
     }
 }
 
 void LineObject::resumeAnimation()
 {
+    running = !running;
     for (auto vehicle : vehicles) {
-        if (vehicle->timer->state() == QTimeLine::Paused)
+        if (vehicle->timer->state() == QTimeLine::Paused){
             vehicle->timer->resume();
+        }
     }
 }
 

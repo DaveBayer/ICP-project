@@ -14,6 +14,8 @@ MainWindow::MainWindow(Map * m) : map(m)
     settime = new QPushButton("&Set Time");
     pauseresumetime = new QPushButton("&Pause/Resume time");
     settime->hide();
+    faster = new QPushButton("&Faster");
+    slower = new QPushButton("&Slower");
 
 }
 
@@ -27,7 +29,7 @@ void MainWindow::createScene()
 
 void MainWindow::createStreetMap()
 {
-    StreetMap *sm = new StreetMap(graph->cs, map->stations);
+    sm = new StreetMap(graph, graph->cs, map->stations);
     scene->addItem(sm);
 }
 
@@ -64,9 +66,10 @@ void MainWindow::createLines()
 
         QObject::connect(lineObject->label, SIGNAL(clicked()),lineObject->route,SLOT(showRoute()));
         QObject::connect(sys_clock,SIGNAL(timeout()),lineObject, SLOT(startVehicle()));
-        QObject::connect(this, SIGNAL(timeChanged()), lineObject, SLOT(timeChanged()));
+        QObject::connect(this, SIGNAL(timeChanged(float)), lineObject, SLOT(timeChanged(float)));
         QObject::connect(this, SIGNAL(stopAnimation()), lineObject, SLOT(stopAnimation()));
         QObject::connect(this, SIGNAL(resumeAnimation()), lineObject, SLOT(resumeAnimation()));
+        QObject::connect(sm, SIGNAL(updateRoute(float)),lineObject, SLOT(timeChanged(float)));
     }
 }
 
@@ -89,19 +92,24 @@ void MainWindow::finish()
     QObject::connect(settime, SIGNAL(clicked()), this, SLOT(setTime()));
     QObject::connect(settime, SIGNAL(clicked()), settime, SLOT(hide()));
     QObject::connect(pauseresumetime, SIGNAL(clicked()), this, SLOT(toggleClock()));
+    QObject::connect(faster, SIGNAL(clicked()), this, SLOT(fasterClock()));
+    QObject::connect(slower, SIGNAL(clicked()), this, SLOT(slowerClock()));
+
 
     mainLayout = new QGridLayout;
 
-    mainLayout->addWidget(view,0,0,1,5);
-    mainLayout->addLayout(this->line_labels, 0, 5);
+    mainLayout->addWidget(view,0,0,1,7);
+    mainLayout->addLayout(this->line_labels, 0, 7);
     mainLayout->addWidget(clock_label, 1,0);
-    mainLayout->addWidget(pauseresumetime,1,1);
-    mainLayout->addWidget(changetime,1,2);
+    mainLayout->addWidget(slower,1,1);
+    mainLayout->addWidget(faster,1,2);
+    mainLayout->addWidget(pauseresumetime,1,3);
+    mainLayout->addWidget(changetime,1,4);
     mainLayout->addWidget(time_edit,2,0);
     mainLayout->addWidget(settime,2,1);  
-    mainLayout->addWidget(zoomout,1,3);
-    mainLayout->addWidget(zoomdefault,1,4);
-    mainLayout->addWidget(zoomin,1,5);
+    mainLayout->addWidget(zoomout,1,5);
+    mainLayout->addWidget(zoomdefault,1,6);
+    mainLayout->addWidget(zoomin,1,7);
     
     QWidget *widget = new QWidget;
     widget->setLayout(mainLayout);
@@ -118,6 +126,7 @@ void MainWindow::updateClock()
 {
     *time = time->addSecs(1);
     clock_label->setText(time->toString("hh:mm:ss"));
+    emit timeChanged(1.f);
 }
 
 void MainWindow::zoomIn()
@@ -133,7 +142,8 @@ void MainWindow::setTime()
 {
     *time = time_edit->time();
     clock_label->setText(time->toString("hh:mm:ss"));
-    emit timeChanged();
+
+    emit timeChanged(1.f);
 }
 
 void MainWindow::defaultZoom()
@@ -145,9 +155,28 @@ void MainWindow::toggleClock()
 {
     if (sys_clock->isActive()){
         sys_clock->stop();
+        clock_state = false;
         emit stopAnimation();
     }else { 
         sys_clock->start();
+        clock_state = true;
         emit resumeAnimation();
+    }
+}
+
+void MainWindow::fasterClock()
+{
+    if (sys_clock->interval()>10){
+        sys_clock->setInterval(sys_clock->interval()*0.5);
+        emit timeChanged(0.5);
+    }
+}
+
+void MainWindow::slowerClock()
+{
+    if(sys_clock->interval()<10000){       
+        std::cout<<sys_clock->interval()<<std::endl;
+        sys_clock->setInterval(sys_clock->interval()*2);
+        emit timeChanged(2);
     }
 }

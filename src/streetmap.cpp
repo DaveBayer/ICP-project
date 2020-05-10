@@ -7,7 +7,7 @@ StreetMap::StreetMap(std::vector<Street> streets) : color(0,0,0), streets(street
 	pen = QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 }
 
-StreetMap::StreetMap(std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> map, std::vector<Station> stations_v) : color(0,0,0), map(map)
+StreetMap::StreetMap(Graph * g,std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> map, std::vector<Station> stations_v) : graph(g),color(0,0,0), map(map)
 {
     pen = QPen(Qt::gray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     if (!map.empty()){
@@ -58,9 +58,13 @@ void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
         if (it->contains(mapToScene(event->pos()))){
             it->setPen(QPen(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
             auto line = it->line();
-            auto p1 = line.p1();
-            auto p2 = line.p2();
-            std::cout<< p1.x()<< "," << p1.y() << "--"<< p2.x() << "," <<p2.y()<<std::endl;
+            Point p1(line.p1().x(),line.p1().y());
+            Point p2(line.p2().x(),line.p2().y());
+            // std::cout<< p1.x()<< "," << p1.y() << "--"<< p2.x() << "," <<p2.y()<<std::endl;
+            auto idx1 = graph->getNodeID(p1);
+            auto idx2 = graph->getNodeID(p2);
+            graph->incEdgeTC(idx1, idx2);
+            emit updateRoute(1.f);
         } else{
             it->setPen(pen);
         }

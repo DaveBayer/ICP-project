@@ -42,13 +42,16 @@ private slots:
     void defaultZoom();
     void setTime();
     void toggleClock();
+    void fasterClock();
+    void slowerClock();
 
 signals:
-    void timeChanged();
+    void timeChanged(float);
     void stopAnimation();
     void resumeAnimation();
 
 private:
+    bool clock_state = true;
     QGraphicsView *view;
     QGraphicsScene *scene;
     QLabel *label;
@@ -68,7 +71,10 @@ private:
     QPushButton * changetime;
     QPushButton * settime;
     QPushButton * pauseresumetime;
+    QPushButton * faster;
+    QPushButton * slower;
 
+    StreetMap *sm;
     Graph * graph;
     Map * map;
 

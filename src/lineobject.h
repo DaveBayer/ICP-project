@@ -29,16 +29,18 @@ public:
     Graph * graph;
     std::vector<Line> lines;
 	std::vector<TransportVehicle *> vehicles;
+	float route_length;
 
 private slots:
     void startVehicle();
-    void timeChanged();
+    void timeChanged(float);
     void stopAnimation();
     void resumeAnimation();
 
 private:
     Line *line;
     QTime * currTime;
+    bool running;
     QGraphicsScene * scene;
     std::vector<std::vector<Point>> route_vector;
 };
