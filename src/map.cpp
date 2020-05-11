@@ -26,6 +26,20 @@ void Map::addStreets(std::vector<Street> v)
         addStreet(i);
 }
 
+void Map::closeStreet(Point A, Point B, std::map<uint32_t, std::vector<uint32_t>> &ret)
+{
+    uint32_t sid = g.getStreetFromPoints(A, B);
+    g.closeStreetEdges(sid);
+
+    ret = g.findLineConflicts(sid);
+}
+/*
+void Map::openStreet()
+{
+    g.openStreetEdges(sid);
+
+}
+*/
 void Map::addStation(Station s)
 {
     for (auto i : streets) {

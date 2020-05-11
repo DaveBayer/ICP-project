@@ -48,6 +48,7 @@ public:
     /// Vytvoření grafu z vektoru ulic a vektoru zastávek
     Graph(std::vector<Street> &, std::vector<Station> &);
 
+    uint32_t getStreetFromPoints(Point, Point);
     /// Tato metoda přeloží bod na index vrcholu
     uint32_t getNodeID(Point);
     /// Tato metoda zpětně přeloží index vrcholu na bod
@@ -59,6 +60,8 @@ public:
 
     /// Tato metoda vytvoří hrany v matici hran
     void createEdges();
+    void closeStreetEdges(uint32_t);
+    void openStreetEdges(uint32_t);
 
     /// Tato metoda vrací délku hrany mezi dvěma body
     float getEdgeW(Point, Point);
@@ -82,7 +85,7 @@ public:
 
     /// Tato metoda vytvoří vektory vrcholů mezi zastávkami u všech linek
     void SetUpLine(uint32_t, std::vector<Point>);
-
+    std::map<uint32_t, std::vector<uint32_t>> findLineConflicts(uint32_t);
     /// Zrušení grafu
     ~Graph();
 };

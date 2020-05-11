@@ -55,6 +55,32 @@ void Graph::init()
     pt_idx = 0;
 }
 
+uint32_t Graph::getStreetFromPoints(Point A, Point B)
+{
+    uint32_t sid;
+    bool exists = false;
+
+    for (auto &i : cs) {
+        auto it_a = std::find_if(i.second.begin(), i.second.end(),
+            [&A](auto &el) -> bool
+            { return A == el.first; });
+        auto it_b = std::find_if(i.second.begin(), i.second.end(),
+            [&B](auto &el) -> bool
+            { return B == el.first; });
+        
+        if (it_a != i.second.end() && it_b != i.second.end()) {
+            sid = i.first;
+            exists = true;
+            break;
+        }   
+    }
+
+    if (!exists)
+        errExit(1, "No street has both points");
+    
+    return sid;
+}
+
 uint32_t Graph::getNodeID(Point A)
 {
     auto it = std::find_if(nodes.begin(), nodes.end(),
@@ -130,6 +156,19 @@ void Graph::createEdges()
     }
 }
 
+void Graph::closeStreetEdges(uint32_t sid)
+{
+    for (uint32_t i = 0; i < cs[sid].size() - 1; i++)
+        setEdgeW(cs[sid][i].second, cs[sid][i + 1].second,
+                 std::numeric_limits<float>::infinity());
+}
+
+void Graph::openStreetEdges(uint32_t sid)
+{
+    for (uint32_t i = 0; i < cs[sid].size() - 1; i++)
+        resetEdgeW(cs[sid][i].second, cs[sid][i + 1].second);
+}
+
 float Graph::getEdgeW(Point A, Point B)
 {
     auto idx_a = getNodeID(A);
@@ -190,23 +229,9 @@ void Graph::incEdgeTC(uint32_t idx_a, uint32_t idx_b)
 
 void Graph::incStreetTC(Point A, Point B)
 {
-    for (auto &i : cs) {
-        auto it_a = std::find_if(i.second.begin(), i.second.end(),
-            [&A](auto &el) -> bool
-            { return A == el.first; });
-        auto it_b = std::find_if(i.second.begin(), i.second.end(),
-            [&B](auto &el) -> bool
-            { return B == el.first; });
-        
-        if (it_a != i.second.end() && it_b != i.second.end()) {
-            for (uint32_t j = 0; j < i.second.size() - 1; j++)
-                incEdgeTC(i.second[j].second, i.second[j + 1].second);
-
-            return;
-        }
-    }
-
-    errExit(1, "No street has both points");
+    uint32_t sid = getStreetFromPoints(A, B);
+    for (uint32_t j = 0; j < cs[sid].size() - 1; j++)
+        incEdgeTC(cs[sid][j].second, cs[sid][j + 1].second);
 }
 
 void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
@@ -224,6 +249,44 @@ void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
     }
 
     line_pts[lnum].push_back(std::vector<Point>{path.back()});
+}
+
+std::map<uint32_t, std::vector<uint32_t>>
+Graph::findLineConflicts(uint32_t sid)
+{
+    std::map<uint32_t, std::vector<uint32_t>> ret;
+
+    for (auto &i : line_pts) {
+        std::vector<std::vector<Point>> &lpts = i.second;
+        std::vector<uint32_t> link_vec(0);
+
+        for (uint32_t j = 1; j < lpts.size() - 1; j++) {
+            link_vec.push_back(j);
+            uint32_t len = 0;
+
+            for (uint32_t k = 0; k < lpts[j].size(); k++) {
+                Point P = lpts[j][k];
+
+                auto it = std::find_if(cs[sid].begin(), cs[sid].end(),
+                    [&P](auto &el) -> bool
+                    { return P == el.first;});
+
+                if (it != cs[sid].end()) {
+                    len++;
+                    if (len > 1) {
+                        link_vec.pop_back();
+                        break;
+                    }
+                } else
+                    len = 0;
+            }
+        }
+
+        if (link_vec.size() > 0)
+            ret[i.first] = link_vec;
+    }
+
+    return ret;
 }
 
 bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
