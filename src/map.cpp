@@ -26,7 +26,7 @@ void Map::addStreets(std::vector<Street> v)
         addStreet(i);
 }
 
-void Map::closeStreet(Point A, Point B, std::map<uint32_t, std::vector<uint32_t>> &ret)
+void Map::closeStreet(Point A, Point B, std::vector<uint32_t> &ret)
 {
     uint32_t sid = g.getStreetFromPoints(A, B);
     g.closeStreetEdges(sid);

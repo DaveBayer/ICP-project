@@ -44,7 +44,7 @@ public:
 	/// Přidání ulic do mapy
 	void addStreets(std::vector<Street>);
 
-	void closeStreet(Point, Point, std::map<uint32_t, std::vector<uint32_t>> &);
+	void closeStreet(Point, Point, std::vector<uint32_t> &);
 	void openStreet();
 
 	/// Přidání stanice do mapy

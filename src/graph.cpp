@@ -251,20 +251,20 @@ void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
     line_pts[lnum].push_back(std::vector<Point>{path.back()});
 }
 
-std::map<uint32_t, std::vector<uint32_t>>
-Graph::findLineConflicts(uint32_t sid)
+std::vector<uint32_t> Graph::findLineConflicts(uint32_t sid)
 {
-    std::map<uint32_t, std::vector<uint32_t>> ret;
+    std::vector<uint32_t> ret;
 
     for (auto &i : line_pts) {
         std::vector<std::vector<Point>> &lpts = i.second;
         std::vector<uint32_t> link_vec(0);
+        bool endFlag = false;
 
-        for (uint32_t j = 1; j < lpts.size() - 1; j++) {
+        for (uint32_t j = 1; j < lpts.size() - 1 && !endFlag; j++) {
             link_vec.push_back(j);
             uint32_t len = 0;
 
-            for (uint32_t k = 0; k < lpts[j].size(); k++) {
+            for (uint32_t k = 0; k < lpts[j].size() && !endFlag; k++) {
                 Point P = lpts[j][k];
 
                 auto it = std::find_if(cs[sid].begin(), cs[sid].end(),
@@ -274,19 +274,21 @@ Graph::findLineConflicts(uint32_t sid)
                 if (it != cs[sid].end()) {
                     len++;
                     if (len > 1) {
-                        link_vec.pop_back();
-                        break;
+                        link_vec.push_back(i.first);
+                        endFlag = true;
                     }
                 } else
                     len = 0;
             }
         }
-
-        if (link_vec.size() > 0)
-            ret[i.first] = link_vec;
     }
 
     return ret;
+}
+
+void Graph::updateLinePath(uint32_t lid, std::vector<std::vector<Point>> path)
+{
+    line_pts[lid] = path;
 }
 
 bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
@@ -325,7 +327,7 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
                 float f = adj_mat[idx][i].first;
                 std::vector<uint32_t> v(it->first);
                 
-                if (f > 0) {
+                if (f > 0 && f != std::numeric_limits<float>::infinity()) {
                     f += it->second;
                     auto toDel = std::find_if(open.begin(), open.end(),
                         [&i](auto &el) -> bool

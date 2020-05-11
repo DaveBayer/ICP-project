@@ -85,7 +85,8 @@ public:
 
     /// Tato metoda vytvoří vektory vrcholů mezi zastávkami u všech linek
     void SetUpLine(uint32_t, std::vector<Point>);
-    std::map<uint32_t, std::vector<uint32_t>> findLineConflicts(uint32_t);
+    std::vector<uint32_t> findLineConflicts(uint32_t);
+    void updateLinePath(uint32_t, std::vector<std::vector<Point>>);
     /// Zrušení grafu
     ~Graph();
 };
