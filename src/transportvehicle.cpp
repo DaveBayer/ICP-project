@@ -31,7 +31,6 @@ void TransportVehicle::initVehicle()
 	animation->setItem(this);
 	animation->setTimeLine(timer);
 	acc = 1.f;
-
 }
 
 float TransportVehicle::getRouteLength()
