@@ -78,6 +78,8 @@ public:
     /// Tato metoda zvýší hodnotu koeficientu provozu hrany mezi dvěma vrcholy
     void incEdgeTC(uint32_t, uint32_t);
 
+    void incStreetTC(Point, Point);
+
     /// Tato metoda vytvoří vektory vrcholů mezi zastávkami u všech linek
     void SetUpLine(uint32_t, std::vector<Point>);
 

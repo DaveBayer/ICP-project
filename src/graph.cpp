@@ -188,6 +188,27 @@ void Graph::incEdgeTC(uint32_t idx_a, uint32_t idx_b)
     adj_mat[idx_b][idx_a].second += TrafficCoef;
 }
 
+void Graph::incStreetTC(Point A, Point B)
+{
+    for (auto &i : cs) {
+        auto it_a = std::find(i.second.begin(), i.second.end(),
+            [&A](auto &el) -> bool
+            { return A == el.first; });
+        auto it_b = std::find(i.second.begin(), i.second.end(),
+            [&B](auto &el) -> bool
+            { return B == el.second; });
+        
+        if (it_a != i.second.end() && it_b != i.second.end()) {
+            for (uint32_t j = 0; j < i.second.size() - 1; j++)
+                incEdgeTC(i.second[j].second, i.second[j + 1].second);
+
+            return;
+        }
+    }
+
+    errExit(1, "No street has both points");
+}
+
 void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
 {
     line_pts[lnum].clear();
