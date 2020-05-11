@@ -6,6 +6,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGridLayout>
+#include <QStackedLayout>
 #include <QTimer>
 #include <QTime>
 #include <map>
@@ -31,6 +32,10 @@ public:
    void createScene();
    void createLines();
    void createSystemClock();
+   void createButtons();
+   void createMainLayout();
+   void connectButtons();
+   void createView();
    void finish();
 
 
@@ -60,29 +65,25 @@ private:
     QGraphicsScene *scene;
     QLabel *label;
 
-    QGridLayout * mainLayout;
-    QVBoxLayout * line_labels;
-    QWidget * street_layout_w;
-    QHBoxLayout * street_options_l;
-
     QTimer * sys_clock;
     QTime * time;
-    QTimeEdit * time_edit;
-    QLabel * clock_label;
+    QTimeEdit * changeTime_e;
+    QLabel * time_l;
 
 
-    QPushButton * zoomin;
-    QPushButton * zoomout;
-    QPushButton * zoomdefault;
-    QPushButton * changetime;
-    QPushButton * settime;
-    QPushButton * pauseresumetime;
-    QPushButton * faster;
-    QPushButton * slower;
+    // buttons
+    QPushButton * zoomIn_b;
+    QPushButton * zoomOut_b;
+    QPushButton * zoomDefault_b;
+    QPushButton * changeTime_b;
+    QPushButton * setTime_b;
+    QPushButton * pauseResumeTime_b;
+    QPushButton * faster_b;
+    QPushButton * slower_b;
 
-    QPushButton * addtraffic;
-    QPushButton * cleartraffic;
-    QPushButton * closestreet;
+    QPushButton * addTraffic_b;
+    QPushButton * clearTraffic_b;
+    QPushButton * closeStreet_b;
 
 
     StreetMap *sm;
@@ -90,6 +91,18 @@ private:
     Map * map;
 
     std::vector<uint32_t> act_street;
+
+    // layout
+    QGridLayout * mainLayout_l;
+    QVBoxLayout * lineLabels_l;
+    QHBoxLayout * viewControl_l;
+    QHBoxLayout * timeControl_l;
+    QHBoxLayout * streetControl_l;
+    QStackedLayout * controlView_l;
+
+    QWidget * streetControl_w;
+    QWidget * timeControl_w;
+    QWidget * viewControl_w;
 
 };
 

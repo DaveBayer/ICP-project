@@ -11,7 +11,7 @@ TransportVehicle::TransportVehicle(Graph * g,std::vector<std::vector<Point>> &ro
 
 void TransportVehicle::initVehicle()
 {
-	station_delay = 1.4;
+	station_delay = 7;
 	speed = 0.0014; 			// 0.0014 pixs/s -> 14m/s -> 50km/h
 	length = getRouteLength();			// total pixel route length (pixs)
 	std::cout<<length<<"len\n";
@@ -39,7 +39,6 @@ float TransportVehicle::getRouteLength()
 	float route_lenght = 0.f;
     for (auto i = 1; i < route.size() -1; i++) {
         for (auto j = 1; j < route[i].size(); j++) {
-			std::cout<<graph->getEdgeW(route[i][j-1],route[i][j]) / graph->getEdgeTC(route[i][j-1],route[i][j])<<"huuh\n";
 
             route_lenght += graph->getEdgeW(route[i][j-1], route[i][j]) / graph->getEdgeTC(route[i][j-1], route[i][j]);
         }
@@ -58,7 +57,6 @@ void TransportVehicle::setRouteDuration(float c)
 void TransportVehicle::setRoutePath()
 {
 	length = getRouteLength();
-	std::cout<<length<<"blabla\n";
 	if (route.size() != 0) {
 		animation->clear();
 		float route_time = 0.f;
@@ -76,11 +74,8 @@ void TransportVehicle::setRoutePath()
 			for (uint32_t j = 1; j < route[i].size(); j++){
 				route_time +=  graph->getEdgeW(route[i][j-1],route[i][j]) / graph->getEdgeTC(route[i][j-1],route[i][j]);
 				QPointF p(route[i][j].getX(), route[i][j].getY());
-				std::cout<<route[i][j].getX()<<","<<route[i][j].getY()<<std::endl;
 				animation->setPosAt((route_time/length), p - vehicleSize);
-				std::cout<<(route_time/length)<<"rati\n";
 			}
-			std::cout<<(route_time/length)<<"rati\n";
 		}
 	}
 }

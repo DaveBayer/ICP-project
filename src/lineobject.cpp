@@ -38,15 +38,7 @@ void LineObject::createVehicles()
             // for (auto connection : line.backward) {
             //     TransportVehicle *v = new TransportVehicle(graph, connection);
             //     v->setRouteDuration(route_lenght*v->speed); // timer->setDuration()
-            //     std::vector<std::vector<Point>> reverse_route;
-            //     std::vector<Point> reverse_part; 
-            //     for (auto it =  route_vector.rbegin(); it != route_vector.rend(); it++) {
-            //         reverse_part.clear();
-            //         for (auto jt = (*it).rbegin(); jt != (*it).rend(); jt++) {
-            //             reverse_part.push_back(*jt);
-            //         }
-            //         reverse_route.push_back(reverse_part);
-            //     }
+            //     
             //     v->setRoutePath(reverse_route,route_lenght);
             //     vehicles.push_back(v);
             //     v->setVisible(false);
