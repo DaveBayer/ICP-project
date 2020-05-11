@@ -191,12 +191,12 @@ void Graph::incEdgeTC(uint32_t idx_a, uint32_t idx_b)
 void Graph::incStreetTC(Point A, Point B)
 {
     for (auto &i : cs) {
-        auto it_a = std::find(i.second.begin(), i.second.end(),
+        auto it_a = std::find_if(i.second.begin(), i.second.end(),
             [&A](auto &el) -> bool
             { return A == el.first; });
-        auto it_b = std::find(i.second.begin(), i.second.end(),
+        auto it_b = std::find_if(i.second.begin(), i.second.end(),
             [&B](auto &el) -> bool
-            { return B == el.second; });
+            { return B == el.first; });
         
         if (it_a != i.second.end() && it_b != i.second.end()) {
             for (uint32_t j = 0; j < i.second.size() - 1; j++)
