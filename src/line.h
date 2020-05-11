@@ -1,5 +1,4 @@
-#ifndef __LINE_H__
-#define __LINE_H__
+#pragma once
 
 #include <iostream>
 
@@ -19,5 +18,3 @@ public:
     friend std::istream &operator>>(std::istream &, Line &);
     ~Line();
 };
-
-#endif	//  __LINE_H__

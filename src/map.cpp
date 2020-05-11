@@ -106,9 +106,4 @@ void Map::setLinesInGraph()
     }
 }
 
-void Map::outputGraph()
-{
-    std::cout << g;
-}
-
 Map::~Map(){}

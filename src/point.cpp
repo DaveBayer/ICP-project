@@ -23,30 +23,14 @@ bool Point::between(const Point &A, const Point &B)
         y > std::max(A.y, B.y));
 }
 
-Point operator+(const Point &A,const Point &B)
+float Point::dist(const Point A) const
 {
-    float x = A.x + B.x;
-    float y = A.y + B.y;
-    Point R(x,y);
-    return R;
-}
-
-Point operator-(const Point &A,const Point &B)
-{
-    float x = A.x - B.x;
-    float y = A.y - B.y;
-    Point R(x,y);
-    return R;
+    return sqrt(pow(x - A.x,2) + pow(y - A.y,2));
 }
 
 bool operator==(const Point &A, const Point &B)
 {
     return floatEQ(A.x, B.x) && floatEQ(A.y, B.y);
-}
-
-float Point::dist(const Point A) const
-{
-    return sqrt(pow(x - A.x,2) + pow(y - A.y,2));
 }
 
 std::ostream &operator<<(std::ostream &os, Point P)

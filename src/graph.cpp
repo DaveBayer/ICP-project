@@ -266,40 +266,4 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
     return false;    
 }
 
-/*
-std::ostream &operator<<(std::ostream &os, Graph g)
-{
-    os.precision(2);
-    uint32_t size = g.adj_mat.size();
-    for (auto i = 0; i < size; i++)
-        os << "\t" << i;
-    os << std::endl;
-
-    for (auto i = 0; i < size; i++) {
-        os << i;
-
-        for (auto j = 0; j < size; j++)
-            os << "\t" << g.adj_mat[i][j];
-
-        os << std::endl;
-    }
-
-    return os;
-}
-*/
-std::ostream &operator<<(std::ostream &os, Graph g)
-{
-    for (uint32_t i = 0; i < g.pt_idx; i++) {
-        for (uint32_t j = 0; j < g.pt_idx; j++) {
-            if (g.adj_mat[i][j].first > 0) {
-                std::cout << g.nodes[i].first
-                    << "\t" << g.nodes[j].first
-                    << "\t\t" << g.adj_mat[i][j].first
-                    << std::endl;
-            }
-        }
-    }
-    return os;
-}
-
 Graph::~Graph(){}

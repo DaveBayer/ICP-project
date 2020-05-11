@@ -1,4 +1,4 @@
-TARGET=apk
+TARGET=icp
 CPPFLAGS=-std=c++17 -Wall -Wextra
 DBUGFLAGS=
 
