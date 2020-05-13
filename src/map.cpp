@@ -26,15 +26,29 @@ void Map::addStreets(std::vector<Street> v)
         addStreet(i);
 }
 
+void Map::closeStreet(Point A, Point B, std::vector<uint32_t> &ret)
+{
+    uint32_t sid = g.getStreetFromPoints(A, B);
+    g.closeStreetEdges(sid);
+
+    ret = g.findLineConflicts(sid);
+}
+
+void Map::openStreets()
+{
+    g.resetEdgesW();
+    setLinesInGraph();
+}
+
 void Map::addStation(Station s)
 {
     for (auto i : streets) {
         auto pts = i.getPoints();
         Point P = s.getPoint();
 
-        float ab = sqrtf((pts[1].getX() - pts[0].getX()) * (pts[1].getY() - pts[0].getY()));
-        float ap = sqrtf((P.getX() - pts[0].getX()) * (P.getY() - pts[0].getY()));
-        float pb = sqrtf((pts[1].getX() - P.getX()) * (pts[1].getY() - P.getY()));
+        float ab = pts[1].dist(pts[0]);
+        float ap = P.dist(pts[0]);
+        float pb = pts[1].dist(P);
 
         if (floatEQ(ab, ap + pb)) {
             s.setStreetID(i.getID());
@@ -71,14 +85,14 @@ void Map::addLine(Line l)
         if (it == stations.end())
             errExit(1, "No such station");
     }
+
     lines.push_back(l);
 }
 
 void Map::addLines(std::vector<Line> lines)
 {
-    for (auto &i : lines){
+    for (auto &i : lines)
         addLine(i);
-    }
 }
 
 void Map::createGraph()
@@ -104,6 +118,35 @@ void Map::setLinesInGraph()
 
         g.SetUpLine(i.getNumber(), pts);
     }
+}
+
+void Map::setDetour(uint32_t lid, std::vector<Point> path)
+{
+    auto isStation = [=](Point P) -> bool
+    {
+        auto it = std::find_if(stations.begin(), stations.end(),
+            [&P](auto &el) -> bool
+            { return P == el.getPoint(); });
+        return it != stations.end();
+    };
+
+    if (!isStation(path.front()) || !isStation(path.back()))
+        errExit(1, "Detour must start and end with a station");
+
+    std::vector<std::vector<Point>> paths;
+    std::vector<Point> subpath{path.front()};
+
+    for (uint32_t i = 0; i < path.size(); i++) {
+        Point P = stations[i].getPoint();
+        subpath.push_back(P);
+
+        if (isStation(P)) {
+            paths.push_back(subpath);
+            subpath = std::vector<Point>{P};
+        }
+    }
+
+    g.updateLinePath(lid, paths);
 }
 
 void Map::outputGraph()
