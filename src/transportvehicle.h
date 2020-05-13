@@ -57,6 +57,9 @@ public:
 private slots:
 	void finished();
 
+signals:
+    void showConnectionInfo();
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 

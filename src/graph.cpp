@@ -1,7 +1,7 @@
 #include "graph.h"
 
 Graph::Graph()
-: pt_idx(0){}
+: pt_idx(0), TrafficCoef(.5f){}
 
 Graph::Graph(std::vector<Street> &s)
 {
@@ -51,7 +51,34 @@ void Graph::init()
     cs.clear();
     nodes.clear();
     adj_mat.clear();
+    TrafficCoef = .5f;
     pt_idx = 0;
+}
+
+uint32_t Graph::getStreetFromPoints(Point A, Point B)
+{
+    uint32_t sid;
+    bool exists = false;
+
+    for (auto &i : cs) {
+        auto it_a = std::find_if(i.second.begin(), i.second.end(),
+            [&A](auto &el) -> bool
+            { return A == el.first; });
+        auto it_b = std::find_if(i.second.begin(), i.second.end(),
+            [&B](auto &el) -> bool
+            { return B == el.first; });
+        
+        if (it_a != i.second.end() && it_b != i.second.end()) {
+            sid = i.first;
+            exists = true;
+            break;
+        }   
+    }
+
+    if (!exists)
+        errExit(1, "No street has both points");
+    
+    return sid;
 }
 
 uint32_t Graph::getNodeID(Point A)
@@ -129,6 +156,13 @@ void Graph::createEdges()
     }
 }
 
+void Graph::closeStreetEdges(uint32_t sid)
+{
+    for (uint32_t i = 0; i < cs[sid].size() - 1; i++)
+        setEdgeW(cs[sid][i].second, cs[sid][i + 1].second,
+                 std::numeric_limits<float>::infinity());
+}
+
 float Graph::getEdgeW(Point A, Point B)
 {
     auto idx_a = getNodeID(A);
@@ -161,6 +195,18 @@ void Graph::resetEdgeW(uint32_t idx_a, uint32_t idx_b)
     setEdgeW(idx_a, idx_b, dist);
 }
 
+void Graph::resetEdgesW()
+{
+    for (uint32_t i = 0; i < pt_idx; i++) {
+        for (uint32_t j = 0; j < pt_idx; j++) {
+            if (floatEQ(adj_mat[i][j].first, std::numeric_limits<float>::infinity())) {
+                resetEdgeW(i, j);
+                resetEdgeW(j, i);
+            }
+        }
+    }
+}
+
 float Graph::getTC()
 {
     return TrafficCoef;
@@ -178,18 +224,33 @@ float Graph::getEdgeTC(uint32_t idx_a, uint32_t idx_b)
 
 float Graph::getEdgeTC(Point A, Point B)
 {
-    uint32_t idx_a, idx_b;
-    idx_a = getNodeID(A);
-    idx_b = getNodeID(B);
-
-    return adj_mat[idx_a][idx_b].second;
+    return adj_mat[getNodeID(A)][getNodeID(B)].second;
 }
 
 void Graph::incEdgeTC(uint32_t idx_a, uint32_t idx_b)
 {
-    std::cout<<"here\n"<<TrafficCoef<<std::endl;
     adj_mat[idx_a][idx_b].second += TrafficCoef;
     adj_mat[idx_b][idx_a].second += TrafficCoef;
+}
+
+void Graph::resetEdgeTC(uint32_t idx_a, uint32_t idx_b)
+{
+    adj_mat[idx_a][idx_b].second = 1.f;
+    adj_mat[idx_b][idx_a].second = 1.f;
+}
+
+void Graph::incStreetTC(Point A, Point B)
+{
+    uint32_t sid = getStreetFromPoints(A, B);
+    for (uint32_t i = 0; i < cs[sid].size() - 1; i++)
+        incEdgeTC(cs[sid][i].second, cs[sid][i + 1].second);
+}
+
+void Graph::resetStreetTC(Point A, Point B)
+{
+    uint32_t sid = getStreetFromPoints(A, B);
+    for (uint32_t i = 0; i < cs[sid].size() - 1; i++)
+        resetEdgeTC(cs[sid][i].second, cs[sid][i + 1].second);
 }
 
 void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
@@ -207,6 +268,48 @@ void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
     }
 
     line_pts[lnum].push_back(std::vector<Point>{path.back()});
+}
+
+std::vector<uint32_t> Graph::findLineConflicts(uint32_t sid)
+{
+    std::vector<uint32_t> ret;
+
+    for (auto &i : line_pts) {
+        std::vector<std::vector<Point>> &lpts = i.second;
+        std::vector<uint32_t> link_vec(0);
+        bool endFlag = false;
+
+        for (uint32_t j = 1; j < lpts.size() - 1 && !endFlag; j++) {
+            link_vec.push_back(j);
+            uint32_t len = 0;
+
+            for (uint32_t k = 0; k < lpts[j].size() && !endFlag; k++) {
+                Point P = lpts[j][k];
+
+                auto it = std::find_if(cs[sid].begin(), cs[sid].end(),
+                    [&P](auto &el) -> bool
+                    { return P == el.first;});
+
+                if (it != cs[sid].end()) {
+                    len++;
+                    if (len > 1) {
+                        link_vec.push_back(i.first);
+                        endFlag = true;
+                    }
+                } else
+                    len = 0;
+            }
+        }
+    }
+
+    return ret;
+}
+
+void Graph::updateLinePath(uint32_t lid, std::vector<std::vector<Point>> path)
+{
+    path.insert(path.begin(), std::vector<Point>{path.front().front()});
+    path.push_back(std::vector<Point>{path.back().back()});
+    line_pts[lid] = path;
 }
 
 bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
@@ -245,7 +348,7 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
                 float f = adj_mat[idx][i].first;
                 std::vector<uint32_t> v(it->first);
                 
-                if (f > 0) {
+                if (f > 0 && f != std::numeric_limits<float>::infinity()) {
                     f += it->second;
                     auto toDel = std::find_if(open.begin(), open.end(),
                         [&i](auto &el) -> bool
@@ -269,38 +372,12 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
 
     return false;    
 }
-
-/*
-std::ostream &operator<<(std::ostream &os, Graph g)
+bool Graph::isEdge(Point p1, Point p2)
 {
-    os.precision(2);
-    uint32_t size = g.adj_mat.size();
-    for (auto i = 0; i < size; i++)
-        os << "\t" << i;
-    os << std::endl;
-    for (auto i = 0; i < size; i++) {
-        os << i;
-        for (auto j = 0; j < size; j++)
-            os << "\t" << g.adj_mat[i][j];
-        os << std::endl;
-    }
-    return os;
-}
-*/
-std::ostream &operator<<(std::ostream &os, Graph g)
-{
-    for (uint32_t i = 0; i < g.pt_idx; i++) {
-        for (uint32_t j = 0; j < g.pt_idx; j++) {
-            if (g.adj_mat[i][j].first > 0) {
-                std::cout << g.nodes[i].first
-                    << "\t" << g.nodes[j].first
-                    << "\t\t" << g.adj_mat[i][j].first
-                    << "\t\t\t" << g.adj_mat[i][j].second
-                    << std::endl;
-            }
-        }
-    }
-    return os;
+    auto idx1 = getNodeID(p1);
+    auto idx2 = getNodeID(p2);
+    if (adj_mat[idx1][idx2].first != 0.f) return true;
+    return false;
 }
 
 Graph::~Graph(){}

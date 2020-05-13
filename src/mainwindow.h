@@ -49,26 +49,40 @@ private slots:
     void toggleClock();
     void fasterClock();
     void slowerClock();
-    void actStreet(uint32_t,uint32_t);
+    void actStreet(uint32_t);
     void closeStreet();
     void addTraffic();
     void clearTraffic();
+    void changeLineRoute();
+    void showConnectionInfo();
 
 signals:
     void timeChanged(float);
     void stopAnimation();
     void resumeAnimation();
 
+    void closeEditMode();
+    void startEditMode();
+
 private:
+
+    std::vector<uint32_t> colliding_lines;
     bool clock_state = true;
-    QGraphicsView *view;
-    QGraphicsScene *scene;
+    QGraphicsView * view;
+    QGraphicsView * connectionView;
+    QGraphicsScene * scene;
+    QGraphicsScene * connectionScene;
     QLabel *label;
 
     QTimer * sys_clock;
     QTime * time;
     QTimeEdit * changeTime_e;
     QLabel * time_l;
+
+    QLabel * info_l;
+    QLabel * editInfo_l;
+    QLabel * street_l;
+    QLabel * streetInfo_l;
 
 
     // buttons
@@ -86,23 +100,30 @@ private:
     QPushButton * closeStreet_b;
 
 
+    std::vector<LineObject *> lines;
+
     StreetMap *sm;
     Graph * graph;
     Map * map;
 
-    std::vector<uint32_t> act_street;
+    std::vector<Point> act_street;
 
     // layout
     QGridLayout * mainLayout_l;
+    QGridLayout * mainGrid_l;
+    QGridLayout * editGrid_l;
+    QStackedLayout * main_l;
     QVBoxLayout * lineLabels_l;
     QHBoxLayout * viewControl_l;
     QHBoxLayout * timeControl_l;
-    QHBoxLayout * streetControl_l;
+    QGridLayout * streetControl_l;
     QStackedLayout * controlView_l;
 
     QWidget * streetControl_w;
     QWidget * timeControl_w;
     QWidget * viewControl_w;
+    QWidget * mainGrid_w;
+    QWidget * editGrid_w;
 
 };
 

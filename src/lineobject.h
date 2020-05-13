@@ -36,6 +36,9 @@ private slots:
     void timeChanged(float);
     void stopAnimation();
     void resumeAnimation();
+    void showConnectionInfo();
+signals:
+	void showConnectionInfo_s();
 
 private:
     Line *line;

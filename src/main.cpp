@@ -81,7 +81,7 @@ int main(int argc, char  *argv[])
     MainWindow mainWindow(&m);
     mainWindow.createButtons();
     mainWindow.createScene();
-    mainWindow.setGeometry(200, 200, 1000, 800);
+    mainWindow.setGeometry(200, 200, 1000, 900);
     mainWindow.createSystemClock();
     mainWindow.createStreetMap();
     mainWindow.createLines();

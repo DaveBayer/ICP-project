@@ -1,6 +1,6 @@
 Třešňová Broskvová Mandarinková Hrušková Jablečná Banánová
 1 300 900 1200
-3 8 13 18 23 28 33 38 43 48
+3
 Třešňová Višňová Banánová Melounová Mandarinková
-
-1 7 13 19 25 31 27
+60 960 1860 2760 3660 4560 5460 6360 7260 8160 9060
+0 900 1800 2700 3600 4500 5400 6300 7200 8100 9000

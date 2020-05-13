@@ -22,6 +22,8 @@ public:
 
 public slots:
 	void showRoute();
+    void hideRoute();
+    void toggleRoute();
 private:
     QColor color;
     uint32_t id;
