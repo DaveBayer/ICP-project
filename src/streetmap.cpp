@@ -6,6 +6,8 @@ StreetMap::StreetMap(Graph * g,std::vector<Street> streets, std::vector<Station>
 {
 	pen = QPen(Qt::gray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     edit_mode = false;
+    s1_item = nullptr;
+    s2_item = nullptr;
 
     if (!streets.empty()) {
         for(auto street : streets) {
@@ -140,7 +142,10 @@ void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void StreetMap::closeStreet()
 {
-    act_street_line->setPen(QPen(Qt::black, 4, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin));
+    if (act_street_line != nullptr){
+        act_street_line->setPen(QPen(Qt::black, 4, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin));
+    }
+
 }
 
 
@@ -174,18 +179,21 @@ void StreetMap::setEditMode()
         node->setVisible(true);
     }
     edit_mode = true;
-    emit editNextRoute();
 }
 
 void StreetMap::closeEditMode()
 {
-    std::cout<<"here\n";
     edit_mode = false;
 
-    s1_item->setVisible(false);
-    s2_item->setVisible(false);
-    delete s1_item;
-    delete s2_item;
+    if (s1_item && s2_item){
+        s1_item->setVisible(false);
+        s2_item->setVisible(false);
+        delete s1_item;
+        delete s2_item;
+        s1_item = nullptr;
+        s2_item = nullptr;
+    }
+    std::cout<<"here\n";
 
     // show stations
     for(auto s : stations){

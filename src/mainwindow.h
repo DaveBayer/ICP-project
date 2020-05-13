@@ -60,6 +60,7 @@ signals:
     void timeChanged(float);
     void stopAnimation();
     void resumeAnimation();
+    void editNextRoute_s();
 
     void closeEditMode();
     void startEditMode();
