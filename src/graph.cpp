@@ -163,12 +163,6 @@ void Graph::closeStreetEdges(uint32_t sid)
                  std::numeric_limits<float>::infinity());
 }
 
-void Graph::openStreetEdges(uint32_t sid)
-{
-    for (uint32_t i = 0; i < cs[sid].size() - 1; i++)
-        resetEdgeW(cs[sid][i].second, cs[sid][i + 1].second);
-}
-
 float Graph::getEdgeW(Point A, Point B)
 {
     auto idx_a = getNodeID(A);
@@ -201,6 +195,18 @@ void Graph::resetEdgeW(uint32_t idx_a, uint32_t idx_b)
     setEdgeW(idx_a, idx_b, dist);
 }
 
+void Graph::resetEdgesW()
+{
+    for (uint32_t i = 0; i < pt_idx; i++) {
+        for (uint32_t j = 0; j < pt_idx; j++) {
+            if (floatEQ(adj_mat[i][j].first, std::numeric_limits<float>::infinity())) {
+                resetEdgeW(i, j);
+                resetEdgeW(j, i);
+            }
+        }
+    }
+}
+
 float Graph::getTC()
 {
     return TrafficCoef;
@@ -227,11 +233,24 @@ void Graph::incEdgeTC(uint32_t idx_a, uint32_t idx_b)
     adj_mat[idx_b][idx_a].second += TrafficCoef;
 }
 
+void Graph::resetEdgeTC(uint32_t idx_a, uint32_t idx_b)
+{
+    adj_mat[idx_a][idx_b].second = 1.f;
+    adj_mat[idx_b][idx_a].second = 1.f;
+}
+
 void Graph::incStreetTC(Point A, Point B)
 {
     uint32_t sid = getStreetFromPoints(A, B);
-    for (uint32_t j = 0; j < cs[sid].size() - 1; j++)
-        incEdgeTC(cs[sid][j].second, cs[sid][j + 1].second);
+    for (uint32_t i = 0; i < cs[sid].size() - 1; i++)
+        incEdgeTC(cs[sid][i].second, cs[sid][i + 1].second);
+}
+
+void Graph::resetStreetTC(Point A, Point B)
+{
+    uint32_t sid = getStreetFromPoints(A, B);
+    for (uint32_t i = 0; i < cs[sid].size() - 1; i++)
+        resetEdgeTC(cs[sid][i].second, cs[sid][i + 1].second);
 }
 
 void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
@@ -288,6 +307,8 @@ std::vector<uint32_t> Graph::findLineConflicts(uint32_t sid)
 
 void Graph::updateLinePath(uint32_t lid, std::vector<std::vector<Point>> path)
 {
+    path.insert(path.begin(), std::vector<Point>{path.front().front()});
+    path.push_back(std::vector<Point>{path.back().back()});
     line_pts[lid] = path;
 }
 

@@ -45,7 +45,7 @@ public:
 	void addStreets(std::vector<Street>);
 
 	void closeStreet(Point, Point, std::vector<uint32_t> &);
-	void openStreet();
+	void openStreets();
 
 	/// Přidání stanice do mapy
 	void addStation(Station);
@@ -61,6 +61,7 @@ public:
 	void createGraph();
 	/// Metoda pro začlenění linek do grafu
 	void setLinesInGraph();
+	void setDetour(uint32_t, std::vector<Point>);
 
 	/// Zrušení grafu
 	~Map();

@@ -61,7 +61,6 @@ public:
     /// Tato metoda vytvoří hrany v matici hran
     void createEdges();
     void closeStreetEdges(uint32_t);
-    void openStreetEdges(uint32_t);
 
     /// Tato metoda vrací délku hrany mezi dvěma body
     float getEdgeW(Point, Point);
@@ -69,6 +68,7 @@ public:
     void setEdgeW(uint32_t, uint32_t, float);
     /// Tato metoda obnoví původní délku hrany mezi dvěma vrcholy
     void resetEdgeW(uint32_t, uint32_t);
+    void resetEdgesW();
 
     /// Tato metoda vrátí hodnotu koeficientu provozu
     float getTC();
@@ -80,8 +80,10 @@ public:
     float getEdgeTC(Point, Point);
     /// Tato metoda zvýší hodnotu koeficientu provozu hrany mezi dvěma vrcholy
     void incEdgeTC(uint32_t, uint32_t);
+    void resetEdgeTC(uint32_t, uint32_t);
 
     void incStreetTC(Point, Point);
+    void resetStreetTC(Point, Point);
 
     /// Tato metoda vytvoří vektory vrcholů mezi zastávkami u všech linek
     void SetUpLine(uint32_t, std::vector<Point>);
