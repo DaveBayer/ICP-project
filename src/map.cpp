@@ -2,11 +2,11 @@
 
 Map::Map(){}
 
-Map::Map(float new_w, float new_h, std::vector<Street> streets, std::vector<Station> stations)
+Map::Map(float new_w, float new_h, std::vector<Street> new_streets, std::vector<Station> new_stations)
 : w(new_w), h(new_h)
 {
-    addStreets(streets);
-    addStations(stations);
+    addStreets(new_streets);
+    addStations(new_stations);
     g = Graph(streets, stations);
 }
 
