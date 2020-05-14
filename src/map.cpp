@@ -151,6 +151,11 @@ void Map::setDetour(uint32_t lid, std::vector<Point> path)
     g.updateLinePath(lid, paths);
 }
 
+std::vector<float> Map::getLineSchedule(uint32_t lid)
+{
+    return g.countLineSchedule(lid);
+}
+
 void Map::outputGraph()
 {
     std::cout << g;

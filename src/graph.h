@@ -25,6 +25,7 @@ class Graph
 private:
     uint32_t pt_idx;    ///< počet uzlů
     float TrafficCoef;  ///< hodnota koeficientu provozu, výchozí hodnota je 0.5
+    std::map<uint32_t, std::vector<float>> schedule;
     std::map<uint32_t, std::vector<std::vector<Point>>> line_pts;   ///< mapa linek obsahující vektory tras mezi zastávkami
     std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> cs; ///< mapa ulic obsahující všechny body, které se na nich nacházejí
     std::vector<std::pair<Point, uint32_t>> nodes;  ///< vektor pro překlad bodu na index do matice hran
@@ -83,6 +84,7 @@ public:
     void SetUpLine(uint32_t, std::vector<Point>);
     std::vector<uint32_t> findLineConflicts(uint32_t);
     void updateLinePath(uint32_t, std::vector<std::vector<Point>>);
+    std::vector<float> countLineSchedule(uint32_t);
     
     friend std::ostream &operator<<(std::ostream &, Graph);
     /// Zrušení grafu
