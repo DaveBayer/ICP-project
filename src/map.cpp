@@ -157,7 +157,7 @@ std::vector<std::pair<std::string, float>> Map::getLineSchedule(uint32_t lid, bo
     if (rev) {
         std::reverse(d.begin(), d.end());
 
-        for (uint32_t i = d.size(); i > 1; i--)
+        for (uint32_t i = d.size(); i > 0; i--)
             d[i].second = d[i - 1].second;
         
         d.front().second = 0.f;
