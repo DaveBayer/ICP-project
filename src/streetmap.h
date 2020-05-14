@@ -21,6 +21,8 @@ public:
     // StreetMap(Graph *,std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>>, std::vector<Station>);
     void changeRoute(Point, Point,uint32_t);
     QPen pen;
+    QPen new_route_pen;
+    QPen closed_street_pen;
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -28,9 +30,10 @@ public:
 signals:
     void actStreet(uint32_t);
     void editNextRoute();
+    void updateLineRoute(uint32_t, std::vector<Point>);
 
 public slots:
-    void setEditMode();
+    void startEditMode();
     void closeEditMode();
     void closeStreet();
 
@@ -41,6 +44,7 @@ private:
     QColor color;
 	std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> map;
     std::vector<QGraphicsLineItem *> streets;
+    std::vector<QGraphicsLineItem *> closed_streets;
     std::vector<QGraphicsLineItem *> lines;
     std::vector<QGraphicsItem *> stations;
     std::vector<QGraphicsEllipseItem *>nodes;
@@ -57,6 +61,9 @@ private:
     Point start_point;
     Point end_point;
     Point act_point;
+
+    std::vector<Point> new_route_v;
+    uint32_t act_line;
 };
 
 #endif

@@ -25,7 +25,7 @@ public:
 
 
 
-    TransportVehicle(Graph *,std::vector<std::vector<Point>> &,uint32_t);
+    TransportVehicle(Graph *,uint32_t,uint32_t,bool);
     ~TransportVehicle();
     QPen pen;
 
@@ -40,13 +40,13 @@ public:
     void initVehicle();
     Graph * graph;
 
+    uint32_t line;
     uint8_t state;
     float speed;
     float length;
     float acc;
     float duration;
     float station_delay;
-    std::vector<std::vector<Point>> route;
 
     enum VEHICLESTATE
     {
@@ -64,7 +64,10 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    QColor color;
+
+    std::vector<std::vector<Point>> getRoute();
+
+    bool direction;
     QGraphicsItemAnimation * animation;
 };
 

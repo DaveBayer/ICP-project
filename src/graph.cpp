@@ -272,15 +272,13 @@ void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
 
 std::vector<uint32_t> Graph::findLineConflicts(uint32_t sid)
 {
-    std::vector<uint32_t> ret;
+    std::vector<uint32_t> ret(0);
 
     for (auto &i : line_pts) {
         std::vector<std::vector<Point>> &lpts = i.second;
-        std::vector<uint32_t> link_vec(0);
         bool endFlag = false;
 
         for (uint32_t j = 1; j < lpts.size() - 1 && !endFlag; j++) {
-            link_vec.push_back(j);
             uint32_t len = 0;
 
             for (uint32_t k = 0; k < lpts[j].size() && !endFlag; k++) {
@@ -293,7 +291,7 @@ std::vector<uint32_t> Graph::findLineConflicts(uint32_t sid)
                 if (it != cs[sid].end()) {
                     len++;
                     if (len > 1) {
-                        link_vec.push_back(i.first);
+                        ret.push_back(i.first);
                         endFlag = true;
                     }
                 } else
@@ -309,6 +307,7 @@ void Graph::updateLinePath(uint32_t lid, std::vector<std::vector<Point>> path)
 {
     path.insert(path.begin(), std::vector<Point>{path.front().front()});
     path.push_back(std::vector<Point>{path.back().back()});
+    std::cout<<path[0][0]<<"--"<<path[path.size()-1][0]<<std::endl;
     line_pts[lid] = path;
 }
 

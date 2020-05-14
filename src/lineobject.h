@@ -17,7 +17,7 @@ class LineObject : public QObject
 {
 	Q_OBJECT
 public:
-    LineObject(Graph *,std::vector<Line>,uint32_t, std::vector<std::vector<Point>> &,QTime *);
+    LineObject(Graph *,Line * line,QTime *);
     ~LineObject();
 
     void createVehicles();
@@ -45,7 +45,6 @@ private:
     QTime * currTime;
     bool running;
     QGraphicsScene * scene;
-    std::vector<std::vector<Point>> route_vector;
 };
 
 

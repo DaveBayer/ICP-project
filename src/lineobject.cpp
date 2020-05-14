@@ -1,51 +1,54 @@
 #include "lineobject.h"
-LineObject::LineObject(Graph * g, std::vector<Line> lines, uint32_t id, std::vector<std::vector<Point>> &route_vector, QTime * time) : graph(g), lines(lines), id(id), currTime(time), route_vector(route_vector)
+LineObject::LineObject(Graph * g, Line *line, QTime * time) : graph(g), line(line), id(line->getNumber()), currTime(time)
 {
     std::string name = "line " + std::to_string(id);
 	label = new LineLabel(name);
         
-    route = new LineRoute(route_vector);
+    route = new LineRoute(g, id);
     running = true;
-
-    
 }
 
 
 
 void LineObject::createVehicles()
 {
-    // std::cout<<getLineLength()<<std::endl;
-    for (auto line : lines) {
-        if (line.getNumber() == id){
-            for (auto connection : line.forward) {
-                TransportVehicle *v = new TransportVehicle(graph,route_vector, connection);
-                QObject::connect(v, SIGNAL(showConnectionInfo()), this, SLOT(showConnectionInfo()));
-                v->initVehicle();
-                v->setRouteDuration(1); // timer->setDuration()
-                v->setRoutePath();
-                vehicles.push_back(v);
-                v->setVisible(false);
-            }
-            std::vector<std::vector<Point>> reverse_route;
-            std::vector<Point> reverse_part; 
-            for (auto it =  route_vector.rbegin(); it != route_vector.rend(); it++) {
-                reverse_part.clear();
-                for (auto jt = (*it).rbegin(); jt != (*it).rend(); jt++) {
-                    reverse_part.push_back(*jt);
-                }
-                reverse_route.push_back(reverse_part);
-            }  
-            for (auto connection : line.backward) {
+    // for (auto line : lines) {
+    //     if (line.getNumber() == id){
+    //         for (auto connection : line.forward) {
+    //             TransportVehicle *v = new TransportVehicle(graph, connection, id, true);
+    //             QObject::connect(v, SIGNAL(showConnectionInfo()), this, SLOT(showConnectionInfo()));
+    //             v->initVehicle();
+    //             v->setRouteDuration(1); // timer->setDuration()
+    //             v->setRoutePath();
+    //             vehicles.push_back(v);
+    //             v->setVisible(false);
+    //         }
+            
+    //         for (auto connection : line.backward) {
                           
-                TransportVehicle *v = new TransportVehicle(graph, reverse_route,connection);
-                QObject::connect(v, SIGNAL(showConnectionInfo()), this, SLOT(showConnectionInfo()));
-                v->initVehicle();
-                v->setRouteDuration(1); // timer->setDuration()
-                v->setRoutePath();
-                vehicles.push_back(v);
-                v->setVisible(false);
-            }
-        }
+    //             TransportVehicle *v = new TransportVehicle(graph, connection,id, false);
+    //             QObject::connect(v, SIGNAL(showConnectionInfo()), this, SLOT(showConnectionInfo()));
+    //             v->initVehicle();
+    //             v->setRouteDuration(1); // timer->setDuration()
+    //             v->setRoutePath();
+    //             vehicles.push_back(v);
+    //             v->setVisible(false);
+    //         }
+    //     }
+    // }
+    for (auto connection : line->forward) {
+        TransportVehicle *v = new TransportVehicle(graph, connection, id, true);
+        vehicles.push_back(v);
+    }
+    for (auto connection : line->backward) {
+        TransportVehicle *v = new TransportVehicle(graph, connection, id, false);
+        vehicles.push_back(v);
+    }
+    for (auto v : vehicles) {
+        v->initVehicle();
+        v->setRouteDuration(1); // timer->setDuration()
+        v->setRoutePath();
+        v->setVisible(false);
     }
 }
 
@@ -90,6 +93,7 @@ void LineObject::stopAnimation()
     for (auto vehicle : vehicles) {
         if (vehicle->timer->state() == QTimeLine::Running){
             vehicle->timer->setPaused(true);
+            vehicle->setZValue(-1);
         }
     }
 }
@@ -100,6 +104,7 @@ void LineObject::resumeAnimation()
     for (auto vehicle : vehicles) {
         if (vehicle->timer->state() == QTimeLine::Paused){
             vehicle->timer->resume();
+            vehicle->setZValue(1);
         }
     }
 }
@@ -107,7 +112,6 @@ void LineObject::resumeAnimation()
 
 void LineObject::showConnectionInfo()
 {
-    std::cout<<"showing info"<<std::endl;
     emit showConnectionInfo_s();
 }
 

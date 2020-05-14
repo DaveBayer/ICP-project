@@ -1,12 +1,30 @@
 #include "transportvehicle.h"
 
-TransportVehicle::TransportVehicle(Graph * g,std::vector<std::vector<Point>> &route, uint32_t timeStart) : graph(g), route(route)
+TransportVehicle::TransportVehicle(Graph * g, uint32_t timeStart, uint32_t line, bool direction) : graph(g), line(line), direction(direction)
 {
 	pen = QPen(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 	
 	time_start = new QTime(0,0,0); // time of vehicle start
 	*time_start = time_start->addSecs(timeStart);
 	
+}
+
+std::vector<std::vector<Point>> TransportVehicle::getRoute()
+{
+	auto route = graph->line_pts[line]; 
+	if (!direction) {
+		std::vector<std::vector<Point>> reverse_route;
+		std::vector<Point> reverse_part; 
+		for (auto it =  route.rbegin(); it != route.rend(); it++) {
+		    reverse_part.clear();
+		    for (auto jt = (*it).rbegin(); jt != (*it).rend(); jt++) {
+		        reverse_part.push_back(*jt);
+		    }
+		    reverse_route.push_back(reverse_part);
+		} 
+		route = reverse_route;
+	}
+	return route;
 }
 
 void TransportVehicle::initVehicle()
@@ -34,6 +52,7 @@ void TransportVehicle::initVehicle()
 
 float TransportVehicle::getRouteLength()
 {
+	auto route = getRoute();
 	auto numOfStations = route.size() - 1;
 	float route_lenght = 0.f;
     for (auto i = 1; i < route.size() -1; i++) {
@@ -55,6 +74,7 @@ void TransportVehicle::setRouteDuration(float c)
 
 void TransportVehicle::setRoutePath()
 {
+	auto route = getRoute(); 
 	length = getRouteLength();
 	if (route.size() != 0) {
 		animation->clear();
@@ -108,7 +128,6 @@ void TransportVehicle::finished()
 
 void TransportVehicle::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	std::cout<<"click :)"<<std::endl;
 	emit showConnectionInfo();
 }
 
