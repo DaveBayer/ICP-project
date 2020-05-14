@@ -4,8 +4,20 @@
 
 StreetMap::StreetMap(std::vector<Street> streets) : color(0,0,0), streets(streets)
 {
-	pen = QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-}
+	pen = QPen(Qt::gray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    edit_mode = false;
+    s1_item = nullptr;
+    s2_item = nullptr;
+
+    if (!streets.empty()) {
+        for(auto street : streets) {
+            auto pts = street.getPoints();
+            auto item = new QGraphicsLineItem(pts[0].getX(),pts[0].getY(),pts[1].getX(),pts[1].getY());
+            item->setPen(pen);
+
+            auto name = new QGraphicsTextItem(QString::fromStdString(street.getName()));
+            name->setPos(QPointF() + QPointF(0,10));
+            name->setDefaultTextColor(Qt::black);
 
 StreetMap::StreetMap(Graph * g,std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> map, std::vector<Station> stations_v) : graph(g),color(0,0,0), map(map)
 {
@@ -73,4 +85,72 @@ void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
             it->setPen(pen);
         }
     }
+}
+
+void StreetMap::closeStreet()
+{
+    if (act_street_line != nullptr){
+        act_street_line->setPen(QPen(Qt::black, 4, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin));
+    }
+
+}
+
+
+void StreetMap::changeRoute(Point p1, Point p2, uint32_t line)
+{
+    std::cout<<p1.getX()<<std::endl;
+
+    start_point = p1;
+    end_point   = p2;
+    act_point   = start_point;
+
+
+    QPointF s1(start_point.getX(),start_point.getY());
+    QPointF s2(end_point.getX(),end_point.getY());
+    s1_item = new QGraphicsEllipseItem(s1.x()-6,s1.y()-6,12,12);
+    s2_item = new QGraphicsEllipseItem(s2.x()-6,s2.y()-6,12,12);
+    s1_item->setPen(QPen(Qt::red,   3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    s2_item->setPen(QPen(Qt::blue,  3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    s1_item->setParentItem(this);
+    s2_item->setParentItem(this);
+
+
+}
+
+void StreetMap::setEditMode()
+{
+    for(auto s : stations){
+        s->setVisible(false);
+    }
+    for(auto node : nodes){
+        node->setVisible(true);
+    }
+    edit_mode = true;
+}
+
+void StreetMap::closeEditMode()
+{
+    edit_mode = false;
+
+    if (s1_item && s2_item){
+        s1_item->setVisible(false);
+        s2_item->setVisible(false);
+        delete s1_item;
+        delete s2_item;
+        s1_item = nullptr;
+        s2_item = nullptr;
+    }
+    std::cout<<"here\n";
+
+    // show stations
+    for(auto s : stations){
+        s->setVisible(true);
+    }
+
+    // hide crossroad nodes
+    for(auto node : nodes){
+        node->setVisible(false);
+    }
+
+    
 }

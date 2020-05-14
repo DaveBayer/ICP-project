@@ -58,6 +58,7 @@ signals:
     void timeChanged(float);
     void stopAnimation();
     void resumeAnimation();
+    void editNextRoute_s();
 
 private:
     bool clock_state = true;

@@ -104,6 +104,12 @@ void MainWindow::createStreetMap()
 {
     sm = new StreetMap(graph, graph->cs, map->stations);
     scene->addItem(sm);
+
+    QObject::connect(this,  SIGNAL(startEditMode()),        sm,     SLOT(startEditMode()));
+    QObject::connect(this,  SIGNAL(closeEditMode()),        sm,     SLOT(closeEditMode()));
+    QObject::connect(sm,    SIGNAL(editNextRoute()),        this,   SLOT(changeLineRoute()));
+    QObject::connect(this,  SIGNAL(editNextRoute_s()),      this,   SLOT(changeLineRoute()));
+    QObject::connect(sm,    SIGNAL(actStreet(uint32_t)),    this,   SLOT(actStreet(uint32_t)));
 }
 
 void MainWindow::createSystemClock()
@@ -138,8 +144,7 @@ void MainWindow::createLines()
         QObject::connect(this,              SIGNAL(timeChanged(float)),             lineObject,         SLOT(timeChanged(float)));
         QObject::connect(this,              SIGNAL(stopAnimation()),                lineObject,         SLOT(stopAnimation()));
         QObject::connect(this,              SIGNAL(resumeAnimation()),              lineObject,         SLOT(resumeAnimation()));
-        QObject::connect(sm,                SIGNAL(actStreet(uint32_t,uint32_t)),   this,               SLOT(actStreet(uint32_t,uint32_t)));
-    std::cout<<"hh\n";
+        QObject::connect(lineObject,        SIGNAL(showConnectionInfo_s()),         this,               SLOT(showConnectionInfo()));
     }
 }
 
@@ -157,7 +162,14 @@ void MainWindow::connectButtons()
     QObject::connect(faster_b,          SIGNAL(clicked()), this,            SLOT(fasterClock()));
     QObject::connect(slower_b,          SIGNAL(clicked()), this,            SLOT(slowerClock()));
     QObject::connect(addTraffic_b,      SIGNAL(clicked()), this,            SLOT(addTraffic()));
-}
+    QObject::connect(closeStreet_b,     SIGNAL(clicked()), this,            SLOT(closeStreet()));
+    QObject::connect(closeStreet_b,     SIGNAL(clicked()), sm,              SLOT(closeStreet()));
+    QObject::connect(closeStreet_b,     SIGNAL(clicked()), sm,              SLOT(setEditMode()));
+
+
+    // QObject::connect(closeStreet_b,     SIGNAL(clicked()), this,            SLOT(startEditMode()));
+    
+}  
 
 void MainWindow::finish() 
 {
@@ -266,7 +278,50 @@ void MainWindow::clearTraffic()
 
 void MainWindow::closeStreet()
 {
+    main_l->setCurrentIndex(1);
 
+    if (act_street.size() != 0) {
+        map->closeStreet(act_street[0],act_street[1],colliding_lines);
+        emit editNextRoute_s();
+    }
+}
+
+void MainWindow::actStreet(uint32_t s_id)
+{
+    for (auto s : map->streets){
+        if (s_id == s.getID()) {
+            controlView_l->setCurrentIndex(1);
+            auto pts = s.getPoints();
+            act_street.push_back(pts[0]);
+            act_street.push_back(pts[1]);
+            street_l->setText(QString::fromStdString(s.getName()));
+            streetControl_w->show();
+            break;
+        }
+    } 
+}
+
+void MainWindow::changeLineRoute()
+{
+
+    if (colliding_lines.size() != 0){
+        std::cout<<"tu\n";
+        auto line = colliding_lines.back();
+        for (auto l : lines) {
+            if (l->id == line) {
+                l->route->showRoute();
+            } else {
+                l->route->hideRoute();
+            }
+        }
+        // emit startEditMode();
+        sm->changeRoute(graph->line_pts[line][0][0],graph->line_pts[line].back()[0],line);
+        colliding_lines.pop_back();
+    } else {
+        std::cout<<"tadyy\n";
+        emit closeEditMode();
+        main_l->setCurrentIndex(0);
+    }
 }
 
 void MainWindow::actStreet(uint32_t idx1,uint32_t idx2)
