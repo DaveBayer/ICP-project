@@ -66,12 +66,14 @@ SOURCES       = src/graph.cpp \
 		src/transportvehicle.cpp \
 		src/lineobject.cpp \
 		src/float_eq.cpp \
-		src/error.cpp moc_mainwindow.cpp \
+		src/error.cpp \
+		src/connection.cpp moc_mainwindow.cpp \
 		moc_streetmap.cpp \
 		moc_linelabel.cpp \
 		moc_lineroute.cpp \
 		moc_transportvehicle.cpp \
-		moc_lineobject.cpp
+		moc_lineobject.cpp \
+		moc_connection.cpp
 OBJECTS       = graph.o \
 		line.o \
 		main.o \
@@ -87,12 +89,14 @@ OBJECTS       = graph.o \
 		lineobject.o \
 		float_eq.o \
 		error.o \
+		connection.o \
 		moc_mainwindow.o \
 		moc_streetmap.o \
 		moc_linelabel.o \
 		moc_lineroute.o \
 		moc_transportvehicle.o \
-		moc_lineobject.o
+		moc_lineobject.o \
+		moc_connection.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
 		/usr/lib/qt/mkspecs/common/linux.conf \
@@ -394,7 +398,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		src/transportvehicle.h \
 		src/float_eq.h \
 		src/lineobject.h \
-		src/error.h src/graph.cpp \
+		src/error.h \
+		src/connection.h src/graph.cpp \
 		src/line.cpp \
 		src/main.cpp \
 		src/mainwindow.cpp \
@@ -408,7 +413,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		src/transportvehicle.cpp \
 		src/lineobject.cpp \
 		src/float_eq.cpp \
-		src/error.cpp
+		src/error.cpp \
+		src/connection.cpp
 QMAKE_TARGET  = ICP-project
 DESTDIR       = 
 TARGET        = ICP-project
@@ -1014,8 +1020,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/graph.h src/line.h src/mainwindow.h src/map.h src/point.h src/station.h src/street.h src/streetmap.h src/linelabel.h src/lineroute.h src/transportvehicle.h src/float_eq.h src/lineobject.h src/error.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/graph.cpp src/line.cpp src/main.cpp src/mainwindow.cpp src/map.cpp src/point.cpp src/station.cpp src/street.cpp src/streetmap.cpp src/linelabel.cpp src/lineroute.cpp src/transportvehicle.cpp src/lineobject.cpp src/float_eq.cpp src/error.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/graph.h src/line.h src/mainwindow.h src/map.h src/point.h src/station.h src/street.h src/streetmap.h src/linelabel.h src/lineroute.h src/transportvehicle.h src/float_eq.h src/lineobject.h src/error.h src/connection.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/graph.cpp src/line.cpp src/main.cpp src/mainwindow.cpp src/map.cpp src/point.cpp src/station.cpp src/street.cpp src/streetmap.cpp src/linelabel.cpp src/lineroute.cpp src/transportvehicle.cpp src/lineobject.cpp src/float_eq.cpp src/error.cpp src/connection.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -1047,9 +1053,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/qt/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/qt/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_streetmap.cpp moc_linelabel.cpp moc_lineroute.cpp moc_transportvehicle.cpp moc_lineobject.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_streetmap.cpp moc_linelabel.cpp moc_lineroute.cpp moc_transportvehicle.cpp moc_lineobject.cpp moc_connection.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_streetmap.cpp moc_linelabel.cpp moc_lineroute.cpp moc_transportvehicle.cpp moc_lineobject.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_streetmap.cpp moc_linelabel.cpp moc_lineroute.cpp moc_transportvehicle.cpp moc_lineobject.cpp moc_connection.cpp
 moc_mainwindow.cpp: src/mainwindow.h \
 		src/streetmap.h \
 		src/street.h \
@@ -1063,6 +1069,7 @@ moc_mainwindow.cpp: src/mainwindow.h \
 		src/lineroute.h \
 		src/transportvehicle.h \
 		src/lineobject.h \
+		src/connection.h \
 		src/map.h \
 		moc_predefs.h \
 		/usr/bin/moc
@@ -1092,10 +1099,13 @@ moc_linelabel.cpp: src/linelabel.h \
 	/usr/bin/moc $(DEFINES) --include /home/michal/School/2019-20/summer/ICP/ICP-project/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include src/linelabel.h -o moc_linelabel.cpp
 
 moc_lineroute.cpp: src/lineroute.h \
-		src/street.h \
+		src/graph.h \
 		src/error.h \
-		src/float_eq.h \
 		src/point.h \
+		src/float_eq.h \
+		src/street.h \
+		src/station.h \
+		src/line.h \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include /home/michal/School/2019-20/summer/ICP/ICP-project/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include src/lineroute.h -o moc_lineroute.cpp
@@ -1123,9 +1133,22 @@ moc_lineobject.cpp: src/lineobject.h \
 		src/graph.h \
 		src/lineroute.h \
 		src/transportvehicle.h \
+		src/connection.h \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include /home/michal/School/2019-20/summer/ICP/ICP-project/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include src/lineobject.h -o moc_lineobject.cpp
+
+moc_connection.cpp: src/connection.h \
+		src/point.h \
+		src/float_eq.h \
+		src/graph.h \
+		src/error.h \
+		src/street.h \
+		src/station.h \
+		src/line.h \
+		moc_predefs.h \
+		/usr/bin/moc
+	/usr/bin/moc $(DEFINES) --include /home/michal/School/2019-20/summer/ICP/ICP-project/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/home/michal/School/2019-20/summer/ICP/ICP-project -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include src/connection.h -o moc_connection.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1173,7 +1196,8 @@ main.o: src/main.cpp src/error.h \
 		src/linelabel.h \
 		src/lineroute.h \
 		src/transportvehicle.h \
-		src/lineobject.h
+		src/lineobject.h \
+		src/connection.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
 mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
@@ -1189,6 +1213,7 @@ mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 		src/lineroute.h \
 		src/transportvehicle.h \
 		src/lineobject.h \
+		src/connection.h \
 		src/map.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o src/mainwindow.cpp
 
@@ -1239,10 +1264,13 @@ linelabel.o: src/linelabel.cpp src/linelabel.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o linelabel.o src/linelabel.cpp
 
 lineroute.o: src/lineroute.cpp src/lineroute.h \
-		src/street.h \
+		src/graph.h \
 		src/error.h \
+		src/point.h \
 		src/float_eq.h \
-		src/point.h
+		src/street.h \
+		src/station.h \
+		src/line.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o lineroute.o src/lineroute.cpp
 
 transportvehicle.o: src/transportvehicle.cpp src/transportvehicle.h \
@@ -1265,7 +1293,8 @@ lineobject.o: src/lineobject.cpp src/lineobject.h \
 		src/linelabel.h \
 		src/graph.h \
 		src/lineroute.h \
-		src/transportvehicle.h
+		src/transportvehicle.h \
+		src/connection.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o lineobject.o src/lineobject.cpp
 
 float_eq.o: src/float_eq.cpp src/float_eq.h
@@ -1273,6 +1302,16 @@ float_eq.o: src/float_eq.cpp src/float_eq.h
 
 error.o: src/error.cpp src/error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o error.o src/error.cpp
+
+connection.o: src/connection.cpp src/connection.h \
+		src/point.h \
+		src/float_eq.h \
+		src/graph.h \
+		src/error.h \
+		src/street.h \
+		src/station.h \
+		src/line.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o connection.o src/connection.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
@@ -1291,6 +1330,9 @@ moc_transportvehicle.o: moc_transportvehicle.cpp
 
 moc_lineobject.o: moc_lineobject.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_lineobject.o moc_lineobject.cpp
+
+moc_connection.o: moc_connection.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_connection.o moc_connection.cpp
 
 ####### Install
 

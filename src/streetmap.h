@@ -12,13 +12,15 @@
 #include "street.h"
 #include "point.h"
 #include "graph.h"
+#include "map.h"
 #include "station.h"
 class StreetMap : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 public:
-    StreetMap(std::vector<Street>);
-    StreetMap(Graph *,std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>>, std::vector<Station>);
+    StreetMap(Map *m);
+    // StreetMap(Graph *,std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>>, std::vector<Station>);
+    void changeRoute(Point, Point,uint32_t);
     QPen pen;
     QPen new_route_pen;
     QPen closed_street_pen;
@@ -41,13 +43,18 @@ protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+    bool isStation(Point p);
     QColor color;
-	std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> map;
+	// std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> map;
     std::vector<QGraphicsLineItem *> streets;
     std::vector<QGraphicsLineItem *> closed_streets;
     std::vector<QGraphicsLineItem *> lines;
     std::vector<QGraphicsItem *> stations;
+    std::vector<QGraphicsItem *>nodes;
+
+    std::vector<QGraphicsLineItem* > new_route;
     Graph * graph;
+    Map * map;
     bool edit_mode;
 
     QGraphicsLineItem * act_street_line;

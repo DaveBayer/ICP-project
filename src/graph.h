@@ -25,10 +25,8 @@ class Graph
 private:
     uint32_t pt_idx;    ///< počet uzlů
     float TrafficCoef;  ///< hodnota koeficientu provozu, výchozí hodnota je 0.5
-    std::map<uint32_t, std::vector<float>> schedule;
-    std::map<uint32_t, std::vector<std::vector<Point>>> line_pts;   ///< mapa linek obsahující vektory tras mezi zastávkami
-    std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> cs; ///< mapa ulic obsahující všechny body, které se na nich nacházejí
-    std::vector<std::pair<Point, uint32_t>> nodes;  ///< vektor pro překlad bodu na index do matice hran
+    
+    
     std::vector<std::vector<std::pair<float, float>>> adj_mat;  ///< matice hran obsaující jejich váhy a koeficienty provozu
     
     /// Tato metoda inicializuje prázdný graf
@@ -36,6 +34,11 @@ private:
     /// Tato metoda spočítá nejkratší cestu mezi 2 body v grafu na základě metody UCS
     bool getPath(Point, Point, std::vector<Point> &);
 public:
+
+    std::map<uint32_t, std::vector<float>> schedule;
+    std::map<uint32_t, std::vector<std::vector<Point>>> line_pts;   ///< mapa linek obsahující vektory tras mezi zastávkami
+    std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> cs; ///< mapa ulic obsahující všechny body, které se na nich nacházejí
+    std::vector<std::pair<Point, uint32_t>> nodes;  ///< vektor pro překlad bodu na index do matice hran
     /// Vytvoření prázdného grafu
     Graph();
     /// Vytvoření grafu z vektoru ulic
@@ -79,12 +82,15 @@ public:
 
     void incStreetTC(Point, Point);
     void resetStreetTC(Point, Point);
+    float getStreetTC(Point, Point);
 
     /// Tato metoda vytvoří vektory vrcholů mezi zastávkami u všech linek
     void SetUpLine(uint32_t, std::vector<Point>);
     std::vector<uint32_t> findLineConflicts(uint32_t);
     void updateLinePath(uint32_t, std::vector<std::vector<Point>>);
     std::vector<std::pair<Point, float>> countLineSchedule(uint32_t);
+
+    bool isEdge(Point,Point);
     
     friend std::ostream &operator<<(std::ostream &, Graph);
     /// Zrušení grafu

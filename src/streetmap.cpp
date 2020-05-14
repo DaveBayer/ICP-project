@@ -2,7 +2,7 @@
 
 
 
-StreetMap::StreetMap(std::vector<Street> streets) : color(0,0,0), streets(streets)
+StreetMap::StreetMap(Map *m) : map(m),graph(&(m->g))
 {
 	pen = QPen(Qt::gray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     new_route_pen = QPen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -11,8 +11,8 @@ StreetMap::StreetMap(std::vector<Street> streets) : color(0,0,0), streets(street
     s1_item = nullptr;
     s2_item = nullptr;
 
-    if (!streets.empty()) {
-        for(auto street : streets) {
+    if (!map->streets.empty()) {
+        for(auto street : map->streets) {
             auto pts = street.getPoints();
             auto item = new QGraphicsLineItem(pts[0].getX(),pts[0].getY(),pts[1].getX(),pts[1].getY());
             item->setPen(pen);
@@ -21,22 +21,10 @@ StreetMap::StreetMap(std::vector<Street> streets) : color(0,0,0), streets(street
             name->setPos(QPointF() + QPointF(0,10));
             name->setDefaultTextColor(Qt::black);
 
-StreetMap::StreetMap(Graph * g,std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> map, std::vector<Station> stations_v) : graph(g),color(0,0,0), map(map)
-{
-    pen = QPen(Qt::gray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    if (!map.empty()){
-        for (auto street = map.begin(); street != map.end(); street++){
-            for (size_t part = 0; part < street->second.size() - 1; part++) {
-                auto pts1 = street->second[part].first;
-                auto pts2 = street->second[part+1].first;
-                auto item = new QGraphicsLineItem(pts1.getX(),pts1.getY(),pts2.getX(),pts2.getY());
-                item->setPen(pen);
-                lines.push_back(item);
-            }
+            this->streets.push_back(item);
         }
     }
-
-    for (auto s : stations_v) {
+    for (auto s : map->stations) {
         QPointF pos(s.getPoint().getX()-5,s.getPoint().getY()-5);
         auto sta = new QGraphicsRectItem(s.getPoint().getX()-5,s.getPoint().getY()-5,10,10);
         sta->setPen(pen);
@@ -47,19 +35,38 @@ StreetMap::StreetMap(Graph * g,std::map<uint32_t, std::vector<std::pair<Point, u
         stations.push_back(name);
         stations.push_back(sta);
     }
-    for (auto n : nodes) {
-        auto node = new QGraphicsEllipseItem(0,0,10,10);
-        node->setPos(n.first.getX()-5,n.first.getY()-5);
-        node->setPen(pen);
-        node->setBrush(QBrush(Qt::gray));
-        node->setVisible(false);
-        this->nodes.push_back(node);
+    for (auto n : graph->nodes) {
+        if (map->isStation(n.first)){
+            auto node = new QGraphicsRectItem(0,0,10,10);
+            node->setPos(n.first.getX()-5,n.first.getY()-5);
+            node->setPen(pen);
+            node->setBrush(QBrush(Qt::gray));
+            node->setVisible(false);
+            this->nodes.push_back(node);
+        } else{
+            auto node = new QGraphicsEllipseItem(0,0,10,10);
+            node->setPos(n.first.getX()-5,n.first.getY()-5);
+            node->setPen(pen);
+            node->setBrush(QBrush(Qt::gray));
+            node->setVisible(false);
+            this->nodes.push_back(node);
+        }
+        
     }
+}
+
+bool StreetMap::isStation(Point p)
+{
+    // for (auto s : stations_v){
+    //     if (p == s.getPoint())
+    //         return true;
+    // }
+    // return false;
 }
 
 void StreetMap::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    for (auto it : lines){
+    for (auto it : streets){
         it->setParentItem(this);
     }
     for (auto it : closed_streets){
@@ -68,6 +75,9 @@ void StreetMap::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
     for (auto it : stations) {
         it->setParentItem(this);
+    }
+    for(auto node : nodes){
+        node->setParentItem(this);
     }
 }
 

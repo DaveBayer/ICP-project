@@ -26,7 +26,8 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    void show(TransportVehicle *);
+    void show(TransportVehicle *, std::vector<std::pair<std::string,float>>);
+    void setVehicle(TransportVehicle *);
 
     Graph * graph;
 
@@ -43,6 +44,7 @@ protected:
 private:
     QGraphicsItemAnimation * animation;
     QGraphicsEllipseItem * vehicle;
+    TransportVehicle * v;
     float xpos;
 };
 

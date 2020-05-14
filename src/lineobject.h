@@ -38,16 +38,18 @@ private slots:
     void timeChanged(float);
     void stopAnimation();
     void resumeAnimation();
-    void showConnectionInfo(TransportVehicle *);
+    void showConnectionInfo(std::vector<std::pair<std::string,float>>);
+    void getConnectionInfo(TransportVehicle *v);
 signals:
 	void showConnectionInfo_s();
-
+	void getConnectionInfo_s(uint32_t,bool);
 
 private:
     Line *line;
     QTime * currTime;
     bool running;
     QGraphicsScene * scene;
+    TransportVehicle * act_v;
 };
 
 

@@ -253,6 +253,17 @@ void Graph::resetStreetTC(Point A, Point B)
         resetEdgeTC(cs[sid][i].second, cs[sid][i + 1].second);
 }
 
+float Graph::getStreetTC(Point A, Point B)
+{
+    uint32_t sid = getStreetFromPoints(A, B);
+    uint32_t idx_a, idx_b;
+
+    idx_a = cs[sid][0].second;
+    idx_b = cs[sid][1].second;
+
+    return adj_mat[idx_a][idx_b].second;
+}
+
 void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
 {
     line_pts[lnum].clear();
@@ -403,6 +414,14 @@ std::ostream &operator<<(std::ostream &os, Graph g)
         }
     }
     return os;
+}
+
+bool Graph::isEdge(Point p1, Point p2)
+{
+    auto idx1 = getNodeID(p1);
+    auto idx2 = getNodeID(p2);
+    if (adj_mat[idx1][idx2].first != 0.f) return true;
+    return false;
 }
 
 Graph::~Graph(){}

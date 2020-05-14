@@ -1,13 +1,14 @@
 #include "lineobject.h"
 LineObject::LineObject(Graph * g, Line *line, QTime * time) : graph(g), line(line), id(line->getNumber()), currTime(time)
 {
-    std::string name = "line" + std::to_string(id);
+    std::string name = "line " + std::to_string(id);
 	label = new LineLabel(name);
         
     route = new LineRoute(g, id);
     running = true;
 
     connection_info = new Connection(graph, id);
+    act_v = nullptr;
 }
 
 void LineObject::createVehicles()
@@ -26,7 +27,7 @@ void LineObject::createVehicles()
         v->setRouteDuration(1); // timer->setDuration()
         v->setRoutePath();
         v->setVisible(false);
-        QObject::connect(v, SIGNAL(showConnectionInfo(TransportVehicle *)), this, SLOT(showConnectionInfo(TransportVehicle *)));
+        QObject::connect(v, SIGNAL(getConnectionInfo(TransportVehicle *)), this, SLOT(getConnectionInfo(TransportVehicle *)));
     }
 }
 
@@ -54,6 +55,7 @@ void LineObject::timeChanged(float speed)
         vehicle->setRouteDuration(speed);
         if (*currTime >= *(vehicle->time_start) && *currTime <= (vehicle->time_start->addSecs(vehicle->duration/1000))) {
             auto pos_time = vehicle->time_start->secsTo(*currTime);
+            // vehicle
             vehicle->setVehiclePosition(pos_time*1000/vehicle->duration);
             vehicle->setVisible(true);
             vehicle->timer->resume();
@@ -87,12 +89,18 @@ void LineObject::resumeAnimation()
 }
 
 
-void LineObject::showConnectionInfo(TransportVehicle * v)
+void LineObject::getConnectionInfo(TransportVehicle * v)
 {
     std::cout<<"object\n";
 
-    connection_info->show(v);
-    emit showConnectionInfo_s();
+    act_v = v;
+    emit getConnectionInfo_s(id,!(v->direction));
+}
+
+void LineObject::showConnectionInfo(std::vector<std::pair<std::string,float>> schedule)
+{
+    if (act_v != nullptr)
+        connection_info->show(act_v,schedule);
 }
 
 

@@ -2,11 +2,11 @@
 
 Map::Map(){}
 
-Map::Map(float new_w, float new_h, std::vector<Street> streets, std::vector<Station> stations)
+Map::Map(float new_w, float new_h, std::vector<Street> new_streets, std::vector<Station> new_stations)
 : w(new_w), h(new_h)
 {
-    addStreets(streets);
-    addStations(stations);
+    addStreets(new_streets);
+    addStations(new_stations);
     g = Graph(streets, stations);
 }
 
@@ -120,15 +120,16 @@ void Map::setLinesInGraph()
     }
 }
 
+bool Map::isStation(Point P)
+{
+    auto it = std::find_if(stations.begin(), stations.end(),
+        [&P](auto &el) -> bool
+        { return P == el.getPoint(); });
+    return it != stations.end();
+}
+
 void Map::setDetour(uint32_t lid, std::vector<Point> path)
 {
-    auto isStation = [=](Point P) -> bool
-    {
-        auto it = std::find_if(stations.begin(), stations.end(),
-            [&P](auto &el) -> bool
-            { return P == el.getPoint(); });
-        return it != stations.end();
-    };
 
     if (!isStation(path.front()) || !isStation(path.back()))
         errExit(1, "Detour must start and end with a station");
@@ -149,11 +150,19 @@ void Map::setDetour(uint32_t lid, std::vector<Point> path)
     g.updateLinePath(lid, paths);
 }
 
-std::vector<std::pair<std::string, float>> Map::getLineSchedule(uint32_t lid)
+std::vector<std::pair<std::string, float>> Map::getLineSchedule(uint32_t lid, bool rev)
 {
     std::vector<std::pair<Point, float>> d = g.countLineSchedule(lid);
     std::vector<std::pair<std::string, float>> ret;
 
+    if (rev) {
+        std::reverse(d.begin(), d.end());
+
+        for (uint32_t i = d.size(); i > 0; i--)
+            d[i].second = d[i - 1].second;
+
+        d.front().second = 0.f;
+    }
     for (auto &i : d) {
         auto it = std::find_if(stations.begin(), stations.end(),
             [&i](auto &el) -> bool

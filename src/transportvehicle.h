@@ -49,6 +49,8 @@ public:
     float acc;
     float duration;
     float station_delay;
+    bool direction;
+
 
     enum VEHICLESTATE
     {
@@ -60,13 +62,12 @@ private slots:
 	void finished();
 
 signals:
-    void showConnectionInfo(TransportVehicle *);
+    void getConnectionInfo(TransportVehicle *);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    bool direction;
     QGraphicsItemAnimation * animation;
 };
 

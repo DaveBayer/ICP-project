@@ -66,11 +66,8 @@ int main(int argc, char  *argv[])
     std::vector<Station> stations = getStations(argv[2]);
     std::vector<Line> lines = getLines(argv[3]);
 
-    Map m(600.f, 600.f);
+    Map m(600.f, 600.f, streets, stations);
 
-    m.addStreets(streets);
-    m.addStations(stations);
-    m.createGraph();
 
     m.addLines(lines);
     m.setLinesInGraph();
