@@ -149,10 +149,19 @@ void Map::setDetour(uint32_t lid, std::vector<Point> path)
     g.updateLinePath(lid, paths);
 }
 
-std::vector<std::pair<std::string, float>> Map::getLineSchedule(uint32_t lid)
+std::vector<std::pair<std::string, float>> Map::getLineSchedule(uint32_t lid, bool rev)
 {
     std::vector<std::pair<Point, float>> d = g.countLineSchedule(lid);
     std::vector<std::pair<std::string, float>> ret;
+
+    if (rev) {
+        std::reverse(d.begin(), d.end());
+
+        for (uint32_t i = 1; i < d.size(); i++)
+            d[i].second = d[i - 1].second;
+        
+        d.front().second = 0.f;
+    }
 
     for (auto &i : d) {
         auto it = std::find_if(stations.begin(), stations.end(),

@@ -53,7 +53,7 @@ public:
 	/// Metoda pro začlenění linek do grafu
 	void setLinesInGraph();
 	void setDetour(uint32_t, std::vector<Point>);
-	std::vector<std::pair<std::string, float>> getLineSchedule(uint32_t);
+	std::vector<std::pair<std::string, float>> getLineSchedule(uint32_t, bool);
 
 	/// Zrušení grafu
 	~Map();
