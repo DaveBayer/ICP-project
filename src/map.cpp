@@ -95,6 +95,8 @@ void Map::addLines(std::vector<Line> lines)
         addLine(i);
 }
 
+
+
 void Map::createGraph()
 {
     g = Graph(streets, stations);
@@ -137,7 +139,7 @@ void Map::setDetour(uint32_t lid, std::vector<Point> path)
     std::vector<Point> subpath{path.front()};
 
     for (uint32_t i = 1; i < path.size(); i++) {
-        Point P = stations[i].getPoint();
+        Point P = path[i].getPoint();
         subpath.push_back(P);
 
         if (isStation(P)) {
