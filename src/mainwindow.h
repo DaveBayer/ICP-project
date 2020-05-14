@@ -37,6 +37,7 @@ public:
    void connectButtons();
    void createView();
    void finish();
+   void startEditMode();
 
 
 private slots:
@@ -49,16 +50,24 @@ private slots:
     void toggleClock();
     void fasterClock();
     void slowerClock();
-    void actStreet(uint32_t,uint32_t);
-    void closeStreet();
+    void actStreet(uint32_t);
+    // void closeStreet();
     void addTraffic();
     void clearTraffic();
+    void changeLineRoute();
+    void showConnectionInfo();
+    void getCollidingLines();
+    void updateLineRoute(uint32_t, std::vector<Point>);
+
 
 signals:
     void timeChanged(float);
     void stopAnimation();
     void resumeAnimation();
     void editNextRoute_s();
+
+    void closeEditMode();
+    // void startEditMode();
 
 private:
     bool clock_state = true;
@@ -85,6 +94,7 @@ private:
     QPushButton * addTraffic_b;
     QPushButton * clearTraffic_b;
     QPushButton * closeStreet_b;
+    QPushButton * closeStreetControl_b;
 
 
     StreetMap *sm;

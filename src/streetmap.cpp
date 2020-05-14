@@ -5,6 +5,8 @@
 StreetMap::StreetMap(std::vector<Street> streets) : color(0,0,0), streets(streets)
 {
 	pen = QPen(Qt::gray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    new_route_pen = QPen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    closed_street_pen = QPen(Qt::black, 4, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
     edit_mode = false;
     s1_item = nullptr;
     s2_item = nullptr;
@@ -45,12 +47,23 @@ StreetMap::StreetMap(Graph * g,std::map<uint32_t, std::vector<std::pair<Point, u
         stations.push_back(name);
         stations.push_back(sta);
     }
+    for (auto n : nodes) {
+        auto node = new QGraphicsEllipseItem(0,0,10,10);
+        node->setPos(n.first.getX()-5,n.first.getY()-5);
+        node->setPen(pen);
+        node->setBrush(QBrush(Qt::gray));
+        node->setVisible(false);
+        this->nodes.push_back(node);
+    }
 }
 
 void StreetMap::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     for (auto it : lines){
         it->setParentItem(this);
+    }
+    for (auto it : closed_streets){
+        it->setPen(closed_street_pen);
     }
 
     for (auto it : stations) {
@@ -65,24 +78,49 @@ QRectF StreetMap::boundingRect() const
 
 void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    for (auto it : lines) {
-        if (it->contains(mapToScene(event->pos()))){
-            it->setPen(QPen(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-            auto line = it->line();
-            Point p1(line.p1().x(),line.p1().y());
-            Point p2(line.p2().x(),line.p2().y());
-            // std::cout<< p1.x()<< "," << p1.y() << "--"<< p2.x() << "," <<p2.y()<<std::endl;
-            auto idx1 = graph->getNodeID(p1);
-            auto idx2 = graph->getNodeID(p2);
-            // std::cout<<*graph<<"\nblablabla\n";
-            // graph->setTC(-0.5);
-            // graph->incEdgeTC(idx1, idx2);
-            // std::cout<<*graph;
-            // emit updateRoute(1.f);
-            emit actStreet(idx1,idx2);
+    if(edit_mode){
+        for (auto n : nodes) {
+            if (n->contains(mapToItem(n,event->pos()))) {
+                Point p(n->pos().x()+5,n->pos().y()+5);
+                auto idx = graph->getNodeID(p);
+                std::cout<<idx<<std::endl;
+                if(!graph->isEdge(act_point, p)){
+                    std::cout<<"not egde"<<std::endl;
+                }else {
+                    std::cout<<"yupyup"<<std::endl;
+                    auto path = new QGraphicsLineItem(act_point.getX(),act_point.getY(),p.getX(),p.getY());
+                    path->setPen(new_route_pen);
+                    path->setParentItem(this);
+                    path->setZValue(1);
+                    new_route.push_back(path);
+                    act_point = p;
+                    new_route_v.push_back(act_point);
+                    if (act_point == end_point){
+                        std::cout<<"end point"<<std::endl;
+                        emit updateLineRoute(act_line, new_route_v);
+                        for(auto p : new_route){
+                            delete p;
+                        }
+                        new_route.clear();
+                        emit editNextRoute();
+                    } 
+                }
+            }
+        }
+    } else{
+        for (auto it : streets) {
+            if (it->contains(mapToScene(event->pos()))){
+                act_street_line = it;
+                it->setPen(QPen(Qt::cyan, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+                auto line = it->line();
+                Point p1(line.p1().x(),line.p1().y());
+                Point p2(line.p2().x(),line.p2().y());
+                auto street_id = graph->getStreetFromPoints(p1,p2);
+                emit actStreet(street_id);
 
-        } else{
-            it->setPen(pen);
+            } else{
+                it->setPen(pen);
+            }
         }
     }
 }
@@ -90,7 +128,8 @@ void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void StreetMap::closeStreet()
 {
     if (act_street_line != nullptr){
-        act_street_line->setPen(QPen(Qt::black, 4, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin));
+        closed_streets.push_back(act_street_line);
+        act_street_line->setPen(closed_street_pen);
     }
 
 }
@@ -103,7 +142,9 @@ void StreetMap::changeRoute(Point p1, Point p2, uint32_t line)
     start_point = p1;
     end_point   = p2;
     act_point   = start_point;
-
+    new_route_v.clear();
+    new_route_v.push_back(p1);
+    act_line = line;
 
     QPointF s1(start_point.getX(),start_point.getY());
     QPointF s2(end_point.getX(),end_point.getY());
@@ -117,15 +158,20 @@ void StreetMap::changeRoute(Point p1, Point p2, uint32_t line)
 
 }
 
-void StreetMap::setEditMode()
+void StreetMap::startEditMode()
 {
-    for(auto s : stations){
-        s->setVisible(false);
+    if (!edit_mode){
+        for(auto s : stations){
+            s->setVisible(false);
+        }
+        for(auto node : nodes){
+            node->setVisible(true);
+            node->setZValue(1);
+        }
+        edit_mode = true;
+    } else {
+        // std::cout<<"edit mode is already set"<<std::endl;
     }
-    for(auto node : nodes){
-        node->setVisible(true);
-    }
-    edit_mode = true;
 }
 
 void StreetMap::closeEditMode()
@@ -140,7 +186,7 @@ void StreetMap::closeEditMode()
         s1_item = nullptr;
         s2_item = nullptr;
     }
-    std::cout<<"here\n";
+    // std::cout<<"here\n";
 
     // show stations
     for(auto s : stations){
