@@ -136,7 +136,7 @@ void Map::setDetour(uint32_t lid, std::vector<Point> path)
     std::vector<std::vector<Point>> paths;
     std::vector<Point> subpath{path.front()};
 
-    for (uint32_t i = 0; i < path.size(); i++) {
+    for (uint32_t i = 1; i < path.size(); i++) {
         Point P = stations[i].getPoint();
         subpath.push_back(P);
 
