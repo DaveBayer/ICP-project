@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 
 
-
 MainWindow::MainWindow(Map * m) : map(m)
 {
     
