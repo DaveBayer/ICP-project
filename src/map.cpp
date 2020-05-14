@@ -2,8 +2,13 @@
 
 Map::Map(){}
 
-Map::Map(float new_w, float new_h)
-: w(new_w), h(new_h){}
+Map::Map(float new_w, float new_h, std::vector<Street> streets, std::vector<Station> stations)
+: w(new_w), h(new_h)
+{
+    addStreets(streets);
+    addStations(stations);
+    g = Graph(streets, stations);
+}
 
 void Map::addStreet(Street s)
 {
@@ -95,13 +100,6 @@ void Map::addLines(std::vector<Line> lines)
         addLine(i);
 }
 
-
-
-void Map::createGraph()
-{
-    g = Graph(streets, stations);
-}
-
 void Map::setLinesInGraph()
 {
     for (auto &i : lines) {
@@ -167,11 +165,6 @@ std::vector<std::pair<std::string, float>> Map::getLineSchedule(uint32_t lid)
     }
 
     return ret;
-}
-
-void Map::outputGraph()
-{
-    std::cout << g;
 }
 
 Map::~Map(){}
