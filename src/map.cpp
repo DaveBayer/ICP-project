@@ -151,9 +151,22 @@ void Map::setDetour(uint32_t lid, std::vector<Point> path)
     g.updateLinePath(lid, paths);
 }
 
-std::vector<float> Map::getLineSchedule(uint32_t lid)
+std::vector<std::pair<std::string, float>> Map::getLineSchedule(uint32_t lid)
 {
-    return g.countLineSchedule(lid);
+    std::vector<std::pair<Point, float>> d = g.countLineSchedule(lid);
+    std::vector<std::pair<std::string, float>> ret;
+
+    for (auto &i : d) {
+        auto it = std::find_if(stations.begin(), stations.end(),
+            [&i](auto &el) -> bool
+            { return i.first == el.getPoint(); });
+        if (it != stations.end())
+            ret.push_back(std::make_pair(it->getName(), i.second));
+        else
+            ret.push_back(std::make_pair("", i.second));
+    }
+
+    return ret;
 }
 
 void Map::outputGraph()

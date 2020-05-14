@@ -310,17 +310,18 @@ void Graph::updateLinePath(uint32_t lid, std::vector<std::vector<Point>> path)
     line_pts[lid] = path;
 }
 
-std::vector<float> Graph::countLineSchedule(uint32_t lid)
+std::vector<std::pair<Point, float>> Graph::countLineSchedule(uint32_t lid)
 {
-    std::vector<float> distances(0);
     auto &lptr = line_pts[lid];
+    std::vector<std::pair<Point, float>> distances{std::make_pair(lptr.front().front(), 0.f)};
+    
 
     for (uint32_t i = 1; i < lptr.size() - 1; i++) {
         float d = 0.f;
         for (uint32_t j = 0; j < lptr[i].size() - 1; j++)
             d += lptr[i][j].dist(lptr[i][j + 1]);
 
-        distances.push_back(d);
+        distances.push_back(std::make_pair(lptr[i].back(), d));
     }
 
     return distances;

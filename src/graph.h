@@ -84,7 +84,7 @@ public:
     void SetUpLine(uint32_t, std::vector<Point>);
     std::vector<uint32_t> findLineConflicts(uint32_t);
     void updateLinePath(uint32_t, std::vector<std::vector<Point>>);
-    std::vector<float> countLineSchedule(uint32_t);
+    std::vector<std::pair<Point, float>> countLineSchedule(uint32_t);
     
     friend std::ostream &operator<<(std::ostream &, Graph);
     /// Zrušení grafu
