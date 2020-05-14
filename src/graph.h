@@ -79,6 +79,7 @@ public:
 
     void incStreetTC(Point, Point);
     void resetStreetTC(Point, Point);
+    float getStreetTC(Point, Point);
 
     /// Tato metoda vytvoří vektory vrcholů mezi zastávkami u všech linek
     void SetUpLine(uint32_t, std::vector<Point>);

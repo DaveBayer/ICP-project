@@ -120,16 +120,16 @@ void Map::setLinesInGraph()
     }
 }
 
+bool Map::isStation(Point P)
+{
+    auto it = std::find_if(stations.begin(), stations.end(),
+        [&P](auto &el) -> bool
+        { return P == el.getPoint(); });
+    return it != stations.end();
+}
+
 void Map::setDetour(uint32_t lid, std::vector<Point> path)
 {
-    auto isStation = [=](Point P) -> bool
-    {
-        auto it = std::find_if(stations.begin(), stations.end(),
-            [&P](auto &el) -> bool
-            { return P == el.getPoint(); });
-        return it != stations.end();
-    };
-
     if (!isStation(path.front()) || !isStation(path.back()))
         errExit(1, "Detour must start and end with a station");
 

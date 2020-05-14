@@ -253,6 +253,17 @@ void Graph::resetStreetTC(Point A, Point B)
         resetEdgeTC(cs[sid][i].second, cs[sid][i + 1].second);
 }
 
+float Graph::getStreetTC(Point A, Point B)
+{
+    uint32_t sid = getStreetFromPoints(A, B);
+    uint32_t idx_a, idx_b;
+
+    idx_a = cs[sid][0].second;
+    idx_b = cs[sid][1].second;
+
+    return adj_mat[idx_a][idx_b].second;
+}
+
 void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
 {
     line_pts[lnum].clear();

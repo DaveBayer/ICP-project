@@ -45,6 +45,8 @@ public:
 	void closeStreet(Point, Point, std::vector<uint32_t> &);
 	void openStreets();
 
+	bool isStation(Point);
+
 	/// Přidání linky do mapy
 	void addLine(Line);
 	/// Přidání linek do mapy
