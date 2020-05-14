@@ -23,41 +23,37 @@ class Map
 private:
 	float w;	///< šířka mapy
 	float h;	///< výška mapy
-	
-public:
-
 	std::vector<Street> streets;	///< vektor ulic nacházejících se v mapě
 	std::vector<Station> stations;	///< vektor stanic nacházejících se v mapě
 	std::vector<Line> lines;	///< vektor linek zobrazovaných v mapě
-	Graph g;	///< graf pro interní reprezentaci ulic, stanic a linek
-	/// Vytvoření prázdné mapy
-	Map();
-	/// Vytvoření mapy s šířkou a délkou
-	Map(float, float);
+	Graph g;	///< graf pro interní reprezentaci uli, stanic a linek
 
 	/// Přidání ulice do mapy
 	void addStreet(Street);
 	/// Přidání ulic do mapy
 	void addStreets(std::vector<Street>);
-
-	void closeStreet(Point, Point, std::vector<uint32_t> &);
-	void openStreets();
-	
 	/// Přidání stanice do mapy
 	void addStation(Station);
 	/// Přidání stanic do mapy
 	void addStations(std::vector<Station>);
+public:
+	/// Vytvoření prázdné mapy
+	Map();
+	/// Vytvoření mapy s šířkou, délkou, ulicemi a stanicemi
+	Map(float, float, std::vector<Street>, std::vector<Station>);
+
+	void closeStreet(Point, Point, std::vector<uint32_t> &);
+	void openStreets();
 
 	/// Přidání linky do mapy
 	void addLine(Line);
 	/// Přidání linek do mapy
 	void addLines(std::vector<Line>);
 
-	/// Metoda pro vytvoření grafu z ulic a stanic
-	void createGraph();
 	/// Metoda pro začlenění linek do grafu
 	void setLinesInGraph();
 	void setDetour(uint32_t, std::vector<Point>);
+	std::vector<std::pair<std::string, float>> getLineSchedule(uint32_t);
 
 	/// Zrušení grafu
 	~Map();

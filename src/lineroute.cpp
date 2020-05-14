@@ -34,28 +34,12 @@ QRectF LineRoute::boundingRect() const
     return QRectF(0,0,600, 600);
 }
 
-void LineRoute::toggleRoute()
+void LineRoute::showRoute()
 {
     if (isVisible())
         setVisible(false);
     else
         setVisible(true);
-    if(auto s = scene()){
-        s->update();
-    }
-}
-
-void LineRoute::hideRoute()
-{
-    setVisible(false);
-    if(auto s = scene()){
-        s->update();
-    }
-}
-
-void LineRoute::showRoute()
-{
-    setVisible(true);
     if(auto s = scene()){
         s->update();
     }

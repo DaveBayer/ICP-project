@@ -311,6 +311,23 @@ void Graph::updateLinePath(uint32_t lid, std::vector<std::vector<Point>> path)
     line_pts[lid] = path;
 }
 
+std::vector<std::pair<Point, float>> Graph::countLineSchedule(uint32_t lid)
+{
+    auto &lptr = line_pts[lid];
+    std::vector<std::pair<Point, float>> distances{std::make_pair(lptr.front().front(), 0.f)};
+    
+
+    for (uint32_t i = 1; i < lptr.size() - 1; i++) {
+        float d = 0.f;
+        for (uint32_t j = 0; j < lptr[i].size() - 1; j++)
+            d += lptr[i][j].dist(lptr[i][j + 1]);
+
+        distances.push_back(std::make_pair(lptr[i].back(), d));
+    }
+
+    return distances;
+}
+
 bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
 {
     uint32_t idx;
@@ -371,12 +388,21 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
 
     return false;    
 }
-bool Graph::isEdge(Point p1, Point p2)
+
+std::ostream &operator<<(std::ostream &os, Graph g)
 {
-    auto idx1 = getNodeID(p1);
-    auto idx2 = getNodeID(p2);
-    if (adj_mat[idx1][idx2].first != 0.f) return true;
-    return false;
+    for (uint32_t i = 0; i < g.pt_idx; i++) {
+        for (uint32_t j = 0; j < g.pt_idx; j++) {
+            if (g.adj_mat[i][j].first > 0) {
+                std::cout << g.nodes[i].first
+                    << "\t" << g.nodes[j].first
+                    << "\t\t" << g.adj_mat[i][j].first
+                    << "\t\t\t" << g.adj_mat[i][j].second
+                    << std::endl;
+            }
+        }
+    }
+    return os;
 }
 
 Graph::~Graph(){}

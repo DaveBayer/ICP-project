@@ -1,10 +1,3 @@
-/**
- * @file graph.h
- * @brief Tento soubor obsahuje deklarace atributů a metod třídy Graph
- * @author David Bayer (xbayer09)
- * @author Michal Szymik
- * @date $Date: 10.5.2020
- */
 #ifndef __GRAPH_H__
 #define __GRAPH_H__
 
@@ -32,7 +25,10 @@ class Graph
 private:
     uint32_t pt_idx;    ///< počet uzlů
     float TrafficCoef;  ///< hodnota koeficientu provozu, výchozí hodnota je 0.5
-    
+    std::map<uint32_t, std::vector<float>> schedule;
+    std::map<uint32_t, std::vector<std::vector<Point>>> line_pts;   ///< mapa linek obsahující vektory tras mezi zastávkami
+    std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> cs; ///< mapa ulic obsahující všechny body, které se na nich nacházejí
+    std::vector<std::pair<Point, uint32_t>> nodes;  ///< vektor pro překlad bodu na index do matice hran
     std::vector<std::vector<std::pair<float, float>>> adj_mat;  ///< matice hran obsaující jejich váhy a koeficienty provozu
     
     /// Tato metoda inicializuje prázdný graf
@@ -46,12 +42,8 @@ public:
     Graph(std::vector<Street> &);
     /// Vytvoření grafu z vektoru ulic a vektoru zastávek
     Graph(std::vector<Street> &, std::vector<Station> &);
+
     uint32_t getStreetFromPoints(Point, Point);
-
-    std::vector<std::pair<Point, uint32_t>> nodes;  ///< vektor pro překlad bodu na index do matice hran
-    std::map<uint32_t, std::vector<std::vector<Point>>> line_pts;   ///< mapa linek obsahující vektory tras mezi zastávkami
-    std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> cs; ///< mapa ulic obsahující všechny body, které se na nich nacházejí
-
     /// Tato metoda přeloží bod na index vrcholu
     uint32_t getNodeID(Point);
     /// Tato metoda zpětně přeloží index vrcholu na bod
@@ -64,7 +56,6 @@ public:
     /// Tato metoda vytvoří hrany v matici hran
     void createEdges();
     void closeStreetEdges(uint32_t);
-    void openStreetEdges(uint32_t);
 
     /// Tato metoda vrací délku hrany mezi dvěma body
     float getEdgeW(Point, Point);
@@ -73,8 +64,6 @@ public:
     /// Tato metoda obnoví původní délku hrany mezi dvěma vrcholy
     void resetEdgeW(uint32_t, uint32_t);
     void resetEdgesW();
-    /// Tato metoda vrací true když body tvoří v grafu hranu
-    bool isEdge(Point,Point);
 
     /// Tato metoda vrátí hodnotu koeficientu provozu
     float getTC();
@@ -95,8 +84,11 @@ public:
     void SetUpLine(uint32_t, std::vector<Point>);
     std::vector<uint32_t> findLineConflicts(uint32_t);
     void updateLinePath(uint32_t, std::vector<std::vector<Point>>);
-
+    std::vector<std::pair<Point, float>> countLineSchedule(uint32_t);
+    
+    friend std::ostream &operator<<(std::ostream &, Graph);
     /// Zrušení grafu
     ~Graph();
 };
-#endif // __GRAPH_H__
+
+#endif  //  __GRAHP_H__

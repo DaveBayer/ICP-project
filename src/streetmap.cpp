@@ -2,7 +2,7 @@
 
 
 
-StreetMap::StreetMap(Graph * g,std::vector<Street> streets, std::vector<Station> stations_v,std::vector<std::pair<Point,uint32_t>> nodes) : graph(g), color(0,0,0)
+StreetMap::StreetMap(std::vector<Street> streets) : color(0,0,0), streets(streets)
 {
 	pen = QPen(Qt::gray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     new_route_pen = QPen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -21,9 +21,21 @@ StreetMap::StreetMap(Graph * g,std::vector<Street> streets, std::vector<Station>
             name->setPos(QPointF() + QPointF(0,10));
             name->setDefaultTextColor(Qt::black);
 
-            this->streets.push_back(item);
+StreetMap::StreetMap(Graph * g,std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> map, std::vector<Station> stations_v) : graph(g),color(0,0,0), map(map)
+{
+    pen = QPen(Qt::gray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    if (!map.empty()){
+        for (auto street = map.begin(); street != map.end(); street++){
+            for (size_t part = 0; part < street->second.size() - 1; part++) {
+                auto pts1 = street->second[part].first;
+                auto pts2 = street->second[part+1].first;
+                auto item = new QGraphicsLineItem(pts1.getX(),pts1.getY(),pts2.getX(),pts2.getY());
+                item->setPen(pen);
+                lines.push_back(item);
+            }
         }
     }
+
     for (auto s : stations_v) {
         QPointF pos(s.getPoint().getX()-5,s.getPoint().getY()-5);
         auto sta = new QGraphicsRectItem(s.getPoint().getX()-5,s.getPoint().getY()-5,10,10);
@@ -47,7 +59,7 @@ StreetMap::StreetMap(Graph * g,std::vector<Street> streets, std::vector<Station>
 
 void StreetMap::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    for (auto it : streets){
+    for (auto it : lines){
         it->setParentItem(this);
     }
     for (auto it : closed_streets){
@@ -56,9 +68,6 @@ void StreetMap::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
     for (auto it : stations) {
         it->setParentItem(this);
-    }
-    for(auto node : nodes){
-        node->setParentItem(this);
     }
 }
 

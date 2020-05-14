@@ -42,6 +42,7 @@ private slots:
 signals:
 	void showConnectionInfo_s();
 
+
 private:
     Line *line;
     QTime * currTime;

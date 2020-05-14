@@ -17,9 +17,8 @@ class StreetMap : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 public:
-    StreetMap(Graph *,std::vector<Street>,std::vector<Station>,std::vector<std::pair<Point,uint32_t>>);
-    // StreetMap(Graph *,std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>>, std::vector<Station>);
-    void changeRoute(Point, Point,uint32_t);
+    StreetMap(std::vector<Street>);
+    StreetMap(Graph *,std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>>, std::vector<Station>);
     QPen pen;
     QPen new_route_pen;
     QPen closed_street_pen;
@@ -48,9 +47,6 @@ private:
     std::vector<QGraphicsLineItem *> closed_streets;
     std::vector<QGraphicsLineItem *> lines;
     std::vector<QGraphicsItem *> stations;
-    std::vector<QGraphicsEllipseItem *>nodes;
-
-    std::vector<QGraphicsLineItem* > new_route;
     Graph * graph;
     bool edit_mode;
 

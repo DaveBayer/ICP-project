@@ -1,7 +1,7 @@
 #include "lineobject.h"
 LineObject::LineObject(Graph * g, Line *line, QTime * time) : graph(g), line(line), id(line->getNumber()), currTime(time)
 {
-    std::string name = "line " + std::to_string(id);
+    std::string name = "line" + std::to_string(id);
 	label = new LineLabel(name);
         
     route = new LineRoute(g, id);
@@ -54,7 +54,6 @@ void LineObject::timeChanged(float speed)
         vehicle->setRouteDuration(speed);
         if (*currTime >= *(vehicle->time_start) && *currTime <= (vehicle->time_start->addSecs(vehicle->duration/1000))) {
             auto pos_time = vehicle->time_start->secsTo(*currTime);
-            // vehicle
             vehicle->setVehiclePosition(pos_time*1000/vehicle->duration);
             vehicle->setVisible(true);
             vehicle->timer->resume();
