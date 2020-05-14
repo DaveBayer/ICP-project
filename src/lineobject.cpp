@@ -6,36 +6,13 @@ LineObject::LineObject(Graph * g, Line *line, QTime * time) : graph(g), line(lin
         
     route = new LineRoute(g, id);
     running = true;
+
+    connection_info = new Connection(graph, id);
 }
-
-
 
 void LineObject::createVehicles()
 {
-    // for (auto line : lines) {
-    //     if (line.getNumber() == id){
-    //         for (auto connection : line.forward) {
-    //             TransportVehicle *v = new TransportVehicle(graph, connection, id, true);
-    //             QObject::connect(v, SIGNAL(showConnectionInfo()), this, SLOT(showConnectionInfo()));
-    //             v->initVehicle();
-    //             v->setRouteDuration(1); // timer->setDuration()
-    //             v->setRoutePath();
-    //             vehicles.push_back(v);
-    //             v->setVisible(false);
-    //         }
-            
-    //         for (auto connection : line.backward) {
-                          
-    //             TransportVehicle *v = new TransportVehicle(graph, connection,id, false);
-    //             QObject::connect(v, SIGNAL(showConnectionInfo()), this, SLOT(showConnectionInfo()));
-    //             v->initVehicle();
-    //             v->setRouteDuration(1); // timer->setDuration()
-    //             v->setRoutePath();
-    //             vehicles.push_back(v);
-    //             v->setVisible(false);
-    //         }
-    //     }
-    // }
+
     for (auto connection : line->forward) {
         TransportVehicle *v = new TransportVehicle(graph, connection, id, true);
         vehicles.push_back(v);
@@ -49,6 +26,7 @@ void LineObject::createVehicles()
         v->setRouteDuration(1); // timer->setDuration()
         v->setRoutePath();
         v->setVisible(false);
+        QObject::connect(v, SIGNAL(showConnectionInfo(TransportVehicle *)), this, SLOT(showConnectionInfo(TransportVehicle *)));
     }
 }
 
@@ -110,9 +88,14 @@ void LineObject::resumeAnimation()
 }
 
 
-void LineObject::showConnectionInfo()
+void LineObject::showConnectionInfo(TransportVehicle * v)
 {
+    std::cout<<"object\n";
+
+    connection_info->show(v);
     emit showConnectionInfo_s();
 }
+
+
 
 LineObject::~LineObject(){}

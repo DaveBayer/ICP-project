@@ -36,6 +36,7 @@ public slots:
     void startEditMode();
     void closeEditMode();
     void closeStreet();
+    void openStreets();
 
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);

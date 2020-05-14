@@ -58,6 +58,7 @@ private slots:
     void showConnectionInfo();
     void getCollidingLines();
     void updateLineRoute(uint32_t, std::vector<Point>);
+    void openStreets();
 
 
 signals:
@@ -104,6 +105,7 @@ private:
     QPushButton * clearTraffic_b;
     QPushButton * closeStreet_b;
     QPushButton * closeStreetControl_b;
+    QPushButton * openStreets_b;
 
 
     std::vector<LineObject *> lines;

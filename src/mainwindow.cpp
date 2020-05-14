@@ -65,6 +65,7 @@ void MainWindow::createButtons()
     closeStreet_b = new QPushButton("&Close Street");
     closeStreetControl_b = new QPushButton("&X");
     closeStreetControl_b->setFixedSize(30,30);
+    openStreets_b = new QPushButton("&Open Streets");
 
 }
 
@@ -79,10 +80,13 @@ void MainWindow::createMainLayout()
     
     mainLayout_l->addLayout(main_l,1,0,1,8);
 
+
+    // 
     mainGrid_l->addLayout(controlView_l,1,0,1,6);
     
     mainGrid_l->addWidget(time_l, 2,0);
     mainGrid_l->addWidget(changeTime_b,2,1);
+    mainGrid_l->addWidget(openStreets_b,2,2);
     mainGrid_l->addWidget(viewControl_w,2,5,1,2);
 
     mainGrid_l->addWidget(timeControl_w,3,0);
@@ -170,7 +174,6 @@ void MainWindow::createSystemClock()
 
 void MainWindow::createLines()
 {
-
     for (auto line : map->lines) {
         LineObject * lineObject = new LineObject(graph, &line, time);
         lines.push_back(lineObject);
@@ -180,11 +183,10 @@ void MainWindow::createLines()
         lineLabels_l->addWidget(lineObject->label);
         
         scene->addItem(lineObject->route);
+        connectionScene->addItem(lineObject->connection_info);
         for (auto v : lineObject->vehicles){
             scene->addItem(v);
-            std::cout<<"just tell ?\n";
         }
-        std::cout<<"I guess?\n";
 
         QObject::connect(lineObject->label, SIGNAL(clicked()),                      lineObject->route,  SLOT(toggleRoute()));
         QObject::connect(sys_clock,         SIGNAL(timeout()),                      lineObject,         SLOT(startVehicle()));
@@ -192,29 +194,7 @@ void MainWindow::createLines()
         QObject::connect(this,              SIGNAL(stopAnimation()),                lineObject,         SLOT(stopAnimation()));
         QObject::connect(this,              SIGNAL(resumeAnimation()),              lineObject,         SLOT(resumeAnimation()));
         QObject::connect(lineObject,        SIGNAL(showConnectionInfo_s()),         this,               SLOT(showConnectionInfo()));
-        std::cout<<"maybe?\n";
     }
-
-    // for (auto line : graph->line_pts) {
-    //     LineObject * lineObject = new LineObject(graph, map->lines,line.first, time);
-    //     lines.push_back(lineObject);
-        
-    //     lineObject->createVehicles();
-
-    //     lineLabels_l->addWidget(lineObject->label);
-        
-    //     scene->addItem(lineObject->route);
-    //     for (auto v : lineObject->vehicles){
-    //         scene->addItem(v);
-    //     }
-
-    //     QObject::connect(lineObject->label, SIGNAL(clicked()),                      lineObject->route,  SLOT(toggleRoute()));
-    //     QObject::connect(sys_clock,         SIGNAL(timeout()),                      lineObject,         SLOT(startVehicle()));
-    //     QObject::connect(this,              SIGNAL(timeChanged(float)),             lineObject,         SLOT(timeChanged(float)));
-    //     QObject::connect(this,              SIGNAL(stopAnimation()),                lineObject,         SLOT(stopAnimation()));
-    //     QObject::connect(this,              SIGNAL(resumeAnimation()),              lineObject,         SLOT(resumeAnimation()));
-    //     QObject::connect(lineObject,        SIGNAL(showConnectionInfo_s()),         this,               SLOT(showConnectionInfo()));
-    // }
 }
 
 void MainWindow::connectButtons()
@@ -243,6 +223,8 @@ void MainWindow::connectButtons()
 
     QObject::connect(closeStreet_b,     SIGNAL(clicked()), this,            SLOT(getCollidingLines()));
     QObject::connect(closeStreet_b,     SIGNAL(clicked()), sm,              SLOT(closeStreet()));
+
+    QObject::connect(openStreets_b,     SIGNAL(clicked()), this,            SLOT(openStreets()));
 }  
 
 void MainWindow::finish() 
@@ -323,28 +305,21 @@ void MainWindow::slowerClock()
 
 void MainWindow::addTraffic()
 {
+    
     graph->setTC(-0.5);
     graph->incStreetTC(act_street[0],act_street[1]);
+    auto currentTC = graph->getEdgeTC(act_street[0],act_street[1]);
+    std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+    streetInfo_l->setText(QString::fromStdString(street_traffic));
     emit timeChanged(1.f);
 }
 
 void MainWindow::clearTraffic()
 {
     graph->setTC(0.5);
-    // incStreetTC();
-    // graph->incEdgeTC(act_street[0],act_street[1]);
     emit timeChanged(1.f);
 }
 
-// void MainWindow::closeStreet()
-// {
-//     main_l->setCurrentIndex(1);
-
-//     if (act_street.size() != 0) {
-//         map->closeStreet(act_street[0],act_street[1],colliding_lines);
-//         emit editNextRoute_s();
-//     }
-// }
 
 void MainWindow::actStreet(uint32_t s_id)
 {
@@ -356,6 +331,9 @@ void MainWindow::actStreet(uint32_t s_id)
             act_street.push_back(pts[0]);
             act_street.push_back(pts[1]);
             street_l->setText(QString::fromStdString(s.getName()));
+            auto currentTC = graph->getEdgeTC(act_street[0],act_street[1]);
+            std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+            streetInfo_l->setText(QString::fromStdString(street_traffic));
             streetControl_w->show();
             break;
         }
@@ -384,7 +362,6 @@ void MainWindow::changeLineRoute()
         sm->changeRoute(graph->line_pts[line][0][0],graph->line_pts[line].back()[0],line);
         colliding_lines.pop_back();
     } else {
-        // std::cout<<"no lines to edit\n";
 
         emit closeEditMode();
         main_l->setCurrentIndex(0);
@@ -398,7 +375,6 @@ void MainWindow::showConnectionInfo()
 
 void MainWindow::startEditMode()
 {
-    // stop animation
 
     // set new control view
     main_l->setCurrentIndex(1);
@@ -414,11 +390,14 @@ void MainWindow::startEditMode()
 
 void MainWindow::getCollidingLines()
 {
-    // std::cout<<"getting col lines\n";
-    // std::cout<<act_street.size()<<std::endl;
     if (act_street.size() == 2) {
         map->closeStreet(act_street[0],act_street[1],colliding_lines);
-        // std::cout<<"calling change line route main\n"<<colliding_lines.size()<<" - size\n";
         changeLineRoute();
     }
+}
+
+void MainWindow::openStreets()
+{
+    sm->openStreets();
+    map->openStreets();
 }

@@ -128,7 +128,8 @@ void TransportVehicle::finished()
 
 void TransportVehicle::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	emit showConnectionInfo();
+	std::cout<<"vehicle\n";
+	emit showConnectionInfo(this);
 }
 
 

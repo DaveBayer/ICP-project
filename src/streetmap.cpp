@@ -191,3 +191,11 @@ void StreetMap::closeEditMode()
 
     
 }
+
+void StreetMap::openStreets()
+{
+    for (auto s : closed_streets) {
+        s->setPen(pen);
+    }
+    closed_streets.clear();
+}
