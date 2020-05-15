@@ -400,22 +400,6 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
     return false;    
 }
 
-std::ostream &operator<<(std::ostream &os, Graph g)
-{
-    for (uint32_t i = 0; i < g.pt_idx; i++) {
-        for (uint32_t j = 0; j < g.pt_idx; j++) {
-            if (g.adj_mat[i][j].first > 0) {
-                std::cout << g.nodes[i].first
-                    << "\t" << g.nodes[j].first
-                    << "\t\t" << g.adj_mat[i][j].first
-                    << "\t\t\t" << g.adj_mat[i][j].second
-                    << std::endl;
-            }
-        }
-    }
-    return os;
-}
-
 bool Graph::isEdge(Point p1, Point p2)
 {
     auto idx1 = getNodeID(p1);
