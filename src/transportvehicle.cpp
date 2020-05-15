@@ -29,10 +29,9 @@ std::vector<std::vector<Point>> TransportVehicle::getRoute()
 
 void TransportVehicle::initVehicle()
 {
-	station_delay = 7;
+	station_delay = 7;			// 5*1.4
 	speed = 0.0014; 			// 0.0014 pixs/s -> 14m/s -> 50km/h
 	length = getRouteLength();			// total pixel route length (pixs)
-	std::cout<<length<<"len\n";
 	duration = length / speed; 	// duration of route with basic speed (ms)
 
 
@@ -129,7 +128,8 @@ void TransportVehicle::finished()
 
 void TransportVehicle::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	emit showConnectionInfo();
+	std::cout<<"vehicle\n";
+	emit getConnectionInfo(this);
 }
 
 

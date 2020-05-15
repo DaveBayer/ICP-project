@@ -13,6 +13,7 @@
 #include "graph.h"
 #include "lineroute.h"
 #include "transportvehicle.h"
+#include "connection.h"
 class LineObject : public QObject
 {
 	Q_OBJECT
@@ -30,18 +31,25 @@ public:
     std::vector<Line> lines;
 	std::vector<TransportVehicle *> vehicles;
 	float route_length;
+	Connection * connection_info;
 
 private slots:
     void startVehicle();
     void timeChanged(float);
     void stopAnimation();
     void resumeAnimation();
+    void showConnectionInfo(std::vector<std::pair<std::string,float>>);
+    void getConnectionInfo(TransportVehicle *v);
+signals:
+	void showConnectionInfo_s();
+	void getConnectionInfo_s(uint32_t,bool);
 
 private:
     Line *line;
     QTime * currTime;
     bool running;
     QGraphicsScene * scene;
+    TransportVehicle * act_v;
 };
 
 

@@ -66,11 +66,8 @@ int main(int argc, char  *argv[])
     std::vector<Station> stations = getStations(argv[2]);
     std::vector<Line> lines = getLines(argv[3]);
 
-    Map m(600.f, 600.f);
+    Map m(600.f, 600.f, streets, stations);
 
-    m.addStreets(streets);
-    m.addStations(stations);
-    m.createGraph();
 
     m.addLines(lines);
     m.setLinesInGraph();
@@ -81,7 +78,7 @@ int main(int argc, char  *argv[])
     MainWindow mainWindow(&m);
     mainWindow.createButtons();
     mainWindow.createScene();
-    mainWindow.setGeometry(200, 200, 1000, 800);
+    mainWindow.setGeometry(200, 200, 1000, 950);
     mainWindow.createSystemClock();
     mainWindow.createStreetMap();
     mainWindow.createLines();

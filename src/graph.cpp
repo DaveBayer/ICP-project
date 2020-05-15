@@ -416,4 +416,12 @@ std::ostream &operator<<(std::ostream &os, Graph g)
     return os;
 }
 
+bool Graph::isEdge(Point p1, Point p2)
+{
+    auto idx1 = getNodeID(p1);
+    auto idx2 = getNodeID(p2);
+    if (adj_mat[idx1][idx2].first != 0.f) return true;
+    return false;
+}
+
 Graph::~Graph(){}

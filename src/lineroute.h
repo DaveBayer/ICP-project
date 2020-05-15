@@ -23,6 +23,8 @@ public:
 
 public slots:
 	void showRoute();
+    void hideRoute();
+    void toggleRoute();
 private:
     Graph * graph;
     QColor color;

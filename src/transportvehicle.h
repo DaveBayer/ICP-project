@@ -38,6 +38,8 @@ public:
     float getRouteLength();
     void setVehiclePosition(float);
     void initVehicle();
+    std::vector<std::vector<Point>> getRoute();
+
     Graph * graph;
 
     uint32_t line;
@@ -47,6 +49,8 @@ public:
     float acc;
     float duration;
     float station_delay;
+    bool direction;
+
 
     enum VEHICLESTATE
     {
@@ -57,14 +61,13 @@ public:
 private slots:
 	void finished();
 
+signals:
+    void getConnectionInfo(TransportVehicle *);
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-
-    std::vector<std::vector<Point>> getRoute();
-
-    bool direction;
     QGraphicsItemAnimation * animation;
 };
 

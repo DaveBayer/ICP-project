@@ -1,51 +1,19 @@
 #include "lineobject.h"
 LineObject::LineObject(Graph * g, Line *line, QTime * time) : graph(g), line(line), id(line->getNumber()), currTime(time)
 {
-    std::string name = "line" + std::to_string(id);
+    std::string name = "line " + std::to_string(id);
 	label = new LineLabel(name);
         
     route = new LineRoute(g, id);
     running = true;
+
+    connection_info = new Connection(graph, id);
+    act_v = nullptr;
 }
-
-// float LineObject::getLineLength()
-// {
-//     auto route_lenght = 0.f;
-//     for (auto i = 1; i < route_vector.size() -1; i++) {
-//         for (auto j = 1; j < route_vector[i].size(); j++) {
-//             route_lenght += graph->getEdgeW(route_vector[i][j-1], route_vector[i][j]) / graph->getEdgeTC(route_vector[i][j-1], route_vector[i][j]);
-//         }
-//     }
-//     return route_lenght;
-// }
-
 
 void LineObject::createVehicles()
 {
-    // for (auto line : lines) {
-    //     if (line.getNumber() == id){
-    //         for (auto connection : line.forward) {
-    //             TransportVehicle *v = new TransportVehicle(graph, connection, id, true);
-    //             QObject::connect(v, SIGNAL(showConnectionInfo()), this, SLOT(showConnectionInfo()));
-    //             v->initVehicle();
-    //             v->setRouteDuration(1); // timer->setDuration()
-    //             v->setRoutePath();
-    //             vehicles.push_back(v);
-    //             v->setVisible(false);
-    //         }
-            
-    //         for (auto connection : line.backward) {
-                          
-    //             TransportVehicle *v = new TransportVehicle(graph, connection,id, false);
-    //             QObject::connect(v, SIGNAL(showConnectionInfo()), this, SLOT(showConnectionInfo()));
-    //             v->initVehicle();
-    //             v->setRouteDuration(1); // timer->setDuration()
-    //             v->setRoutePath();
-    //             vehicles.push_back(v);
-    //             v->setVisible(false);
-    //         }
-    //     }
-    // }
+
     for (auto connection : line->forward) {
         TransportVehicle *v = new TransportVehicle(graph, connection, id, true);
         vehicles.push_back(v);
@@ -59,6 +27,7 @@ void LineObject::createVehicles()
         v->setRouteDuration(1); // timer->setDuration()
         v->setRoutePath();
         v->setVisible(false);
+        QObject::connect(v, SIGNAL(getConnectionInfo(TransportVehicle *)), this, SLOT(getConnectionInfo(TransportVehicle *)));
     }
 }
 
@@ -86,6 +55,7 @@ void LineObject::timeChanged(float speed)
         vehicle->setRouteDuration(speed);
         if (*currTime >= *(vehicle->time_start) && *currTime <= (vehicle->time_start->addSecs(vehicle->duration/1000))) {
             auto pos_time = vehicle->time_start->secsTo(*currTime);
+            // vehicle
             vehicle->setVehiclePosition(pos_time*1000/vehicle->duration);
             vehicle->setVisible(true);
             vehicle->timer->resume();
@@ -119,9 +89,18 @@ void LineObject::resumeAnimation()
 }
 
 
-void LineObject::showConnectionInfo()
+void LineObject::getConnectionInfo(TransportVehicle * v)
 {
-    emit showConnectionInfo_s();
+    act_v = v;
+    emit getConnectionInfo_s(id,!(v->direction));
 }
+
+void LineObject::showConnectionInfo(std::vector<std::pair<std::string,float>> schedule)
+{
+    if (act_v != nullptr)
+        connection_info->show(act_v,schedule);
+}
+
+
 
 LineObject::~LineObject(){}

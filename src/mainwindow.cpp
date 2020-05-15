@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 
+
 MainWindow::MainWindow(Map * m) : map(m)
 {
     
@@ -11,8 +12,16 @@ MainWindow::MainWindow(Map * m) : map(m)
 
     lineLabels_l = new QVBoxLayout;
 
+    main_l = new QStackedLayout;
+
+    mainGrid_w = new QWidget();
+    mainGrid_l = new QGridLayout(mainGrid_w);
+
+    editGrid_w = new QWidget();
+    editGrid_l = new QGridLayout(editGrid_w);
+
     streetControl_w = new QWidget();
-    streetControl_l = new QHBoxLayout(streetControl_w);
+    streetControl_l = new QGridLayout(streetControl_w);
 
     timeControl_w = new QWidget();
     timeControl_l = new QHBoxLayout(timeControl_w);
@@ -21,6 +30,12 @@ MainWindow::MainWindow(Map * m) : map(m)
     viewControl_l = new QHBoxLayout(viewControl_w);
 
     controlView_l = new QStackedLayout();
+
+    info_l = new QLabel("&Traffic simulator");
+    editInfo_l = new QLabel("Edit information label");
+    street_l = new QLabel("");
+    streetInfo_l = new QLabel("Traffic index: 0");
+    status_l = new QLabel();
 
 }
 
@@ -45,11 +60,14 @@ void MainWindow::createButtons()
     zoomDefault_b->setFixedSize(60,25);
 
 
+    // street control button  
     addTraffic_b = new QPushButton("&Add Traffic");
     clearTraffic_b = new QPushButton("&Clear Traffic");
     closeStreet_b = new QPushButton("&Close Street");
     closeStreetControl_b = new QPushButton("&X");
     closeStreetControl_b->setFixedSize(30,30);
+    openStreets_b = new QPushButton("&Open Streets");
+    saveNewRoute_b = new QPushButton("&Save Route");
 
 }
 
@@ -62,15 +80,21 @@ void MainWindow::createMainLayout()
     mainLayout_l->addWidget(view,0,0,1,7);
     mainLayout_l->addLayout(lineLabels_l,0,7);
     
-    mainLayout_l->addLayout(controlView_l,1,0,1,6);
-    
-    mainLayout_l->addWidget(time_l, 2,0);
-    mainLayout_l->addWidget(changeTime_b,2,1);
-    mainLayout_l->addWidget(viewControl_w,2,5,1,2);
+    mainLayout_l->addLayout(main_l,1,0,1,8);
+    mainLayout_l->addWidget(status_l,2,0);
 
-    mainLayout_l->addWidget(timeControl_w,3,0);
-    mainLayout_l->addWidget(changeTime_e,3,1);
-    mainLayout_l->addWidget(setTime_b,3,2);
+
+    // 
+    mainGrid_l->addLayout(controlView_l,1,0,1,6);
+    
+    mainGrid_l->addWidget(time_l, 2,0);
+    mainGrid_l->addWidget(changeTime_b,2,1);
+    mainGrid_l->addWidget(openStreets_b,2,2);
+    mainGrid_l->addWidget(viewControl_w,2,5,1,2);
+
+    mainGrid_l->addWidget(timeControl_w,3,0);
+    mainGrid_l->addWidget(changeTime_e,3,1);
+    mainGrid_l->addWidget(setTime_b,3,2);
 
     // street control
     streetControl_l->addWidget(street_l,0,0);
@@ -89,6 +113,19 @@ void MainWindow::createMainLayout()
     viewControl_l->addWidget(zoomOut_b);
     viewControl_l->addWidget(zoomDefault_b);
     viewControl_l->addWidget(zoomIn_b);
+
+    // control view
+    controlView_l->addWidget(info_l);
+    controlView_l->addWidget(streetControl_w);
+    controlView_l->addWidget(connectionView);
+
+    // main
+    main_l->addWidget(mainGrid_w);
+    main_l->addWidget(editGrid_w);
+
+    // edit grid
+    editGrid_l->addWidget(editInfo_l,0,0);
+    editGrid_l->addWidget(saveNewRoute_b,1,0);
 }
 
 void MainWindow::createScene()
@@ -96,18 +133,23 @@ void MainWindow::createScene()
     scene = new QGraphicsScene();
     scene->setSceneRect(-50,-50,700,700);
     scene->setBackgroundBrush(QBrush(Qt::white));
+
+    connectionScene = new QGraphicsScene();
+    connectionScene->setSceneRect(0,0,700,80);
 }
 
 void MainWindow::createView()
 {
     view = new QGraphicsView(scene);
     view->show();
+    connectionView = new QGraphicsView(connectionScene);
+    connectionView->show();
 }
 
 
 void MainWindow::createStreetMap()
 {
-    sm = new StreetMap(graph, graph->cs, map->stations);
+    sm = new StreetMap(map);
     scene->addItem(sm);
 
     // QObject::connect(this,  SIGNAL(startEditMode()),        sm,     SLOT(startEditMode()));
@@ -116,23 +158,27 @@ void MainWindow::createStreetMap()
     QObject::connect(this,  SIGNAL(editNextRoute_s()),      this,   SLOT(changeLineRoute()));
     QObject::connect(sm,    SIGNAL(actStreet(uint32_t)),    this,   SLOT(actStreet(uint32_t)));
     QObject::connect(sm,    SIGNAL(updateLineRoute(uint32_t, std::vector<Point>)), this, SLOT(updateLineRoute(uint32_t, std::vector<Point>)));
+    QObject::connect(sm,    SIGNAL(setStatusLabel(std::string)),  this, SLOT(setStatusLabel(std::string)));
 }
 
 void MainWindow::createSystemClock()
 {
     sys_clock = new QTimer(this);
     time = new QTime(0,0,0);
+    
     changeTime_e = new QTimeEdit();
     changeTime_e->hide();
     changeTime_e->setTime(*time);
+    
     time_l = new QLabel(time->toString("hh:mm:ss"));
+    time_l->setAlignment(Qt::AlignCenter);
+    
     QObject::connect(sys_clock, SIGNAL(timeout()), this, SLOT(updateClock()));
 }
 
 
 void MainWindow::createLines()
 {
-
     for (auto line : map->lines) {
         LineObject * lineObject = new LineObject(graph, &line, time);
         lines.push_back(lineObject);
@@ -142,61 +188,51 @@ void MainWindow::createLines()
         lineLabels_l->addWidget(lineObject->label);
         
         scene->addItem(lineObject->route);
+        connectionScene->addItem(lineObject->connection_info);
         for (auto v : lineObject->vehicles){
             scene->addItem(v);
-            std::cout<<"just tell ?\n";
         }
-        std::cout<<"I guess?\n";
 
-        QObject::connect(lineObject->label, SIGNAL(clicked()),                      lineObject->route,  SLOT(showRoute()));
+        QObject::connect(lineObject->label, SIGNAL(clicked()),                      lineObject->route,  SLOT(toggleRoute()));
         QObject::connect(sys_clock,         SIGNAL(timeout()),                      lineObject,         SLOT(startVehicle()));
         QObject::connect(this,              SIGNAL(timeChanged(float)),             lineObject,         SLOT(timeChanged(float)));
         QObject::connect(this,              SIGNAL(stopAnimation()),                lineObject,         SLOT(stopAnimation()));
         QObject::connect(this,              SIGNAL(resumeAnimation()),              lineObject,         SLOT(resumeAnimation()));
-        QObject::connect(lineObject,        SIGNAL(showConnectionInfo_s()),         this,               SLOT(showConnectionInfo()));
-        std::cout<<"maybe?\n";
+        QObject::connect(lineObject,        SIGNAL(getConnectionInfo_s(uint32_t,bool)),this,            SLOT(getConnectionInfo(uint32_t,bool)));
+        QObject::connect(this,              SIGNAL(showConnectionInfo_s(std::vector<std::pair<std::string,float>>)), lineObject, SLOT(showConnectionInfo(std::vector<std::pair<std::string,float>>)));
     }
-
-    // for (auto line : graph->line_pts) {
-    //     LineObject * lineObject = new LineObject(graph, map->lines,line.first, time);
-    //     lines.push_back(lineObject);
-        
-    //     lineObject->createVehicles();
-
-    //     lineLabels_l->addWidget(lineObject->label);
-        
-    //     scene->addItem(lineObject->route);
-    //     for (auto v : lineObject->vehicles){
-    //         scene->addItem(v);
-    //     }
-
-    //     QObject::connect(lineObject->label, SIGNAL(clicked()),                      lineObject->route,  SLOT(toggleRoute()));
-    //     QObject::connect(sys_clock,         SIGNAL(timeout()),                      lineObject,         SLOT(startVehicle()));
-    //     QObject::connect(this,              SIGNAL(timeChanged(float)),             lineObject,         SLOT(timeChanged(float)));
-    //     QObject::connect(this,              SIGNAL(stopAnimation()),                lineObject,         SLOT(stopAnimation()));
-    //     QObject::connect(this,              SIGNAL(resumeAnimation()),              lineObject,         SLOT(resumeAnimation()));
-    //     QObject::connect(lineObject,        SIGNAL(showConnectionInfo_s()),         this,               SLOT(showConnectionInfo()));
-    // }
 }
 
 void MainWindow::connectButtons()
 {
+
+    // view control 
     QObject::connect(zoomIn_b,          SIGNAL(clicked()), this,            SLOT(zoomIn()));
     QObject::connect(zoomOut_b,         SIGNAL(clicked()), this,            SLOT(zoomOut()));
     QObject::connect(zoomDefault_b,     SIGNAL(clicked()), this,            SLOT(defaultZoom()));
+    
+    // time control
     QObject::connect(changeTime_b,      SIGNAL(clicked()), changeTime_e,    SLOT(show()));
-    QObject::connect(changeTime_b,      SIGNAL(clicked()), setTime_b,         SLOT(show()));
+    QObject::connect(changeTime_b,      SIGNAL(clicked()), setTime_b,       SLOT(show()));
+    
     QObject::connect(setTime_b,         SIGNAL(clicked()), changeTime_e,    SLOT(hide()));
     QObject::connect(setTime_b,         SIGNAL(clicked()), this,            SLOT(setTime()));
-    QObject::connect(setTime_b,         SIGNAL(clicked()), setTime_b,         SLOT(hide()));
+    QObject::connect(setTime_b,         SIGNAL(clicked()), setTime_b,       SLOT(hide()));
+     
     QObject::connect(pauseResumeTime_b, SIGNAL(clicked()), this,            SLOT(toggleClock()));
     QObject::connect(faster_b,          SIGNAL(clicked()), this,            SLOT(fasterClock()));
     QObject::connect(slower_b,          SIGNAL(clicked()), this,            SLOT(slowerClock()));
+    
+    // street control
     QObject::connect(addTraffic_b,      SIGNAL(clicked()), this,            SLOT(addTraffic()));
 
 
     QObject::connect(closeStreet_b,     SIGNAL(clicked()), this,            SLOT(getCollidingLines()));
     QObject::connect(closeStreet_b,     SIGNAL(clicked()), sm,              SLOT(closeStreet()));
+
+    QObject::connect(saveNewRoute_b,    SIGNAL(clicked()), sm,              SLOT(saveRoute()));
+
+    QObject::connect(openStreets_b,     SIGNAL(clicked()), this,            SLOT(openStreets()));
 }  
 
 void MainWindow::finish() 
@@ -204,20 +240,7 @@ void MainWindow::finish()
 
     sys_clock->start(1000);
     
-    // mainLayout->addWidget(view,0,0,1,7);
-    // mainLayout->addLayout(this->lineLabels_l, 0, 7);
-    // mainLayout->addWidget(street_layout_w,1,0);
-    // mainLayout->addWidget(clock_label, 2,0);
-    // mainLayout->addWidget(slower,2,1);
-    // mainLayout->addWidget(faster,2,2);
-    // mainLayout->addWidget(pauseresumetime,2,3);
-    // mainLayout->addWidget(changetime,2,4);
-    // mainLayout->addWidget(time_edit,3,0);
-    // mainLayout->addWidget(settime,3,1);  
-    // mainLayout->addWidget(zoomout,2,5);
-    // mainLayout->addWidget(zoomdefault,2,6);
-    // mainLayout->addWidget(zoomin,2,7);
-    
+
     QWidget *widget = new QWidget;
     widget->setLayout(mainLayout_l);
 
@@ -290,28 +313,21 @@ void MainWindow::slowerClock()
 
 void MainWindow::addTraffic()
 {
+    
     graph->setTC(-0.5);
-    graph->incEdgeTC(act_street[0],act_street[1]);
-    std::cout<<*graph;
+    graph->incStreetTC(act_street[0],act_street[1]);
+    auto currentTC = graph->getStreetTC(act_street[0],act_street[1]);
+    std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+    streetInfo_l->setText(QString::fromStdString(street_traffic));
     emit timeChanged(1.f);
 }
 
 void MainWindow::clearTraffic()
 {
     graph->setTC(0.5);
-    graph->incEdgeTC(act_street[0],act_street[1]);
     emit timeChanged(1.f);
 }
 
-// void MainWindow::closeStreet()
-// {
-//     main_l->setCurrentIndex(1);
-
-//     if (act_street.size() != 0) {
-//         map->closeStreet(act_street[0],act_street[1],colliding_lines);
-//         emit editNextRoute_s();
-//     }
-// }
 
 void MainWindow::actStreet(uint32_t s_id)
 {
@@ -323,6 +339,9 @@ void MainWindow::actStreet(uint32_t s_id)
             act_street.push_back(pts[0]);
             act_street.push_back(pts[1]);
             street_l->setText(QString::fromStdString(s.getName()));
+            auto currentTC = graph->getStreetTC(act_street[0],act_street[1]);
+            std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+            streetInfo_l->setText(QString::fromStdString(street_traffic));
             streetControl_w->show();
             break;
         }
@@ -336,7 +355,6 @@ void MainWindow::updateLineRoute(uint32_t line, std::vector<Point> route)
 
 void MainWindow::changeLineRoute()
 {
-    // std::cout<<"in change line route main\n";
 
     if (colliding_lines.size() != 0){
         startEditMode();
@@ -351,21 +369,21 @@ void MainWindow::changeLineRoute()
         sm->changeRoute(graph->line_pts[line][0][0],graph->line_pts[line].back()[0],line);
         colliding_lines.pop_back();
     } else {
-        // std::cout<<"no lines to edit\n";
 
         emit closeEditMode();
         main_l->setCurrentIndex(0);
     }
 }
 
-void MainWindow::actStreet(uint32_t idx1,uint32_t idx2)
+void MainWindow::getConnectionInfo(uint32_t line_id, bool reverse)
 {
     controlView_l->setCurrentIndex(2);
+    auto schedule = map->getLineSchedule(line_id,reverse);
+    emit showConnectionInfo_s(schedule);
 }
 
 void MainWindow::startEditMode()
 {
-    // stop animation
 
     // set new control view
     main_l->setCurrentIndex(1);
@@ -381,11 +399,19 @@ void MainWindow::startEditMode()
 
 void MainWindow::getCollidingLines()
 {
-    // std::cout<<"getting col lines\n";
-    // std::cout<<act_street.size()<<std::endl;
     if (act_street.size() == 2) {
         map->closeStreet(act_street[0],act_street[1],colliding_lines);
-        // std::cout<<"calling change line route main\n"<<colliding_lines.size()<<" - size\n";
         changeLineRoute();
     }
+}
+
+void MainWindow::openStreets()
+{
+    sm->openStreets();
+    map->openStreets();
+}
+
+void MainWindow::setStatusLabel(std::string msg)
+{
+    status_l->setText(QString::fromStdString(msg));
 }

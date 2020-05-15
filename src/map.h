@@ -23,10 +23,7 @@ class Map
 private:
 	float w;	///< šířka mapy
 	float h;	///< výška mapy
-	std::vector<Street> streets;	///< vektor ulic nacházejících se v mapě
-	std::vector<Station> stations;	///< vektor stanic nacházejících se v mapě
-	std::vector<Line> lines;	///< vektor linek zobrazovaných v mapě
-	Graph g;	///< graf pro interní reprezentaci uli, stanic a linek
+	
 
 	/// Přidání ulice do mapy
 	void addStreet(Street);
@@ -56,6 +53,12 @@ public:
 	void setLinesInGraph();
 	void setDetour(uint32_t, std::vector<Point>);
 	std::vector<std::pair<std::string, float>> getLineSchedule(uint32_t, bool);
+	bool isStation(Point);
+
+	Graph g;	///< graf pro interní reprezentaci uli, stanic a linek
+	std::vector<Street> streets;	///< vektor ulic nacházejících se v mapě
+	std::vector<Station> stations;	///< vektor stanic nacházejících se v mapě
+	std::vector<Line> lines;	///< vektor linek zobrazovaných v mapě
 
 	/// Zrušení grafu
 	~Map();
