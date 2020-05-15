@@ -40,6 +40,7 @@ public:
 	/// Metoda pro získání jména stanice
 	std::string getName();
 
+	/// Operátor pro načtení vstupu
 	friend std::istream &operator>>(std::istream &, Station &);
 	/// Zrušení stanice
 	~Station();

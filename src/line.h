@@ -14,10 +14,6 @@
 
 #include "station.h"
 
-struct timetable_s {
-    uint32_t start;
-};
-
 /**
  * @class Line
  * @brief Třída reprezentující linku
@@ -39,6 +35,7 @@ public:
     /// Metoda pro získání vektoru se jmény stanic
     std::vector<std::string> getSNames();
 
+    /// Operátor pro načtení vstupu
     friend std::istream &operator>>(std::istream &, Line &);
     
     /// Zrušení linky

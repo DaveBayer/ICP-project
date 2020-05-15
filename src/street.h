@@ -44,6 +44,7 @@ public:
 	/// Metoda pro zjištění průsečíku dvou ulic
 	bool intersect(Street, Point &);
 
+	/// Operátor pro načtení vstupu
 	friend std::istream &operator>>(std::istream &, Street &);
 	
 	/// Zrušení ulice

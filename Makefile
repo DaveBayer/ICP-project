@@ -1,3 +1,7 @@
+#	file: Makefile
+#	autor: David Bayer (xbayer09)
+#	autor: Michal Szymik (xszymi00)
+#	date: 15.5.2020
 .PHONY: project run doxygen clean pack
 
 project:

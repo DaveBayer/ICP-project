@@ -44,8 +44,9 @@ public:
     /// Metoda pro získání vzdálenosti bodu od zadaného bodu
     float dist(const Point A) const;
     
+    /// Operátor pro rovnost dvou bodů
     friend bool operator==(const Point &A, const Point &B);
-    friend std::ostream &operator<<(std::ostream &, Point);
+    /// Operátor pro načtení vstupu
     friend std::istream &operator>>(std::istream &, Point &);
     
     /// Zrušení bodu
