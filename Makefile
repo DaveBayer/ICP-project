@@ -11,7 +11,7 @@ doxygen:
 	@mkdir -p doc
 
 clean:
-	@rm -rf icp obj
+	@rm -rf icp obj src/moc_*
 
 pack:
 	@zip -r xbayer09-xszymi00.zip src examples doc Makefile README.txt
