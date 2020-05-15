@@ -10,7 +10,6 @@ void Connection::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 	painter->setBrush(QBrush(Qt::red));
 
 	if (vehicle != nullptr) {
-		std::cout<<"Zde\n";
 		vehicle->setPos(xpos,35);
 	} 
 }

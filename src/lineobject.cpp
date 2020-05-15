@@ -91,8 +91,6 @@ void LineObject::resumeAnimation()
 
 void LineObject::getConnectionInfo(TransportVehicle * v)
 {
-    std::cout<<"object\n";
-
     act_v = v;
     emit getConnectionInfo_s(id,!(v->direction));
 }

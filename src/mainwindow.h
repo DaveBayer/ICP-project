@@ -60,7 +60,7 @@ private slots:
     void updateLineRoute(uint32_t, std::vector<Point>);
     void openStreets();
     void getConnectionInfo(uint32_t,bool);
-
+    void setStatusLabel(std::string);
 
 
 signals:
@@ -92,6 +92,8 @@ private:
     QLabel * street_l;
     QLabel * streetInfo_l;
 
+    QLabel * status_l;
+
 
     // buttons
     QPushButton * zoomIn_b;
@@ -108,6 +110,7 @@ private:
     QPushButton * closeStreet_b;
     QPushButton * closeStreetControl_b;
     QPushButton * openStreets_b;
+    QPushButton * saveNewRoute_b;
 
 
     std::vector<LineObject *> lines;

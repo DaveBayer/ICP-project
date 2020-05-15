@@ -32,18 +32,19 @@ signals:
     void actStreet(uint32_t);
     void editNextRoute();
     void updateLineRoute(uint32_t, std::vector<Point>);
+    void setStatusLabel(std::string);
 
 public slots:
     void startEditMode();
     void closeEditMode();
     void closeStreet();
     void openStreets();
+    void saveRoute();
 
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    bool isStation(Point p);
     QColor color;
 	// std::map<uint32_t, std::vector<std::pair<Point, uint32_t>>> map;
     std::vector<QGraphicsLineItem *> streets;
@@ -62,8 +63,7 @@ private:
     QGraphicsEllipseItem * s1_item;
     QGraphicsEllipseItem * s2_item;
 
-    Point start_point;
-    Point end_point;
+    bool start_point_set;
     Point act_point;
 
     std::vector<Point> new_route_v;

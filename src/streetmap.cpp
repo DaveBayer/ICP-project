@@ -55,14 +55,6 @@ StreetMap::StreetMap(Map *m) : map(m),graph(&(m->g))
     }
 }
 
-bool StreetMap::isStation(Point p)
-{
-    // for (auto s : stations_v){
-    //     if (p == s.getPoint())
-    //         return true;
-    // }
-    // return false;
-}
 
 void StreetMap::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
@@ -93,11 +85,21 @@ void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
             if (n->contains(mapToItem(n,event->pos()))) {
                 Point p(n->pos().x()+5,n->pos().y()+5);
                 auto idx = graph->getNodeID(p);
-                std::cout<<idx<<std::endl;
+                if(!start_point_set) {
+                    if (!map->isStation(p)) {
+                        emit setStatusLabel("First line point must be a station.");
+                    } else {
+                        emit setStatusLabel("First line point selected.");
+                        start_point_set = true;
+                        act_point = p;
+                        new_route_v.push_back(act_point);
+                    }
+                    break;
+                }
                 if(!graph->isEdge(act_point, p)){
-                    std::cout<<"not egde"<<std::endl;
+                    emit setStatusLabel("Selected point is not connected with last point.");
                 }else {
-                    std::cout<<"yupyup"<<std::endl;
+                    emit setStatusLabel("Line point selected.");
                     auto path = new QGraphicsLineItem(act_point.getX(),act_point.getY(),p.getX(),p.getY());
                     path->setPen(new_route_pen);
                     path->setParentItem(this);
@@ -105,15 +107,6 @@ void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
                     new_route.push_back(path);
                     act_point = p;
                     new_route_v.push_back(act_point);
-                    if (act_point == end_point){
-                        std::cout<<"end point"<<std::endl;
-                        emit updateLineRoute(act_line, new_route_v);
-                        for(auto p : new_route){
-                            delete p;
-                        }
-                        new_route.clear();
-                        emit editNextRoute();
-                    } 
                 }
             }
         }
@@ -147,23 +140,20 @@ void StreetMap::closeStreet()
 
 void StreetMap::changeRoute(Point p1, Point p2, uint32_t line)
 {
-    std::cout<<p1.getX()<<std::endl;
 
-    start_point = p1;
-    end_point   = p2;
-    act_point   = start_point;
+    start_point_set = false;
+    // act_point   = start_point;
     new_route_v.clear();
-    new_route_v.push_back(p1);
     act_line = line;
 
-    QPointF s1(start_point.getX(),start_point.getY());
-    QPointF s2(end_point.getX(),end_point.getY());
-    s1_item = new QGraphicsEllipseItem(s1.x()-6,s1.y()-6,12,12);
-    s2_item = new QGraphicsEllipseItem(s2.x()-6,s2.y()-6,12,12);
-    s1_item->setPen(QPen(Qt::red,   3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    s2_item->setPen(QPen(Qt::blue,  3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    s1_item->setParentItem(this);
-    s2_item->setParentItem(this);
+    // QPointF s1(start_point.getX(),start_point.getY());
+    // QPointF s2(end_point.getX(),end_point.getY());
+    // s1_item = new QGraphicsEllipseItem(s1.x()-6,s1.y()-6,12,12);
+    // s2_item = new QGraphicsEllipseItem(s2.x()-6,s2.y()-6,12,12);
+    // s1_item->setPen(QPen(Qt::red,   3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    // s2_item->setPen(QPen(Qt::blue,  3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    // s1_item->setParentItem(this);
+    // s2_item->setParentItem(this);
 
 
 }
@@ -179,9 +169,7 @@ void StreetMap::startEditMode()
             node->setZValue(1);
         }
         edit_mode = true;
-    } else {
-        // std::cout<<"edit mode is already set"<<std::endl;
-    }
+    } 
 }
 
 void StreetMap::closeEditMode()
@@ -196,7 +184,6 @@ void StreetMap::closeEditMode()
         s1_item = nullptr;
         s2_item = nullptr;
     }
-    // std::cout<<"here\n";
 
     // show stations
     for(auto s : stations){
@@ -217,4 +204,19 @@ void StreetMap::openStreets()
         s->setPen(pen);
     }
     closed_streets.clear();
+}
+
+void StreetMap::saveRoute()
+{
+    if(map->isStation(act_point)){
+        emit updateLineRoute(act_line, new_route_v);
+        for(auto p : new_route){
+            delete p;
+        }
+        new_route.clear();
+        emit setStatusLabel("");
+        emit editNextRoute();
+    } else {
+        emit setStatusLabel("Last line point must be a station.");
+    }
 }

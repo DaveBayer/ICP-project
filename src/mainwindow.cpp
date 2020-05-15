@@ -35,6 +35,7 @@ MainWindow::MainWindow(Map * m) : map(m)
     editInfo_l = new QLabel("Edit information label");
     street_l = new QLabel("");
     streetInfo_l = new QLabel("Traffic index: 0");
+    status_l = new QLabel();
 
 }
 
@@ -66,6 +67,7 @@ void MainWindow::createButtons()
     closeStreetControl_b = new QPushButton("&X");
     closeStreetControl_b->setFixedSize(30,30);
     openStreets_b = new QPushButton("&Open Streets");
+    saveNewRoute_b = new QPushButton("&Save Route");
 
 }
 
@@ -79,6 +81,7 @@ void MainWindow::createMainLayout()
     mainLayout_l->addLayout(lineLabels_l,0,7);
     
     mainLayout_l->addLayout(main_l,1,0,1,8);
+    mainLayout_l->addWidget(status_l,2,0);
 
 
     // 
@@ -122,6 +125,7 @@ void MainWindow::createMainLayout()
 
     // edit grid
     editGrid_l->addWidget(editInfo_l,0,0);
+    editGrid_l->addWidget(saveNewRoute_b,1,0);
 }
 
 void MainWindow::createScene()
@@ -154,6 +158,7 @@ void MainWindow::createStreetMap()
     QObject::connect(this,  SIGNAL(editNextRoute_s()),      this,   SLOT(changeLineRoute()));
     QObject::connect(sm,    SIGNAL(actStreet(uint32_t)),    this,   SLOT(actStreet(uint32_t)));
     QObject::connect(sm,    SIGNAL(updateLineRoute(uint32_t, std::vector<Point>)), this, SLOT(updateLineRoute(uint32_t, std::vector<Point>)));
+    QObject::connect(sm,    SIGNAL(setStatusLabel(std::string)),  this, SLOT(setStatusLabel(std::string)));
 }
 
 void MainWindow::createSystemClock()
@@ -224,6 +229,8 @@ void MainWindow::connectButtons()
 
     QObject::connect(closeStreet_b,     SIGNAL(clicked()), this,            SLOT(getCollidingLines()));
     QObject::connect(closeStreet_b,     SIGNAL(clicked()), sm,              SLOT(closeStreet()));
+
+    QObject::connect(saveNewRoute_b,    SIGNAL(clicked()), sm,              SLOT(saveRoute()));
 
     QObject::connect(openStreets_b,     SIGNAL(clicked()), this,            SLOT(openStreets()));
 }  
@@ -348,7 +355,6 @@ void MainWindow::updateLineRoute(uint32_t line, std::vector<Point> route)
 
 void MainWindow::changeLineRoute()
 {
-    // std::cout<<"in change line route main\n";
 
     if (colliding_lines.size() != 0){
         startEditMode();
@@ -403,4 +409,9 @@ void MainWindow::openStreets()
 {
     sm->openStreets();
     map->openStreets();
+}
+
+void MainWindow::setStatusLabel(std::string msg)
+{
+    status_l->setText(QString::fromStdString(msg));
 }
