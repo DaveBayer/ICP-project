@@ -21,6 +21,7 @@
 #include "lineobject.h"
 #include "graph.h"
 #include "map.h"
+#include "connection.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -59,7 +60,7 @@ private slots:
     void getCollidingLines();
     void updateLineRoute(uint32_t, std::vector<Point>);
     void openStreets();
-    void getConnectionInfo(uint32_t,bool);
+    void getConnectionInfo(uint32_t,TransportVehicle *);
     void setStatusLabel(std::string);
 
 
@@ -137,6 +138,8 @@ private:
     QWidget * viewControl_w;
     QWidget * mainGrid_w;
     QWidget * editGrid_w;
+
+    Connection * connection_info;
 
 };
 

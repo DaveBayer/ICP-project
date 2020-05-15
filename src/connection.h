@@ -13,13 +13,15 @@
 #include "transportvehicle.h"
 
 
+#define VEHICLE_SPEED 1.4
+#define STATION_DELAY 7
 
 class Connection : public QObject, public QGraphicsItem
 {
 	Q_OBJECT
 public:
 
-    Connection(Graph *,uint32_t);
+    Connection();
     ~Connection();
     QPen pen;
 
@@ -42,6 +44,9 @@ protected:
     // void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+    std::vector<QGraphicsEllipseItem *> stations;
+    std::vector<QGraphicsTextItem *> stations_info; 
+
     QGraphicsItemAnimation * animation;
     QGraphicsEllipseItem * vehicle;
     TransportVehicle * v;

@@ -188,7 +188,6 @@ void MainWindow::createLines()
         lineLabels_l->addWidget(lineObject->label);
         
         scene->addItem(lineObject->route);
-        connectionScene->addItem(lineObject->connection_info);
         for (auto v : lineObject->vehicles){
             scene->addItem(v);
         }
@@ -198,9 +197,11 @@ void MainWindow::createLines()
         QObject::connect(this,              SIGNAL(timeChanged(float)),             lineObject,         SLOT(timeChanged(float)));
         QObject::connect(this,              SIGNAL(stopAnimation()),                lineObject,         SLOT(stopAnimation()));
         QObject::connect(this,              SIGNAL(resumeAnimation()),              lineObject,         SLOT(resumeAnimation()));
-        QObject::connect(lineObject,        SIGNAL(getConnectionInfo_s(uint32_t,bool)),this,            SLOT(getConnectionInfo(uint32_t,bool)));
+        QObject::connect(lineObject,        SIGNAL(getConnectionInfo_s(uint32_t,TransportVehicle *)),this,            SLOT(getConnectionInfo(uint32_t,TransportVehicle *)));
         QObject::connect(this,              SIGNAL(showConnectionInfo_s(std::vector<std::pair<std::string,float>>)), lineObject, SLOT(showConnectionInfo(std::vector<std::pair<std::string,float>>)));
     }
+    connection_info = new Connection();
+    connectionScene->addItem(connection_info);
 }
 
 void MainWindow::connectButtons()
@@ -225,6 +226,7 @@ void MainWindow::connectButtons()
     
     // street control
     QObject::connect(addTraffic_b,      SIGNAL(clicked()), this,            SLOT(addTraffic()));
+    QObject::connect(clearTraffic_b,    SIGNAL(clicked()), this,            SLOT(clearTraffic()));
 
 
     QObject::connect(closeStreet_b,     SIGNAL(clicked()), this,            SLOT(getCollidingLines()));
@@ -314,17 +316,24 @@ void MainWindow::slowerClock()
 void MainWindow::addTraffic()
 {
     
-    graph->setTC(-0.5);
-    graph->incStreetTC(act_street[0],act_street[1]);
+    graph->setTC(-0.1);
     auto currentTC = graph->getStreetTC(act_street[0],act_street[1]);
-    std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
-    streetInfo_l->setText(QString::fromStdString(street_traffic));
-    emit timeChanged(1.f);
+    if (currentTC > 0.1){
+        graph->incStreetTC(act_street[0],act_street[1]);
+        std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+        streetInfo_l->setText(QString::fromStdString(street_traffic));
+        emit timeChanged(1.f);
+    } else {
+        setStatusLabel("Traffic index reached its minimum.");
+    }
 }
 
 void MainWindow::clearTraffic()
 {
-    graph->setTC(0.5);
+    graph->resetEdgeTC(graph->getNodeID(act_street[0]),graph->getNodeID(act_street[1]));
+    auto currentTC = graph->getStreetTC(act_street[0],act_street[1]);
+    std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+    streetInfo_l->setText(QString::fromStdString(street_traffic));
     emit timeChanged(1.f);
 }
 
@@ -375,11 +384,12 @@ void MainWindow::changeLineRoute()
     }
 }
 
-void MainWindow::getConnectionInfo(uint32_t line_id, bool reverse)
+void MainWindow::getConnectionInfo(uint32_t line_id, TransportVehicle * vehicle)
 {
     controlView_l->setCurrentIndex(2);
-    auto schedule = map->getLineSchedule(line_id,reverse);
-    emit showConnectionInfo_s(schedule);
+    auto schedule = map->getLineSchedule(line_id,!(vehicle->direction));
+    connection_info->show(vehicle, schedule);
+    // emit showConnectionInfo_s(schedule);
 }
 
 void MainWindow::startEditMode()

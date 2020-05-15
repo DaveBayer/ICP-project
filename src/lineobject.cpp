@@ -7,7 +7,7 @@ LineObject::LineObject(Graph * g, Line *line, QTime * time) : graph(g), line(lin
     route = new LineRoute(g, id);
     running = true;
 
-    connection_info = new Connection(graph, id);
+    // connection_info = new Connection(graph, id);
     act_v = nullptr;
 }
 
@@ -91,8 +91,8 @@ void LineObject::resumeAnimation()
 
 void LineObject::getConnectionInfo(TransportVehicle * v)
 {
-    act_v = v;
-    emit getConnectionInfo_s(id,!(v->direction));
+    // act_v = v;
+    emit getConnectionInfo_s(id,v);
 }
 
 void LineObject::showConnectionInfo(std::vector<std::pair<std::string,float>> schedule)

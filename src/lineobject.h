@@ -42,7 +42,7 @@ private slots:
     void getConnectionInfo(TransportVehicle *v);
 signals:
 	void showConnectionInfo_s();
-	void getConnectionInfo_s(uint32_t,bool);
+	void getConnectionInfo_s(uint32_t,TransportVehicle *);
 
 private:
     Line *line;
