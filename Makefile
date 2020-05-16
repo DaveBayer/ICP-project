@@ -3,13 +3,14 @@
 #	autor: Michal Szymik (xszymi00)
 #	date: 15.5.2020
 
-.PHONY: project run doxygen clean pack
+.PHONY: icp run doxygen clean pack
 
-project:
+icp:
+	@qmake -makefile -o src/Makefile src/icp.pro
 	@mkdir -p obj
 	@$(MAKE) -C src
 
-run: project
+run: icp
 	./icp examples/streets.txt examples/stations.txt examples/lines.txt
 
 doxygen:
