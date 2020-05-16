@@ -4,9 +4,11 @@
 
 OBJECTS_DIR=../obj/
 DESTDIR=../
-QT += widgets
+QT+=widgets
 QT+=gui
 QT+=core
+CONFIG+=silent
+CONFIG+=warn_off
 TEMPLATE = app
 TARGET = icp
 INCLUDEPATH += .

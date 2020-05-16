@@ -11,7 +11,7 @@ Point::Point(){};
 
 /**
  * @param new_x horizontální poloha bodu
- * @param new_z vertikální poloha bodu
+ * @param new_y vertikální poloha bodu
  */
 Point::Point(float new_x, float new_y)
 : x(new_x), y(new_y){}

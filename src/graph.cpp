@@ -268,7 +268,7 @@ float Graph::getTC()
 }
 
 /**
- * @param nová hodnota dopravního koeficientu
+ * @param f nová hodnota dopravního koeficientu
  */
 void Graph::setTC(float f)
 {
