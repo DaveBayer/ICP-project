@@ -177,6 +177,10 @@ private slots:
      * @brief      Slot pro zahájení editačního módu.
      */
     void startEditMode();
+    /**
+     * @brief      Slot pro zavření nastavení ulice.
+     */
+    void closeStreetControl();
 
 
 
@@ -309,6 +313,8 @@ private:
     QPushButton * openStreets_b;
     /// Tlačítko pro uložení nové trasy
     QPushButton * saveNewRoute_b;
+    /// Tlačítko pro zrušení uzavření ulice
+    QPushButton * cancelstreetclose_b;
 
     /// Vektor uchovávající ukazatele na objekty linek 
     std::vector<LineObject *> lines;
@@ -346,6 +352,8 @@ private:
     QGridLayout * streetControl_l;
     /// Ukazatel na zásobníkové rozložení uchovávající kontrolní rozložení
     QStackedLayout * controlView_l;
+    /// Ukazatel na rozložení informacích spoje
+    QHBoxLayout * connection_l;
 
     /// Ukazatel na objekt uchovávající rozložení nastavení ulice
     QWidget * streetControl_w;
@@ -357,8 +365,23 @@ private:
     QWidget * mainGrid_w;
     /// Ukazatel na objekt uchovávající editační rozložení
     QWidget * editGrid_w;
+    /// Ukazatel na objekt uchovávající rozložení s informacemi o spoji
+    QWidget * connection_w;
 
 
+    const std::string app_information_str = "Simulace pohybu hromadné dopravy.\n"
+                                            "\n"
+                                            "Kliknutím na ulici v mapě se otevře nabídka s nastavením ulice.\n"
+                                            "Kliknutím na spoj (vozidlo) se objeví jízdní  řád daného spoje.\n"
+                                            "Klinutím na název linky v pravé části aplikace se zvýrazní trasa dané linky.\n"
+                                            "V levé spodní části se nachází systémový čas. Ten je možné změnit klinutím na tlačítko Změnit čas, popřípadě pozastavit, či změnit rychlost.\n"
+                                            "V pravé spodní části se nachází tlačítka pro přiblížení, oddálení a nastavení základního pohledu na mapu.\n";
+    const std::string edit_route_str = "Pro navolení objíždné trasy linky je třeba manuálně naklikat novou trasu celé linky.\n"
+                                       "Nová trasa musí začínat a končit stanicí.\n"
+                                       "Stanice jsou na mapě znázorněny čtverci, křižovatky kružnicemi.\n"
+                                       "Každý nový bod trasy musí tvořit hranu s bodem předchozím.\n"
+                                       "Kliknutím na název linky se skryje, resp. zobrazí, její zvýrazněná trasa.\n";
+    const std::string traffic_c_str = "Stupeň provozu: ";
 };
 
 #endif // __MAINWINDOW_H__

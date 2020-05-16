@@ -42,15 +42,18 @@ void MainWindow::createLayouts()
     viewControl_l = new QHBoxLayout(viewControl_w);
 
     controlView_l = new QStackedLayout();
+
+    connection_w = new QWidget();
+    connection_l = new QHBoxLayout(connection_w);
 }
 
 void MainWindow::createButtons()
 {
     zoomIn_b = new QPushButton("&+");
     zoomOut_b = new QPushButton("&-");
-    zoomDefault_b = new QPushButton("&Default");
-    changeTime_b = new QPushButton("&Change Time");
-    setTime_b = new QPushButton("&Set Time");
+    zoomDefault_b = new QPushButton("&Původní");
+    changeTime_b = new QPushButton("&Změnit čas");
+    setTime_b = new QPushButton("&Nastavit čas");
     pauseResumeTime_b = new QPushButton("&>||");
     setTime_b->hide();
     faster_b = new QPushButton("&>>");
@@ -66,22 +69,22 @@ void MainWindow::createButtons()
 
 
     // street control button  
-    addTraffic_b = new QPushButton("&Add Traffic");
-    clearTraffic_b = new QPushButton("&Clear Traffic");
-    closeStreet_b = new QPushButton("&Close Street");
+    addTraffic_b = new QPushButton("&Zvyš stupěn dopravy");
+    clearTraffic_b = new QPushButton("&Vyčistit dopravu");
+    closeStreet_b = new QPushButton("&Uzavřít ulici");
     closeStreetControl_b = new QPushButton("&X");
     closeStreetControl_b->setFixedSize(30,30);
-    openStreets_b = new QPushButton("&Open Streets");
-    saveNewRoute_b = new QPushButton("&Save Route");
-
+    openStreets_b = new QPushButton("&Otevřít ulice");
+    saveNewRoute_b = new QPushButton("&Uložit trasu");
+    cancelstreetclose_b = new QPushButton("&Zrušit");
 }
 
 void MainWindow::createLabels()
 {
-    info_l = new QLabel("&Traffic simulator");
-    editInfo_l = new QLabel("Edit information label");
+    info_l = new QLabel(QString::fromStdString(app_information_str));
+    editInfo_l = new QLabel(QString::fromStdString(edit_route_str));
     street_l = new QLabel("");
-    streetInfo_l = new QLabel("Traffic index: 0");
+    streetInfo_l = new QLabel(QString::fromStdString(traffic_c_str));
     status_l = new QLabel();
 }
 
@@ -126,10 +129,14 @@ void MainWindow::createMainLayout()
     viewControl_l->addWidget(zoomDefault_b);
     viewControl_l->addWidget(zoomIn_b);
 
+    // connection layout
+    connection_l->addWidget(connectionView);
+    connection_l->addWidget(closeStreetControl_b);
+
     // control view
     controlView_l->addWidget(info_l);
     controlView_l->addWidget(streetControl_w);
-    controlView_l->addWidget(connectionView);
+    controlView_l->addWidget(connection_w);
 
     // main
     main_l->addWidget(mainGrid_w);
@@ -138,6 +145,7 @@ void MainWindow::createMainLayout()
     // edit grid
     editGrid_l->addWidget(editInfo_l,0,0);
     editGrid_l->addWidget(saveNewRoute_b,1,0);
+    editGrid_l->addWidget(cancelstreetclose_b,1,1);
 }
 
 void MainWindow::createScenes()
@@ -245,6 +253,8 @@ void MainWindow::connectButtons()
     QObject::connect(saveNewRoute_b,    SIGNAL(clicked()), sm,              SLOT(saveRoute()));
 
     QObject::connect(openStreets_b,     SIGNAL(clicked()), this,            SLOT(openStreets()));
+    QObject::connect(cancelstreetclose_b,SIGNAL(clicked()), this,           SLOT(openStreets()));
+    QObject::connect(closeStreetControl_b, SIGNAL(clicked()), this,         SLOT(closeStreetControl()));
 }  
 
 void MainWindow::init() 
@@ -331,19 +341,19 @@ void MainWindow::addTraffic()
     if (currentTC > 0.1){
         graph->incStreetTC(act_street[0],act_street[1]);
         currentTC -= 0.1;
-        std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+        std::string street_traffic = traffic_c_str + std::to_string(currentTC);
         streetInfo_l->setText(QString::fromStdString(street_traffic));
         emit timeChanged(1.f);
     } else {
-        setStatusLabel("Traffic index reached its minimum.");
+        setStatusLabel("Byl dosažen minimální stupeň dopravy.");
     }
 }
 
 void MainWindow::clearTraffic()
 {
-    graph->resetEdgeTC(graph->getNodeID(act_street[0]),graph->getNodeID(act_street[1]));
+    graph->resetStreetTC(act_street[0],act_street[1]);
     auto currentTC = graph->getStreetTC(act_street[0],act_street[1]);
-    std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+    std::string street_traffic = traffic_c_str + std::to_string(currentTC);
     streetInfo_l->setText(QString::fromStdString(street_traffic));
     emit timeChanged(1.f);
 }
@@ -360,7 +370,7 @@ void MainWindow::actStreet(uint32_t s_id)
             act_street.push_back(pts[1]);
             street_l->setText(QString::fromStdString(s.getName()));
             auto currentTC = graph->getStreetTC(act_street[0],act_street[1]);
-            std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+            std::string street_traffic = traffic_c_str + std::to_string(currentTC);
             streetInfo_l->setText(QString::fromStdString(street_traffic));
             streetControl_w->show();
             break;
@@ -427,6 +437,9 @@ void MainWindow::getCollidingLines()
 
 void MainWindow::openStreets()
 {
+    colliding_lines.clear();
+    main_l->setCurrentIndex(0);
+    sm->closeEditMode();
     sm->openStreets();
     map->openStreets();
 }
@@ -434,6 +447,11 @@ void MainWindow::openStreets()
 void MainWindow::setStatusLabel(std::string msg)
 {
     status_l->setText(QString::fromStdString(msg));
+}
+
+void MainWindow::closeStreetControl()
+{
+    controlView_l->setCurrentIndex(0);
 }
 
 MainWindow::~MainWindow() {}

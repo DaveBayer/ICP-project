@@ -91,19 +91,19 @@ void StreetMap::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 auto idx = graph->getNodeID(p);
                 if(!start_point_set) {
                     if (!map->isStation(p)) {
-                        emit setStatusLabel("First line point must be a station.");
+                        emit setStatusLabel("První bod trasy musí být stanice.");
                     } else {
-                        emit setStatusLabel("First line point selected.");
+                        emit setStatusLabel("První stanice trasy úspěšně vybrána.");
                         start_point_set = true;
                         act_point = p;
                         new_route_v.push_back(act_point);
                     }
                     break;
                 }
-                if(!graph->isEdge(act_point, p)){
-                    emit setStatusLabel("Selected point is not connected with last point.");
+                if(!graph->isEdge(act_point, p) || graph->getEdgeW(act_point,p) == std::numeric_limits<float>::infinity()){
+                    emit setStatusLabel("Vybraný bod netvoří hranu s posledním bodem.");
                 }else {
-                    emit setStatusLabel("Line point selected.");
+                    emit setStatusLabel("Bod linky úspěšně vybrán.");
                     auto path = new QGraphicsLineItem(act_point.getX(),act_point.getY(),p.getX(),p.getY());
                     path->setPen(new_route_pen);
                     path->setParentItem(this);
@@ -148,7 +148,8 @@ void StreetMap::changeRoute(uint32_t line)
     start_point_set = false;
     new_route_v.clear();
     act_line = line;
-
+    std::string msg = "Úprava linky číslo: " + std::to_string(line);
+    emit setStatusLabel(msg);
 
 }
 
@@ -168,18 +169,20 @@ void StreetMap::startEditMode()
 
 void StreetMap::closeEditMode()
 {
-    edit_mode = false;
+    if (edit_mode) {
+        edit_mode = false;
 
-    
+        emit setStatusLabel("");
 
-    // show stations
-    for(auto s : stations){
-        s->setVisible(true);
-    }
+        // show stations
+        for(auto s : stations){
+            s->setVisible(true);
+        }
 
-    // hide crossroad nodes
-    for(auto node : nodes){
-        node->setVisible(false);
+        // hide crossroad nodes
+        for(auto node : nodes){
+            node->setVisible(false);
+        }
     }
 
     
