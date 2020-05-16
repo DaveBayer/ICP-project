@@ -31,6 +31,7 @@
 class StreetMap : public QObject, public QGraphicsItem
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 public:
     /**
      * @brief      Vytvoří novou instanci třídy StreetMap

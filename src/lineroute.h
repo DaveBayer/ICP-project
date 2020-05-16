@@ -24,6 +24,7 @@
 class LineRoute :  public QObject, public QGraphicsItem
 {
 	Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 public:
     /**
      * @brief      Vytvoří novou instanci třídy LineRoute. Nastaví pero pro
