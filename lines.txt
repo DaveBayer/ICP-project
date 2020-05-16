@@ -2,5 +2,8 @@ Třešňová Broskvová Mandarinková Hrušková Jablečná Banánová
 1 900 1800 2700 3600 4500 5400 6300
 1 900 1800 2700 3600 4500 5400 6300
 Třešňová Višňová Banánová Melounová Mandarinková
-1 900 1800 2700 3600 4500 5400 6300
-1 900 1800 2700 3600 4500 5400 6300
+
+1
+Višňová Jahodová Malinová Hrušková
+4
+4

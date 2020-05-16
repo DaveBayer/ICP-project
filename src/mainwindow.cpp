@@ -64,8 +64,8 @@ void MainWindow::createButtons()
     addTraffic_b = new QPushButton("&Add Traffic");
     clearTraffic_b = new QPushButton("&Clear Traffic");
     closeStreet_b = new QPushButton("&Close Street");
-    closeStreetControl_b = new QPushButton("&X");
-    closeStreetControl_b->setFixedSize(30,30);
+    // closeStreetControl_b = new QPushButton("&X");
+    // closeStreetControl_b->setFixedSize(30,30);
     openStreets_b = new QPushButton("&Open Streets");
     saveNewRoute_b = new QPushButton("&Save Route");
 
@@ -99,7 +99,7 @@ void MainWindow::createMainLayout()
     // street control
     streetControl_l->addWidget(street_l,0,0);
     streetControl_l->addWidget(streetInfo_l,0,1);
-    streetControl_l->addWidget(closeStreetControl_b,0,2,Qt::AlignRight);
+    // streetControl_l->addWidget(closeStreetControl_b,0,2,Qt::AlignRight);
     streetControl_l->addWidget(closeStreet_b,1,0);
     streetControl_l->addWidget(clearTraffic_b,1,1);
     streetControl_l->addWidget(addTraffic_b,1,2);
@@ -320,7 +320,7 @@ void MainWindow::addTraffic()
     auto currentTC = graph->getStreetTC(act_street[0],act_street[1]);
     if (currentTC > 0.1){
         graph->incStreetTC(act_street[0],act_street[1]);
-        std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
+        std::string street_traffic = "Traffic index: " + std::to_string(currentTC-0.1);
         streetInfo_l->setText(QString::fromStdString(street_traffic));
         emit timeChanged(1.f);
     } else {
