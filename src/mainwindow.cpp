@@ -198,7 +198,6 @@ void MainWindow::createLines()
         QObject::connect(this,              SIGNAL(stopAnimation()),                lineObject,         SLOT(stopAnimation()));
         QObject::connect(this,              SIGNAL(resumeAnimation()),              lineObject,         SLOT(resumeAnimation()));
         QObject::connect(lineObject,        SIGNAL(getConnectionInfo_s(uint32_t,TransportVehicle *)),this,            SLOT(getConnectionInfo(uint32_t,TransportVehicle *)));
-        QObject::connect(this,              SIGNAL(showConnectionInfo_s(std::vector<std::pair<std::string,float>>)), lineObject, SLOT(showConnectionInfo(std::vector<std::pair<std::string,float>>)));
     }
     connection_info = new Connection();
     connectionScene->addItem(connection_info);

@@ -1,3 +1,10 @@
+/**
+ * @file street.h
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy LineRoute
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
 #include "lineroute.h"
 
 LineRoute::LineRoute(Graph * g, uint32_t line) : graph(g), line(line)

@@ -1,56 +1,81 @@
+/**
+ * @file street.h
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy Street
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
+
 #ifndef __CONNECTION_H__
 #define __CONNECTION_H__
 
 #include <QGraphicsItem>
-#include <QGraphicsItemAnimation>
-#include <QTimeLine>
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QTime>
 
 #include "point.h"
-#include "graph.h"
 #include "transportvehicle.h"
 
-
+/// Makro pro rychlost vozidla. K dopočtení jízdního řádu.
 #define VEHICLE_SPEED 1.4
+/// Makro pro čas strávený na stanici. K dopočtení jízdního řádu.
 #define STATION_DELAY 7
 
+
+/**
+ * @class      Connection
+ *
+ * @brief      Třída reprezentující jednotlivé spoje linek. Slouží pro
+ *             vykreslení informací o daném spoji. Dědí od QT tříd QObject a
+ *             QGraphicsItem.
+ */
 class Connection : public QObject, public QGraphicsItem
 {
 	Q_OBJECT
 public:
 
+    /**
+     * @brief      Vytvoří novou instanci třídy @p Connection. Nastaví pero
+     *             (QPen), podle kterého se má vykreslit časová osa spoje s jeho
+     *             jízdním řádem. Poté vykresí mustr časové osy.
+     */
     Connection();
+    /**
+     * @brief      Destruktor pro instanci třídy \p Connection.
+     */
     ~Connection();
-    QPen pen;
 
+    /**
+     * @brief      Funkce poděděná ze QT třídy QGraphicsItem
+     *
+     */
     QRectF boundingRect() const override;
+    /**
+     * @brief      Funkce poděděná ze QT třídy QGraphicsItem
+     *
+     */
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
+    /**
+     * @brief      Funkce na vykreslení stanic spoje s jeho dopočítaným jízdním
+     *             řádem.
+     *
+     * @param      v         Ukazatel na vozidlo spoje.
+     * @param[in]  schedule  Jízdní řád daného spoje
+     */
     void show(TransportVehicle *, std::vector<std::pair<std::string,float>>);
-    void setVehicle(TransportVehicle *);
-
-    Graph * graph;
-
-    uint32_t line;
-
-private slots:
-
-
-signals:
-
-protected:
-    // void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    std::vector<QGraphicsEllipseItem *> stations;
-    std::vector<QGraphicsTextItem *> stations_info; 
+    /// Vektor, do kterého se ukládají vykreslené stanice spoje.
+    std::vector<QGraphicsEllipseItem *> stations; 
+    /// Vektor, do kterého se ukládají vykreslené informace o spoji.
+    std::vector<QGraphicsTextItem *> stations_info;  
+    /// Pero, dle kterého se vykresluje daná scéna.
+    QPen pen;
+    /// Štětec, dle kterého se vykresluje daná scéna.
+    QBrush brush;
 
-    QGraphicsItemAnimation * animation;
-    QGraphicsEllipseItem * vehicle;
-    TransportVehicle * v;
-    float xpos;
 };
 
 #endif // __CONNECTION_H__

@@ -318,7 +318,6 @@ void Graph::updateLinePath(uint32_t lid, std::vector<std::vector<Point>> path)
 {
     path.insert(path.begin(), std::vector<Point>{path.front().front()});
     path.push_back(std::vector<Point>{path.back().back()});
-    std::cout<<path[0][0]<<"--"<<path[path.size()-1][0]<<std::endl;
     line_pts[lid] = path;
 }
 

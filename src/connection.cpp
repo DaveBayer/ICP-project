@@ -1,8 +1,16 @@
+/**
+ * @file street.h
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy Street
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
 #include "connection.h"
 
-Connection::Connection() : vehicle(nullptr)
+Connection::Connection()
 {
 	pen = QPen(Qt::white, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+	brush = QBrush(Qt::white);
 	QGraphicsLineItem * station_line = new QGraphicsLineItem(50,40,650,40);
 	station_line->setParentItem(this);
 	station_line->setPen(pen);
@@ -11,10 +19,6 @@ void Connection::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 {
 	painter->setPen(pen);
 	painter->setBrush(QBrush(Qt::red));
-
-	if (vehicle != nullptr) {
-		vehicle->setPos(xpos,35);
-	} 
 }
 
 QRectF Connection::boundingRect() const
@@ -24,8 +28,6 @@ QRectF Connection::boundingRect() const
 
 void Connection::show(TransportVehicle * v, std::vector<std::pair<std::string,float>> schedule)
 {
-
-
 	for (auto s : stations){
 		delete s;
 	}
@@ -55,22 +57,14 @@ void Connection::show(TransportVehicle * v, std::vector<std::pair<std::string,fl
 		station_time->setParentItem(this);
 		station_time->setPos(40 +offset*(i-1),55);
 		station->setParentItem(this);
-		station->setBrush(Qt::white);
+		station->setBrush(brush);
 
 		stations_info.push_back(name);
 		stations_info.push_back(station_time);
 
 		time = time.addSecs(STATION_DELAY);
 	}
-	vehicle = new QGraphicsEllipseItem(0,0,10,10);
-	vehicle->setParentItem(this);
-	vehicle->setBrush(Qt::red);
-	xpos= 50;
 
-}
-void Connection::setVehicle(TransportVehicle * v)
-{
-	this->v = v;
 }
 
 Connection::~Connection(){}
