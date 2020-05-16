@@ -76,17 +76,9 @@ int main(int argc, char  *argv[])
 
     QApplication app(argc, argv);
     MainWindow mainWindow(&m);
-    mainWindow.createButtons();
-    mainWindow.createScene();
     mainWindow.setGeometry(200, 200, 1000, 950);
-    mainWindow.createSystemClock();
-    mainWindow.createStreetMap();
-    mainWindow.createLines();
-    mainWindow.createView();
-    mainWindow.createMainLayout();
-    mainWindow.connectButtons();
 
-    mainWindow.finish();
+    mainWindow.init();
     mainWindow.show();
 
     return app.exec();

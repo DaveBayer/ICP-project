@@ -31,11 +31,6 @@ void LineRoute::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
 }
 
-uint32_t LineRoute::getId()
-{
-    return line;
-}
-
 QRectF LineRoute::boundingRect() const
 {
     return QRectF(0,0,600, 600);
@@ -67,3 +62,5 @@ void LineRoute::showRoute()
         s->update();
     }
 }
+
+LineRoute::~LineRoute(){}

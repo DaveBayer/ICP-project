@@ -1,13 +1,25 @@
+/**
+ * @file mainwindow.cpp
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy MainWindow
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
+
 #include "mainwindow.h"
 
-
-
-MainWindow::MainWindow(Map * m) : map(m)
+MainWindow::MainWindow(Map * m) 
+: map(m), graph(&(m->g))
 {
-    
-    // street_layout_w->hide();
-    graph = &(m->g);
+    createLayouts();
+    createButtons();
+    createLabels();
+    createScenes();
+    createViews();
+}
 
+void MainWindow::createLayouts()
+{
     mainLayout_l = new QGridLayout;
 
     lineLabels_l = new QVBoxLayout;
@@ -30,13 +42,6 @@ MainWindow::MainWindow(Map * m) : map(m)
     viewControl_l = new QHBoxLayout(viewControl_w);
 
     controlView_l = new QStackedLayout();
-
-    info_l = new QLabel("&Traffic simulator");
-    editInfo_l = new QLabel("Edit information label");
-    street_l = new QLabel("");
-    streetInfo_l = new QLabel("Traffic index: 0");
-    status_l = new QLabel();
-
 }
 
 void MainWindow::createButtons()
@@ -69,6 +74,15 @@ void MainWindow::createButtons()
     openStreets_b = new QPushButton("&Open Streets");
     saveNewRoute_b = new QPushButton("&Save Route");
 
+}
+
+void MainWindow::createLabels()
+{
+    info_l = new QLabel("&Traffic simulator");
+    editInfo_l = new QLabel("Edit information label");
+    street_l = new QLabel("");
+    streetInfo_l = new QLabel("Traffic index: 0");
+    status_l = new QLabel();
 }
 
 void MainWindow::createMainLayout()
@@ -128,7 +142,7 @@ void MainWindow::createMainLayout()
     editGrid_l->addWidget(saveNewRoute_b,1,0);
 }
 
-void MainWindow::createScene()
+void MainWindow::createScenes()
 {
     scene = new QGraphicsScene();
     scene->setSceneRect(-50,-50,700,700);
@@ -138,7 +152,7 @@ void MainWindow::createScene()
     connectionScene->setSceneRect(0,0,700,80);
 }
 
-void MainWindow::createView()
+void MainWindow::createViews()
 {
     view = new QGraphicsView(scene);
     view->show();
@@ -172,7 +186,8 @@ void MainWindow::createSystemClock()
     
     time_l = new QLabel(time->toString("hh:mm:ss"));
     time_l->setAlignment(Qt::AlignCenter);
-    
+    sys_clock->start(1000);
+
     QObject::connect(sys_clock, SIGNAL(timeout()), this, SLOT(updateClock()));
 }
 
@@ -236,17 +251,19 @@ void MainWindow::connectButtons()
     QObject::connect(openStreets_b,     SIGNAL(clicked()), this,            SLOT(openStreets()));
 }  
 
-void MainWindow::finish() 
+void MainWindow::init() 
 {
 
-    sys_clock->start(1000);
-    
+    createSystemClock();
+    createStreetMap();
+    createLines();
+    createMainLayout();
+    connectButtons();
 
     QWidget *widget = new QWidget;
     widget->setLayout(mainLayout_l);
 
     setCentralWidget(widget);
-
 
     setWindowTitle(tr("ICP -Traffic simulator"));
     setUnifiedTitleAndToolBarOnMac(true);

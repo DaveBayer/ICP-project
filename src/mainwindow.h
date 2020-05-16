@@ -1,3 +1,10 @@
+/**
+ * @file mainwindow.h
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy MainWindow
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
 #ifndef __MAINWINDOW_H__
 #define __MAINWINDOW_H__
 
@@ -29,21 +36,12 @@ class MainWindow : public QMainWindow
 public:
 
    MainWindow(Map *);
-   void createStreetMap();
-   void createScene();
-   void createLines();
-   void createSystemClock();
-   void createButtons();
-   void createMainLayout();
-   void connectButtons();
-   void createView();
-   void finish();
+   void init();
    void startEditMode();
 
 
 
 private slots:
-    // void clock_tick_slot();
     void updateClock();
     void zoomIn();
     void zoomOut();
@@ -53,7 +51,6 @@ private slots:
     void fasterClock();
     void slowerClock();
     void actStreet(uint32_t);
-    // void closeStreet();
     void addTraffic();
     void clearTraffic();
     void changeLineRoute();
@@ -71,32 +68,43 @@ signals:
     void editNextRoute_s();
     void showConnectionInfo_s(std::vector<std::pair<std::string,float>>);
     void closeEditMode();
-    // void startEditMode();
 
 private:
+    void createLayouts();
+    void createButtons();
+    void createLabels();
+    void createScenes();
+    void createViews();
+    void createStreetMap();
+    void createLines();
+    void createSystemClock();
+    void createMainLayout();
+    void connectButtons();
 
-    std::vector<uint32_t> colliding_lines;
-    bool clock_state = true;
+
+    // Graphics
     QGraphicsView * view;
     QGraphicsView * connectionView;
+
     QGraphicsScene * scene;
     QGraphicsScene * connectionScene;
-    QLabel *label;
+    
 
     QTimer * sys_clock;
     QTime * time;
     QTimeEdit * changeTime_e;
-    QLabel * time_l;
+    bool clock_state = true;
 
+    // Labels
+    QLabel * time_l;
     QLabel * info_l;
     QLabel * editInfo_l;
     QLabel * street_l;
     QLabel * streetInfo_l;
-
     QLabel * status_l;
 
 
-    // buttons
+    // Buttons
     QPushButton * zoomIn_b;
     QPushButton * zoomOut_b;
     QPushButton * zoomDefault_b;
@@ -115,14 +123,16 @@ private:
 
 
     std::vector<LineObject *> lines;
+    std::vector<uint32_t> colliding_lines;
 
+    Connection * connection_info;
     StreetMap *sm;
     Graph * graph;
     Map * map;
 
     std::vector<Point> act_street;
 
-    // layout
+    // Layout
     QGridLayout * mainLayout_l;
     QGridLayout * mainGrid_l;
     QGridLayout * editGrid_l;
@@ -139,7 +149,6 @@ private:
     QWidget * mainGrid_w;
     QWidget * editGrid_w;
 
-    Connection * connection_info;
 
 };
 
