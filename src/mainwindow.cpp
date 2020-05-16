@@ -88,8 +88,6 @@ void MainWindow::createLabels()
 void MainWindow::createMainLayout()
 {
    
-
-
     // main layout
     mainLayout_l->addWidget(view,0,0,1,7);
     mainLayout_l->addLayout(lineLabels_l,0,7);
@@ -166,10 +164,8 @@ void MainWindow::createStreetMap()
     sm = new StreetMap(map);
     scene->addItem(sm);
 
-    // QObject::connect(this,  SIGNAL(startEditMode()),        sm,     SLOT(startEditMode()));
     QObject::connect(this,  SIGNAL(closeEditMode()),        sm,     SLOT(closeEditMode()));
     QObject::connect(sm,    SIGNAL(editNextRoute()),        this,   SLOT(changeLineRoute()));
-    QObject::connect(this,  SIGNAL(editNextRoute_s()),      this,   SLOT(changeLineRoute()));
     QObject::connect(sm,    SIGNAL(actStreet(uint32_t)),    this,   SLOT(actStreet(uint32_t)));
     QObject::connect(sm,    SIGNAL(updateLineRoute(uint32_t, std::vector<Point>)), this, SLOT(updateLineRoute(uint32_t, std::vector<Point>)));
     QObject::connect(sm,    SIGNAL(setStatusLabel(std::string)),  this, SLOT(setStatusLabel(std::string)));
@@ -253,7 +249,6 @@ void MainWindow::connectButtons()
 
 void MainWindow::init() 
 {
-
     createSystemClock();
     createStreetMap();
     createLines();
@@ -267,7 +262,6 @@ void MainWindow::init()
 
     setWindowTitle(tr("ICP -Traffic simulator"));
     setUnifiedTitleAndToolBarOnMac(true);
-
 }
 
 
@@ -336,6 +330,7 @@ void MainWindow::addTraffic()
     auto currentTC = graph->getStreetTC(act_street[0],act_street[1]);
     if (currentTC > 0.1){
         graph->incStreetTC(act_street[0],act_street[1]);
+        currentTC -= 0.1;
         std::string street_traffic = "Traffic index: " + std::to_string(currentTC);
         streetInfo_l->setText(QString::fromStdString(street_traffic));
         emit timeChanged(1.f);
@@ -391,7 +386,7 @@ void MainWindow::changeLineRoute()
                 l->route->hideRoute();
             }
         }
-        sm->changeRoute(graph->line_pts[line][0][0],graph->line_pts[line].back()[0],line);
+        sm->changeRoute(line);
         colliding_lines.pop_back();
     } else {
 
@@ -405,7 +400,6 @@ void MainWindow::getConnectionInfo(uint32_t line_id, TransportVehicle * vehicle)
     controlView_l->setCurrentIndex(2);
     auto schedule = map->getLineSchedule(line_id,!(vehicle->direction));
     connection_info->show(vehicle, schedule);
-    // emit showConnectionInfo_s(schedule);
 }
 
 void MainWindow::startEditMode()
@@ -441,3 +435,5 @@ void MainWindow::setStatusLabel(std::string msg)
 {
     status_l->setText(QString::fromStdString(msg));
 }
+
+MainWindow::~MainWindow() {}

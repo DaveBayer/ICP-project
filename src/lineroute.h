@@ -1,5 +1,5 @@
 /**
- * @file street.h
+ * @file lineroute.h
  * @brief Tento soubor obsahuje deklarace atributů a metod třídy LineRoute
  * @author David Bayer (xbayer09)
  * @author Michal Szymik (xszymi00)

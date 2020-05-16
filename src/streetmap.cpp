@@ -1,15 +1,19 @@
+/**
+ * @file streetmap.cpp
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy StreetMap
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
 #include "streetmap.h"
-
-
 
 StreetMap::StreetMap(Map *m) : map(m),graph(&(m->g))
 {
 	pen = QPen(Qt::gray, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     new_route_pen = QPen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     closed_street_pen = QPen(Qt::black, 4, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
+    
     edit_mode = false;
-    s1_item = nullptr;
-    s2_item = nullptr;
 
     if (!map->streets.empty()) {
         for(auto street : map->streets) {
@@ -138,22 +142,12 @@ void StreetMap::closeStreet()
 }
 
 
-void StreetMap::changeRoute(Point p1, Point p2, uint32_t line)
+void StreetMap::changeRoute(uint32_t line)
 {
 
     start_point_set = false;
-    // act_point   = start_point;
     new_route_v.clear();
     act_line = line;
-
-    // QPointF s1(start_point.getX(),start_point.getY());
-    // QPointF s2(end_point.getX(),end_point.getY());
-    // s1_item = new QGraphicsEllipseItem(s1.x()-6,s1.y()-6,12,12);
-    // s2_item = new QGraphicsEllipseItem(s2.x()-6,s2.y()-6,12,12);
-    // s1_item->setPen(QPen(Qt::red,   3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    // s2_item->setPen(QPen(Qt::blue,  3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    // s1_item->setParentItem(this);
-    // s2_item->setParentItem(this);
 
 
 }
@@ -176,14 +170,7 @@ void StreetMap::closeEditMode()
 {
     edit_mode = false;
 
-    if (s1_item && s2_item){
-        s1_item->setVisible(false);
-        s2_item->setVisible(false);
-        delete s1_item;
-        delete s2_item;
-        s1_item = nullptr;
-        s2_item = nullptr;
-    }
+    
 
     // show stations
     for(auto s : stations){
@@ -220,3 +207,5 @@ void StreetMap::saveRoute()
         emit setStatusLabel("Last line point must be a station.");
     }
 }
+
+StreetMap::~StreetMap() {}

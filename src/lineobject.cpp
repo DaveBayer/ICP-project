@@ -1,6 +1,6 @@
 /**
- * @file street.h
- * @brief Tento soubor obsahuje deklarace atributů a metod třídy Street
+ * @file lineobject.cpp
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy LineObject
  * @author David Bayer (xbayer09)
  * @author Michal Szymik (xszymi00)
  * @date 10.5.2020

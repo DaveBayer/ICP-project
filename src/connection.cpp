@@ -1,6 +1,6 @@
 /**
- * @file street.h
- * @brief Tento soubor obsahuje deklarace atributů a metod třídy Street
+ * @file connection.cpp
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy Connection
  * @author David Bayer (xbayer09)
  * @author Michal Szymik (xszymi00)
  * @date 10.5.2020
@@ -52,7 +52,7 @@ void Connection::show(TransportVehicle * v, std::vector<std::pair<std::string,fl
 		name->setParentItem(this);
 		name->setPos(40 +offset*(i-1),40);
 
-		time = time.addSecs(((schedule[i-1].second)/VEHICLE_SPEED));
+		time = time.addSecs(((schedule[i-1].second)/(v->speed*1000)));
 		auto station_time = new QGraphicsTextItem(time.toString("hh:mm:ss"));
 		station_time->setParentItem(this);
 		station_time->setPos(40 +offset*(i-1),55);
@@ -62,7 +62,7 @@ void Connection::show(TransportVehicle * v, std::vector<std::pair<std::string,fl
 		stations_info.push_back(name);
 		stations_info.push_back(station_time);
 
-		time = time.addSecs(STATION_DELAY);
+		time = time.addSecs(v->station_delay);
 	}
 
 }

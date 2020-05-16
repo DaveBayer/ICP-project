@@ -1,6 +1,6 @@
 /**
- * @file street.h
- * @brief Tento soubor obsahuje deklarace atributů a metod třídy Street
+ * @file connection.h
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy Connection
  * @author David Bayer (xbayer09)
  * @author Michal Szymik (xszymi00)
  * @date 10.5.2020
@@ -17,10 +17,6 @@
 #include "point.h"
 #include "transportvehicle.h"
 
-/// Makro pro rychlost vozidla. K dopočtení jízdního řádu.
-#define VEHICLE_SPEED 1.4
-/// Makro pro čas strávený na stanici. K dopočtení jízdního řádu.
-#define STATION_DELAY 7
 
 
 /**

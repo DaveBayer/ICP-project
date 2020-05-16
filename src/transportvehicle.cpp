@@ -1,3 +1,10 @@
+/**
+ * @file transportvehicle.cpp
+ * @brief Tento soubor obsahuje deklarace atributů a metod třídy TransportVehicle
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
 #include "transportvehicle.h"
 
 TransportVehicle::TransportVehicle(Graph * g, uint32_t timeStart, uint32_t line, bool direction) : graph(g), line(line), direction(direction)
@@ -29,8 +36,8 @@ std::vector<std::vector<Point>> TransportVehicle::getRoute()
 
 void TransportVehicle::initVehicle()
 {
-	station_delay = 7;			// 5*1.4
-	speed = 0.0014; 			// 0.0014 pixs/s -> 14m/s -> 50km/h
+	station_delay = STATION_DELAY;			// 5*1.4
+	speed = VEHICLE_SPEED; 			// 0.0014 pixs/s -> 14m/s -> 50km/h
 	length = getRouteLength();			// total pixel route length (pixs)
 	duration = length / speed; 	// duration of route with basic speed (ms)
 
