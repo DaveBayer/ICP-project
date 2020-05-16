@@ -1,7 +1,20 @@
+/**
+ * @file map.cpp
+ * @brief Tento soubor obsahuje implementace metod třídy Map
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
 #include "map.h"
 
 Map::Map(){}
 
+/**
+ * @param new_w nová šířka mapy
+ * @param new_h nová výška mapy
+ * @param new_streets vektor ulic
+ * @param new_stations vektor stanic
+ */
 Map::Map(float new_w, float new_h, std::vector<Street> new_streets, std::vector<Station> new_stations)
 : w(new_w), h(new_h)
 {
@@ -10,6 +23,9 @@ Map::Map(float new_w, float new_h, std::vector<Street> new_streets, std::vector<
     g = Graph(streets, stations);
 }
 
+/**
+ * @param s ulice pro přidání do mapy
+ */
 void Map::addStreet(Street s)
 {
     std::vector<Point> pts (s.getPoints());
@@ -25,12 +41,20 @@ void Map::addStreet(Street s)
         streets.push_back(s);
 }
 
+/**
+ * @param v vektor ulic pro přidání do mapy
+ */
 void Map::addStreets(std::vector<Street> v)
 {
     for (auto &i : v)
         addStreet(i);
 }
 
+/**
+ * @param A první bod ulice
+ * @param B poslední bod ulice
+ * @param ret vektor zasažených linek
+ */
 void Map::closeStreet(Point A, Point B, std::vector<uint32_t> &ret)
 {
     uint32_t sid = g.getStreetFromPoints(A, B);
@@ -45,6 +69,9 @@ void Map::openStreets()
     setLinesInGraph();
 }
 
+/**
+ * @param s stanice pro přidání do mapy
+ */
 void Map::addStation(Station s)
 {
     for (auto i : streets) {
@@ -74,12 +101,18 @@ void Map::addStation(Station s)
     errExit(1, "Station must lay on a street");
 }
 
+/**
+ * @param v vektor stanic pro přidání do mapy
+ */
 void Map::addStations(std::vector<Station> v)
 {
     for (auto &i : v)
         addStation(i);
 }
 
+/**
+ * @param l linka pro přidání do mapy
+ */
 void Map::addLine(Line l)
 {
     for (auto &i : l.getSNames()) {
@@ -94,6 +127,9 @@ void Map::addLine(Line l)
     lines.push_back(l);
 }
 
+/**
+ * @param lines vektor linek pro přidání do mapy
+ */
 void Map::addLines(std::vector<Line> lines)
 {
     for (auto &i : lines)
@@ -120,6 +156,10 @@ void Map::setLinesInGraph()
     }
 }
 
+/**
+ * @param P bod
+ * @return true pokud bod P je stanicí v mapě
+ */
 bool Map::isStation(Point P)
 {
     auto it = std::find_if(stations.begin(), stations.end(),
@@ -128,6 +168,10 @@ bool Map::isStation(Point P)
     return it != stations.end();
 }
 
+/**
+ * @param lid číslo linky
+ * @param path vektor objízdné trasy linky
+ */
 void Map::setDetour(uint32_t lid, std::vector<Point> path)
 {
     if (!isStation(path.front()) || !isStation(path.back()))
@@ -149,6 +193,11 @@ void Map::setDetour(uint32_t lid, std::vector<Point> path)
     g.updateLinePath(lid, paths);
 }
 
+/**
+ * @param lid číslo linky
+ * @param rev směr linky
+ * @return vektor jmen stanic a vzdáleností mezi nimi
+ */
 std::vector<std::pair<std::string, float>> Map::getLineSchedule(uint32_t lid, bool rev)
 {
     std::vector<std::pair<Point, float>> d = g.countLineSchedule(lid);

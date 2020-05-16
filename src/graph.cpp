@@ -1,8 +1,18 @@
+/**
+ * @file graph.cpp
+ * @brief Tento soubor obsahuje implementace metod třídy Graph
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
 #include "graph.h"
 
 Graph::Graph()
 : pt_idx(0), TrafficCoef(.5f){}
 
+/**
+ * @param s vektor ulic pro vytvoření grafu
+ */
 Graph::Graph(std::vector<Street> &s)
 {
     init();
@@ -23,6 +33,10 @@ Graph::Graph(std::vector<Street> &s)
     createEdges();
 }
 
+/**
+ * @param streets vektor ulic pro vytvoření grafu
+ * @param stations vektor stanic
+ */
 Graph::Graph(std::vector<Street> &streets, std::vector<Station> &stations)
 {
     init();
@@ -55,6 +69,11 @@ void Graph::init()
     pt_idx = 0;
 }
 
+/**
+ * @param A první bod
+ * @param B druhý bod
+ * @return id ulice, na které body leží
+ */
 uint32_t Graph::getStreetFromPoints(Point A, Point B)
 {
     uint32_t sid;
@@ -81,6 +100,10 @@ uint32_t Graph::getStreetFromPoints(Point A, Point B)
     return sid;
 }
 
+/**
+ * @param A bod k přeložení
+ * @return index vrcholu
+ */
 uint32_t Graph::getNodeID(Point A)
 {
     auto it = std::find_if(nodes.begin(), nodes.end(),
@@ -93,6 +116,10 @@ uint32_t Graph::getNodeID(Point A)
     return it->second;
 }
 
+/**
+ * @param idx index vrcholu
+ * @return souřadnice vrcholu
+ */
 Point Graph::getNodePoint(uint32_t idx)
 {
     auto it = std::find_if(nodes.begin(), nodes.end(),
@@ -104,6 +131,10 @@ Point Graph::getNodePoint(uint32_t idx)
     return it->first;
 }
 
+/**
+ * @param sid id ulice
+ * @param A nový bod
+ */
 void Graph::addNode(uint32_t sid, Point A)
 {
     auto findPoint = [&A](auto &el) -> bool
@@ -125,6 +156,10 @@ void Graph::addNode(uint32_t sid, Point A)
         cs[sid].push_back(p);
 }
 
+/**
+ * @param sid id ulice
+ * @param v vektor bodů
+ */
 void Graph::addNodes(uint32_t sid, std::vector<Point> v)
 {
     for (auto i : v)
@@ -156,6 +191,9 @@ void Graph::createEdges()
     }
 }
 
+/**
+ * @param sid id ulice
+ */
 void Graph::closeStreetEdges(uint32_t sid)
 {
     for (uint32_t i = 0; i < cs[sid].size() - 1; i++)
@@ -163,6 +201,11 @@ void Graph::closeStreetEdges(uint32_t sid)
                  std::numeric_limits<float>::infinity());
 }
 
+/**
+ * @param A první bod
+ * @param B druhý bod
+ * @return délka hrany
+ */
 float Graph::getEdgeW(Point A, Point B)
 {
     auto idx_a = getNodeID(A);
@@ -171,12 +214,21 @@ float Graph::getEdgeW(Point A, Point B)
     return adj_mat[idx_a][idx_b].first;
 }
 
+/**
+ * @param idx_a první index vrcholu
+ * @param idx_b druhý index vrcholu
+ * @param w délka hrany
+ */
 void Graph::setEdgeW(uint32_t idx_a, uint32_t idx_b, float w)
 { 
     adj_mat[idx_a][idx_b].first = w;
     adj_mat[idx_b][idx_a].first = w;
 }
 
+/**
+ * @param idx_a první index vrcholu
+ * @param idx_b druhý index vrcholu
+ */
 void Graph::resetEdgeW(uint32_t idx_a, uint32_t idx_b)
 {
     auto it1 = std::find_if(nodes.begin(), nodes.end(),
@@ -207,38 +259,66 @@ void Graph::resetEdgesW()
     }
 }
 
+/**
+ * @return aktuální dopravní koeficient
+ */
 float Graph::getTC()
 {
     return TrafficCoef;
 }
 
+/**
+ * @param nová hodnota dopravního koeficientu
+ */
 void Graph::setTC(float f)
 {
     TrafficCoef = f;
 }
 
+/**
+ * @param idx_a první index vrcholu
+ * @param idx_b druhý index vrcholu
+ * @return dopravní koeficient hrany
+ */
 float Graph::getEdgeTC(uint32_t idx_a, uint32_t idx_b)
 {
     return adj_mat[idx_a][idx_b].second;
 }
 
+/**
+ * @param A první bod
+ * @param B druhý bod
+ * @return dopravní koeficient hrany
+ */
 float Graph::getEdgeTC(Point A, Point B)
 {
     return adj_mat[getNodeID(A)][getNodeID(B)].second;
 }
 
+/**
+ * @param idx_a první index vrcholu
+ * @param idx_b druhý index vrcholu
+ */
 void Graph::incEdgeTC(uint32_t idx_a, uint32_t idx_b)
 {
     adj_mat[idx_a][idx_b].second += TrafficCoef;
     adj_mat[idx_b][idx_a].second += TrafficCoef;
 }
 
+/**
+ * @param idx_a první index vrcholu
+ * @param idx_b druhý index vrcholu
+ */
 void Graph::resetEdgeTC(uint32_t idx_a, uint32_t idx_b)
 {
     adj_mat[idx_a][idx_b].second = 1.f;
     adj_mat[idx_b][idx_a].second = 1.f;
 }
 
+/**
+ * @param A první bod
+ * @param B druhý bod
+ */
 void Graph::incStreetTC(Point A, Point B)
 {
     uint32_t sid = getStreetFromPoints(A, B);
@@ -246,6 +326,10 @@ void Graph::incStreetTC(Point A, Point B)
         incEdgeTC(cs[sid][i].second, cs[sid][i + 1].second);
 }
 
+/**
+ * @param A první bod
+ * @param B druhý bod
+ */
 void Graph::resetStreetTC(Point A, Point B)
 {
     uint32_t sid = getStreetFromPoints(A, B);
@@ -253,6 +337,11 @@ void Graph::resetStreetTC(Point A, Point B)
         resetEdgeTC(cs[sid][i].second, cs[sid][i + 1].second);
 }
 
+/**
+ * @param A první bod
+ * @param B druhý bod
+ * @return dopravní koeficient celé ulice
+ */
 float Graph::getStreetTC(Point A, Point B)
 {
     uint32_t sid = getStreetFromPoints(A, B);
@@ -264,6 +353,10 @@ float Graph::getStreetTC(Point A, Point B)
     return adj_mat[idx_a][idx_b].second;
 }
 
+/**
+ * @param lnum id linky
+ * @param path vektor s body stanic
+ */
 void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
 {
     line_pts[lnum].clear();
@@ -281,6 +374,10 @@ void Graph::SetUpLine(uint32_t lnum, std::vector<Point> path)
     line_pts[lnum].push_back(std::vector<Point>{path.back()});
 }
 
+/**
+ * @param sid id uzavřené ulice
+ * @return vektor s čísly zasažených linek
+ */
 std::vector<uint32_t> Graph::findLineConflicts(uint32_t sid)
 {
     std::vector<uint32_t> ret(0);
@@ -314,6 +411,10 @@ std::vector<uint32_t> Graph::findLineConflicts(uint32_t sid)
     return ret;
 }
 
+/**
+ * @param lid číslo linky
+ * @param path nová cesta linky
+ */
 void Graph::updateLinePath(uint32_t lid, std::vector<std::vector<Point>> path)
 {
     path.insert(path.begin(), std::vector<Point>{path.front().front()});
@@ -321,6 +422,10 @@ void Graph::updateLinePath(uint32_t lid, std::vector<std::vector<Point>> path)
     line_pts[lid] = path;
 }
 
+/**
+ * @param lid číslo linky
+ * @return vektor vzdáleností jednotlivých stanic
+ */
 std::vector<std::pair<Point, float>> Graph::countLineSchedule(uint32_t lid)
 {
     auto &lptr = line_pts[lid];
@@ -338,6 +443,12 @@ std::vector<std::pair<Point, float>> Graph::countLineSchedule(uint32_t lid)
     return distances;
 }
 
+/**
+ * @param A první bod
+ * @param B druhý bod
+ * @param path vektor pro uložení cesty
+ * @return true pokud byla nalezena cesta z bodu A do bodu B
+ */
 bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
 {
     uint32_t idx;
@@ -399,6 +510,11 @@ bool Graph::getPath(Point A, Point B, std::vector<Point> &path)
     return false;    
 }
 
+/**
+ * @param p1 první bod
+ * @param p2 druhý bod
+ * @return true pokud jsou body spojeny hranou
+ */
 bool Graph::isEdge(Point p1, Point p2)
 {
     auto idx1 = getNodeID(p1);

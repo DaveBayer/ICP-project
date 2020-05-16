@@ -1,3 +1,10 @@
+/**
+ * @file float_eq.cpp
+ * @brief Tento soubor obsahuje implementaci funkce pro rovnost dvou čísel v plovoucí řádové čárce
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
 #include "float_eq.h"
 
 /***************************************************************************************
@@ -12,6 +19,11 @@
 ***************************************************************************************/
 static const float epsilon = .00001f;
 
+/**
+ * @param a první číslo v plovoucí řádové čárce
+ * @param b druhé číslo v plovoucí řádové čárce
+ * @return true pokud se rovnají
+ */
 bool floatEQ(float a, float b)
 {
     float abs_a = fabsf(a);

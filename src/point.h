@@ -3,7 +3,7 @@
  * @brief Tento soubor obsahuje deklarace atributů a metod třídy Point
  * @author David Bayer (xbayer09)
  * @author Michal Szymik
- * @date $Date: 10.5.2020
+ * @date 10.5.2020
  */
 #ifndef __POINT_H__
 #define __POINT_H__

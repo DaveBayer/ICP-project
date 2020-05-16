@@ -1,3 +1,10 @@
+/**
+ * @file street.cpp
+ * @brief Tento soubor obsahuje implementace metod třídy Street
+ * @author David Bayer (xbayer09)
+ * @author Michal Szymik (xszymi00)
+ * @date 10.5.2020
+ */
 #include "street.h"
 
 uint32_t Street::StreetCount = 0;
@@ -5,19 +12,33 @@ uint32_t Street::StreetCount = 0;
 Street::Street()
 : id(StreetCount++){}
 
+/**
+ * @param new_A první krajní bod ulice
+ * @param new_B druhý krajní bod ulice
+ * @param new_name jméno ulice
+ */
 Street::Street(Point new_A, Point new_B, std::string new_name)
 : id(StreetCount++), A(new_A), B(new_B), name(new_name){}
 
+/**
+ * @return id ulice
+ */
 uint32_t Street::getID()
 {
     return id;
 }
 
+/**
+ * @return jméno ulice
+ */
 std::string Street::getName()
 {
     return name;
 }
 
+/**
+ * @return vektor s krajními body ulice
+ */
 std::vector<Point> Street::getPoints()
 {
     std::vector<Point> ret;
@@ -26,6 +47,11 @@ std::vector<Point> Street::getPoints()
     return ret;
 }
 
+/**
+ * @param s ulice pro spočítání průsečíku
+ * @param P průsečík ulic
+ * @return true pokud mají ulice průsečík
+ */
 bool Street::intersect(Street s, Point &P)
 {
     auto det = [](std::vector<float> &a, std::vector<float> &b) -> float
@@ -66,6 +92,11 @@ bool Street::intersect(Street s, Point &P)
     return P.between(s.A, s.B) && P.between(A, B);
 }
 
+/**
+ * @param is in stream
+ * @param s instance třídy Street pro zápis
+ * @return in stream
+ */
 std::istream &operator>>(std::istream &is, Street &s)
 {
     std::string line;
