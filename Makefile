@@ -10,10 +10,10 @@ icp:
 	@mkdir -p obj
 	@$(MAKE) -C src
 
-run: icp
+run: icp examples/streets.txt examples/stations.txt examples/lines.txt
 	./icp examples/streets.txt examples/stations.txt examples/lines.txt
 
-doxygen:
+doxygen: doxyfile
 	@doxygen doxyfile
 
 clean:
